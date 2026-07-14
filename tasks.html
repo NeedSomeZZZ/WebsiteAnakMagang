@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>InternSpace - Kanban Board</title>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed": "#dce1ff",
+                      "surface-container-highest": "#d3e4fe",
+                      "primary": "#00236f",
+                      "on-tertiary-fixed": "#341100",
+                      "on-surface": "#0b1c30",
+                      "inverse-primary": "#b6c4ff",
+                      "tertiary-container": "#6e2c00",
+                      "primary-container": "#1e3a8a",
+                      "outline": "#757682",
+                      "on-error-container": "#93000a",
+                      "surface-bright": "#f8f9ff",
+                      "on-secondary-fixed-variant": "#374475",
+                      "surface-tint": "#4059aa",
+                      "on-tertiary-fixed-variant": "#773205",
+                      "on-tertiary": "#ffffff",
+                      "background": "#f8f9ff",
+                      "secondary-container": "#b7c4fd",
+                      "tertiary": "#4b1c00",
+                      "surface-container-low": "#eff4ff",
+                      "inverse-on-surface": "#eaf1ff",
+                      "on-tertiary-container": "#f39461",
+                      "on-primary-container": "#90a8ff",
+                      "secondary-fixed-dim": "#b7c4fd",
+                      "on-surface-variant": "#444651",
+                      "surface-container-high": "#dce9ff",
+                      "on-background": "#0b1c30",
+                      "surface": "#f8f9ff",
+                      "inverse-surface": "#213145",
+                      "error-container": "#ffdad6",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-container": "#435081",
+                      "surface-dim": "#cbdbf5",
+                      "tertiary-fixed-dim": "#ffb691",
+                      "on-secondary": "#ffffff",
+                      "primary-fixed": "#dce1ff",
+                      "outline-variant": "#c5c5d3",
+                      "on-primary-fixed-variant": "#264191",
+                      "tertiary-fixed": "#ffdbcb",
+                      "error": "#ba1a1a",
+                      "on-primary": "#ffffff",
+                      "secondary": "#4f5c8e",
+                      "on-secondary-fixed": "#071747",
+                      "primary-fixed-dim": "#b6c4ff",
+                      "on-error": "#ffffff",
+                      "surface-container": "#e5eeff",
+                      "on-primary-fixed": "#00164e",
+                      "surface-variant": "#d3e4fe"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px",
+                      "2xl": "1rem"
+              },
+              "spacing": {
+                      "container-max": "1280px",
+                      "md": "16px",
+                      "base": "4px",
+                      "xs": "4px",
+                      "3xl": "64px",
+                      "gutter": "24px",
+                      "xl": "32px",
+                      "lg": "24px",
+                      "sm": "8px",
+                      "2xl": "48px"
+              },
+              "fontFamily": {
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "label-md": ["Geist"],
+                      "headline-xl": ["Geist"],
+                      "headline-md": ["Geist"],
+                      "headline-lg-mobile": ["Geist"],
+                      "headline-lg": ["Geist"],
+                      "label-sm": ["Geist"]
+              },
+              "fontSize": {
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "label-sm": ["12px", {"lineHeight": "14px", "fontWeight": "500"}]
+              }
+            }
+          }
+        }
+    </script>
+    <style>
+        .kanban-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .kanban-scroll::-webkit-scrollbar-track {
+            background: #f8f9ff;
+            border-radius: 4px;
+        }
+        .kanban-scroll::-webkit-scrollbar-thumb {
+            background: #c5c5d3;
+            border-radius: 4px;
+        }
+        .kanban-scroll::-webkit-scrollbar-thumb:hover {
+            background: #757682;
+        }
+        .hover-card-shadow:hover {
+            box-shadow: 0 10px 15px -3px rgba(30, 58, 138, 0.05), 0 4px 6px -2px rgba(30, 58, 138, 0.02);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md text-body-md h-screen overflow-hidden flex">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-full w-64 bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
+    <div class="flex items-center gap-sm mb-xl px-sm">
+        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
+        </div>
+        <div>
+            <h1 class="font-headline-md text-headline-md text-primary font-bold">InternSpace</h1>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Management Portal</p>
+        </div>
+    </div>
+    <nav class="flex-1 space-y-sm">
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="index.html">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span>Dashboard</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="attendance.html">
+            <span class="material-symbols-outlined">event_available</span>
+            <span>Attendance</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md active:scale-[0.98] transition-transform" href="tasks.html">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">view_kanban</span>
+            <span>Tasks</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="profile.html">
+            <span class="material-symbols-outlined">person</span>
+            <span>Profile</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="recruitment.html">
+            <span class="material-symbols-outlined">description</span>
+            <span>Applications</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="verification.html">
+            <span class="material-symbols-outlined">verified_user</span>
+            <span>Verification</span>
+        </a>
+    </nav>
+    <div class="mt-auto pt-md border-t border-outline-variant space-y-sm">
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="#">
+            <span class="material-symbols-outlined">settings</span>
+            <span>Settings</span>
+        </a>
+    </div>
+</aside>
+
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 flex flex-col h-full bg-surface">
+    <!-- Top Action Bar -->
+    <header class="h-20 px-gutter flex items-center justify-between border-b border-outline-variant bg-surface-container-lowest flex-shrink-0">
+        <div>
+            <h2 class="font-headline-lg text-headline-lg text-on-surface font-bold">Active Sprint</h2>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">Week 4: Frontend Implementation</p>
+        </div>
+        <div class="flex items-center gap-md">
+            <button onclick="createNewTask()" class="bg-primary text-on-primary font-label-md text-label-md px-lg py-sm rounded-lg flex items-center gap-sm hover:bg-primary-container transition-colors active:scale-95 shadow-sm">
+                <span class="material-symbols-outlined">add</span>
+                New Task
+            </button>
+        </div>
+    </header>
+
+    <!-- Kanban Board Container -->
+    <div class="flex-1 overflow-x-auto overflow-y-hidden p-gutter kanban-scroll">
+        <div class="flex gap-gutter h-full pb-sm items-start min-w-max">
+            <!-- Column: To Do -->
+            <div class="w-80 flex flex-col gap-md h-full flex-shrink-0">
+                <div class="flex items-center justify-between bg-surface-container-low px-md py-sm rounded-lg border border-outline-variant">
+                    <h3 class="font-headline-md text-headline-md text-on-surface flex items-center gap-sm font-semibold">
+                        <span class="w-3 h-3 rounded-full bg-outline"></span>
+                        To Do
+                    </h3>
+                    <span id="todo-count" class="bg-surface-container-highest text-on-surface px-sm py-xs rounded-full font-label-sm text-label-sm font-bold">2</span>
+                </div>
+                <div id="todo-col" class="flex-1 overflow-y-auto kanban-scroll flex flex-col gap-sm pr-xs pb-xl" ondragover="allowDrop(event)" ondrop="drop(event, 'todo')">
+                    <!-- Task Card 1 -->
+                    <div id="task-1" draggable="true" ondragstart="drag(event)" class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-md hover-card-shadow transition-all duration-200 cursor-pointer group">
+                        <div class="flex justify-between items-start mb-sm">
+                            <span class="bg-error-container text-on-error-container px-sm py-xs rounded-full font-label-sm text-label-sm flex items-center gap-xs">
+                                <span class="material-symbols-outlined text-[14px]">local_fire_department</span> High
+                            </span>
+                        </div>
+                        <h4 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold">Implement Auth Middleware</h4>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant mb-md line-clamp-2">Set up JWT validation on all protected routes and handle token refresh logic.</p>
+                        <div class="flex justify-end gap-2">
+                            <button onclick="moveTask('task-1', 'inprogress')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-primary-container hover:text-white transition-colors">Start Task</button>
+                        </div>
+                    </div>
+                    <!-- Task Card 2 -->
+                    <div id="task-2" draggable="true" ondragstart="drag(event)" class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-md hover-card-shadow transition-all duration-200 cursor-pointer group">
+                        <div class="flex justify-between items-start mb-sm">
+                            <span class="bg-tertiary-fixed text-on-tertiary-fixed px-sm py-xs rounded-full font-label-sm text-label-sm">Medium</span>
+                        </div>
+                        <h4 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold">Design System Audit</h4>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant mb-md line-clamp-2">Review current components against Figma designs for margin inconsistencies.</p>
+                        <div class="flex justify-end gap-2">
+                            <button onclick="moveTask('task-2', 'inprogress')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-primary-container hover:text-white transition-colors">Start Task</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column: In Progress -->
+            <div class="w-80 flex flex-col gap-md h-full flex-shrink-0">
+                <div class="flex items-center justify-between bg-primary-fixed border border-primary-fixed-dim px-md py-sm rounded-lg shadow-sm">
+                    <h3 class="font-headline-md text-headline-md text-on-primary-fixed flex items-center gap-sm font-semibold">
+                        <span class="w-3 h-3 rounded-full bg-primary animate-pulse"></span>
+                        In Progress
+                    </h3>
+                    <span id="inprogress-count" class="bg-primary text-on-primary px-sm py-xs rounded-full font-label-sm text-label-sm shadow-sm font-bold">1</span>
+                </div>
+                <div id="inprogress-col" class="flex-1 overflow-y-auto kanban-scroll flex flex-col gap-sm pr-xs pb-xl" ondragover="allowDrop(event)" ondrop="drop(event, 'inprogress')">
+                    <!-- Task Card 3 -->
+                    <div id="task-3" draggable="true" ondragstart="drag(event)" class="bg-surface-container-lowest border-2 border-primary-fixed-dim rounded-2xl p-md hover-card-shadow transition-all duration-200 cursor-pointer group relative overflow-hidden">
+                        <div class="absolute bottom-0 left-0 h-1 bg-primary w-2/3"></div>
+                        <div class="flex justify-between items-start mb-sm">
+                            <span class="bg-error-container text-on-error-container px-sm py-xs rounded-full font-label-sm text-label-sm flex items-center gap-xs">
+                                <span class="material-symbols-outlined text-[14px]">local_fire_department</span> High
+                            </span>
+                        </div>
+                        <h4 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold">Build Kanban UI</h4>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant mb-md line-clamp-2">Implement the drag-and-drop interface for task management using strict Tailwind tokens.</p>
+                        <div class="flex justify-between items-center">
+                            <button onclick="moveTask('task-3', 'todo')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-slate-400 hover:text-white transition-colors">Move Back</button>
+                            <button onclick="moveTask('task-3', 'underreview')" class="px-2 py-1 bg-primary text-white rounded text-[11px] hover:bg-primary-container transition-colors">Submit Review</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column: Under Review -->
+            <div class="w-80 flex flex-col gap-md h-full flex-shrink-0">
+                <div class="flex items-center justify-between bg-secondary-fixed border border-secondary-fixed-dim px-md py-sm rounded-lg">
+                    <h3 class="font-headline-md text-headline-md text-on-secondary-fixed flex items-center gap-sm font-semibold">
+                        <span class="material-symbols-outlined text-[18px]">visibility</span>
+                        Under Review
+                    </h3>
+                    <span id="underreview-count" class="bg-secondary-fixed-dim text-on-secondary-fixed px-sm py-xs rounded-full font-label-sm text-label-sm font-bold">1</span>
+                </div>
+                <div id="underreview-col" class="flex-1 overflow-y-auto kanban-scroll flex flex-col gap-sm pr-xs pb-xl" ondragover="allowDrop(event)" ondrop="drop(event, 'underreview')">
+                    <!-- Task Card 4 -->
+                    <div id="task-4" draggable="true" ondragstart="drag(event)" class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-md hover-card-shadow transition-all duration-200 cursor-pointer">
+                        <div class="flex justify-between items-start mb-sm">
+                            <span class="bg-surface-container-high text-on-surface-variant px-sm py-xs rounded-full font-label-sm text-label-sm">Low</span>
+                        </div>
+                        <h4 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold">Update Onboarding Copy</h4>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant mb-md line-clamp-2">Revise the welcome emails to align with new brand voice guidelines.</p>
+                        <div class="flex justify-between items-center">
+                            <button onclick="moveTask('task-4', 'inprogress')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-slate-400 hover:text-white transition-colors">Request Changes</button>
+                            <button onclick="moveTask('task-4', 'done')" class="px-2 py-1 bg-green-600 text-white rounded text-[11px] hover:bg-green-700 transition-colors">Approve & Done</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column: Done (Gamified) -->
+            <div class="w-80 flex flex-col gap-md h-full flex-shrink-0">
+                <div class="flex items-center justify-between bg-surface-container-lowest border border-outline-variant px-md py-sm rounded-lg shadow-sm relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-surface-container-lowest to-secondary-fixed opacity-50 z-0"></div>
+                    <h3 class="font-headline-md text-headline-md text-on-surface flex items-center gap-sm relative z-10 font-semibold">
+                        <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+                        Done
+                    </h3>
+                    <span id="done-count" class="relative z-10 bg-slate-200 text-on-surface px-sm py-xs rounded-full font-label-sm text-label-sm font-bold">1</span>
+                </div>
+                <div id="done-col" class="flex-1 overflow-y-auto kanban-scroll flex flex-col gap-md pr-xs pb-xl" ondragover="allowDrop(event)" ondrop="drop(event, 'done')">
+                    <!-- Gamification Widget: Task Master Badge -->
+                    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-md shadow-sm relative overflow-hidden group cursor-default">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-primary-fixed-dim rounded-bl-full opacity-20 -z-0"></div>
+                        <div class="flex items-center gap-sm mb-sm relative z-10">
+                            <div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-primary shadow-sm border border-secondary-fixed-dim">
+                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+                            </div>
+                            <div>
+                                <h4 class="font-label-md text-label-md text-on-surface font-bold">Task Master Badge</h4>
+                                <p class="font-body-sm text-body-sm text-on-surface-variant text-[12px]">Level 2</p>
+                            </div>
+                        </div>
+                        <div class="w-full bg-surface-container h-3 rounded-full overflow-hidden mt-sm relative z-10">
+                            <div id="xp-bar" class="bg-gradient-to-r from-primary-container to-primary h-full rounded-full w-[75%] transition-all duration-1000 ease-out"></div>
+                        </div>
+                        <div class="flex justify-between items-center mt-xs text-[12px] text-on-surface-variant relative z-10 font-medium">
+                            <span id="xp-text">150 XP</span>
+                            <span>200 XP</span>
+                        </div>
+                        <p class="text-center font-label-sm text-label-sm text-primary mt-sm relative z-10">+50 XP to Next Badge!</p>
+                    </div>
+                    <!-- Completed Task Card -->
+                    <div class="bg-surface-bright border border-outline-variant rounded-2xl p-md opacity-80 hover:opacity-100 transition-opacity">
+                        <div class="flex justify-between items-start mb-sm">
+                            <span class="text-outline line-through font-headline-md text-headline-md text-[16px] font-bold">Database Migration</span>
+                            <span class="bg-surface-container-highest text-primary font-label-sm text-label-sm px-sm py-xs rounded-full border border-primary-fixed flex items-center gap-xs shadow-sm font-bold">
+                                <span class="material-symbols-outlined text-[14px]">auto_awesome</span> +15 XP
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between mt-md">
+                            <div class="flex items-center gap-xs text-on-surface-variant font-label-sm text-label-sm">
+                                <span class="material-symbols-outlined text-[16px] text-outline">done_all</span> Completed Oct 22
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    let currentXp = 150;
+
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function drop(ev, colId) {
+        ev.preventDefault();
+        const data = ev.dataTransfer.getData("text");
+        moveTask(data, colId);
+    }
+
+    function moveTask(taskId, targetColId) {
+        const taskCard = document.getElementById(taskId);
+        const colContainer = document.getElementById(targetColId + '-col');
+        if (!taskCard || !colContainer) return;
+
+        // Append card to target column container
+        colContainer.appendChild(taskCard);
+
+        // Update actions buttons dynamically depending on columns
+        const actionArea = taskCard.querySelector('div.flex');
+        if (actionArea) {
+            if (targetColId === 'todo') {
+                actionArea.innerHTML = `<button onclick="moveTask('${taskId}', 'inprogress')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-primary-container hover:text-white transition-colors">Start Task</button>`;
+            } else if (targetColId === 'inprogress') {
+                actionArea.innerHTML = `
+                    <button onclick="moveTask('${taskId}', 'todo')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-slate-400 hover:text-white transition-colors">Move Back</button>
+                    <button onclick="moveTask('${taskId}', 'underreview')" class="px-2 py-1 bg-primary text-white rounded text-[11px] hover:bg-primary-container transition-colors ml-auto">Submit Review</button>
+                `;
+            } else if (targetColId === 'underreview') {
+                actionArea.innerHTML = `
+                    <button onclick="moveTask('${taskId}', 'inprogress')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-slate-400 hover:text-white transition-colors">Request Changes</button>
+                    <button onclick="moveTask('${taskId}', 'done')" class="px-2 py-1 bg-green-600 text-white rounded text-[11px] hover:bg-green-700 transition-colors ml-auto">Approve & Done</button>
+                `;
+            } else if (targetColId === 'done') {
+                actionArea.remove(); // Remove action buttons in done
+                // Award XP
+                currentXp += 15;
+                if (currentXp > 200) currentXp = 200;
+                document.getElementById('xp-bar').style.width = ((currentXp / 200) * 100) + '%';
+                document.getElementById('xp-text').textContent = currentXp + ' XP';
+                alert("Task completed! +15 XP Gained!");
+            }
+        } else if (targetColId !== 'done') {
+            // Re-create action area if moving out of Done
+            const newActionArea = document.createElement('div');
+            newActionArea.className = "flex justify-between items-center mt-4 pt-2 border-t border-surface-container-highest";
+            taskCard.appendChild(newActionArea);
+            moveTask(taskId, targetColId); // re-trigger to draw correct actions
+        }
+
+        updateCounts();
+    }
+
+    function updateCounts() {
+        document.getElementById('todo-count').textContent = document.getElementById('todo-col').querySelectorAll('.product-card, div[id^="task-"]').length;
+        document.getElementById('inprogress-count').textContent = document.getElementById('inprogress-col').querySelectorAll('div[id^="task-"]').length;
+        document.getElementById('underreview-count').textContent = document.getElementById('underreview-col').querySelectorAll('div[id^="task-"]').length;
+        document.getElementById('done-count').textContent = document.getElementById('done-col').querySelectorAll('div[id^="task-"]').length + 1; // including default database migration
+    }
+
+    function createNewTask() {
+        const title = prompt("Enter task title:");
+        if (!title) return;
+        const desc = prompt("Enter task description:");
+        const id = 'task-' + Date.now();
+
+        const taskHtml = `
+            <div id="${id}" draggable="true" ondragstart="drag(event)" class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-md hover-card-shadow transition-all duration-200 cursor-pointer group">
+                <div class="flex justify-between items-start mb-sm">
+                    <span class="bg-tertiary-fixed text-on-tertiary-fixed px-sm py-xs rounded-full font-label-sm text-label-sm">Medium</span>
+                </div>
+                <h4 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold">${title}</h4>
+                <p class="font-body-sm text-body-sm text-on-surface-variant mb-md line-clamp-2">${desc || 'No description provided.'}</p>
+                <div class="flex justify-end gap-2">
+                    <button onclick="moveTask('${id}', 'inprogress')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-primary-container hover:text-white transition-colors">Start Task</button>
+                </div>
+            </div>
+        `;
+
+        const container = document.createElement('div');
+        container.innerHTML = taskHtml;
+        document.getElementById('todo-col').appendChild(container.firstElementChild);
+        updateCounts();
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>InternSpace Dashboard</title>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Tailwind Config -->
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed": "#dce1ff",
+                      "surface-container-highest": "#d3e4fe",
+                      "primary": "#00236f",
+                      "on-tertiary-fixed": "#341100",
+                      "on-surface": "#0b1c30",
+                      "inverse-primary": "#b6c4ff",
+                      "tertiary-container": "#6e2c00",
+                      "primary-container": "#1e3a8a",
+                      "outline": "#757682",
+                      "on-error-container": "#93000a",
+                      "surface-bright": "#f8f9ff",
+                      "on-secondary-fixed-variant": "#374475",
+                      "surface-tint": "#4059aa",
+                      "on-tertiary-fixed-variant": "#773205",
+                      "on-tertiary": "#ffffff",
+                      "background": "#f8f9ff",
+                      "secondary-container": "#b7c4fd",
+                      "tertiary": "#4b1c00",
+                      "surface-container-low": "#eff4ff",
+                      "inverse-on-surface": "#eaf1ff",
+                      "on-tertiary-container": "#f39461",
+                      "on-primary-container": "#90a8ff",
+                      "secondary-fixed-dim": "#b7c4fd",
+                      "on-surface-variant": "#444651",
+                      "surface-container-high": "#dce9ff",
+                      "on-background": "#0b1c30",
+                      "surface": "#f8f9ff",
+                      "inverse-surface": "#213145",
+                      "error-container": "#ffdad6",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-container": "#435081",
+                      "surface-dim": "#cbdbf5",
+                      "tertiary-fixed-dim": "#ffb691",
+                      "on-secondary": "#ffffff",
+                      "primary-fixed": "#dce1ff",
+                      "outline-variant": "#c5c5d3",
+                      "on-primary-fixed-variant": "#264191",
+                      "tertiary-fixed": "#ffdbcb",
+                      "error": "#ba1a1a",
+                      "on-primary": "#ffffff",
+                      "secondary": "#4f5c8e",
+                      "on-secondary-fixed": "#071747",
+                      "primary-fixed-dim": "#b6c4ff",
+                      "on-error": "#ffffff",
+                      "surface-container": "#e5eeff",
+                      "on-primary-fixed": "#00164e",
+                      "surface-variant": "#d3e4fe"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "2xl": "1rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-max": "1280px",
+                      "md": "16px",
+                      "base": "4px",
+                      "xs": "4px",
+                      "3xl": "64px",
+                      "gutter": "24px",
+                      "xl": "32px",
+                      "lg": "24px",
+                      "sm": "8px",
+                      "2xl": "48px"
+              },
+              "fontFamily": {
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "label-md": ["Geist"],
+                      "headline-xl": ["Geist"],
+                      "headline-md": ["Geist"],
+                      "headline-lg-mobile": ["Geist"],
+                      "headline-lg": ["Geist"],
+                      "label-sm": ["Geist"]
+              },
+              "fontSize": {
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "label-sm": ["12px", {"lineHeight": "14px", "fontWeight": "500"}]
+              }
+            }
+          }
+        }
+    </script>
+    <style>
+        .glass-card {
+            box-shadow: 0 4px 6px -1px rgba(30, 58, 138, 0.05), 0 2px 4px -1px rgba(30, 58, 138, 0.03);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(30, 58, 138, 0.05), 0 4px 6px -2px rgba(30, 58, 138, 0.02);
+            transform: translateY(-2px);
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c5c5d3; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #757682; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md flex h-screen overflow-hidden">
+<!-- SideNavBar (Desktop) -->
+<aside class="hidden md:flex flex-col h-full w-64 bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
+    <div class="flex items-center gap-sm mb-xl px-sm">
+        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
+        </div>
+        <div>
+            <h1 class="font-headline-md text-headline-md text-primary font-bold">InternSpace</h1>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Management Portal</p>
+        </div>
+    </div>
+    <nav class="flex-1 space-y-sm">
+        <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md active:scale-[0.98] transition-transform" href="index.html">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span>Dashboard</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="attendance.html">
+            <span class="material-symbols-outlined">event_available</span>
+            <span>Attendance</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="tasks.html">
+            <span class="material-symbols-outlined">view_kanban</span>
+            <span>Tasks</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="profile.html">
+            <span class="material-symbols-outlined">person</span>
+            <span>Profile</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="recruitment.html">
+            <span class="material-symbols-outlined">description</span>
+            <span>Applications</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="verification.html">
+            <span class="material-symbols-outlined">verified_user</span>
+            <span>Verification</span>
+        </a>
+    </nav>
+    <div class="mt-auto pt-md border-t border-outline-variant space-y-sm">
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="#">
+            <span class="material-symbols-outlined">settings</span>
+            <span>Settings</span>
+        </a>
+    </div>
+</aside>
+
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col md:ml-64 h-screen overflow-y-auto relative">
+    <!-- TopNavBar -->
+    <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10">
+        <div class="flex justify-between items-center px-gutter w-full max-w-container-max mx-auto h-full">
+            <div class="flex-1 flex items-center">
+                <div class="relative w-full max-w-md hidden sm:block">
+                    <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">search</span>
+                    <input class="w-full pl-xl pr-md py-sm rounded-lg bg-surface-bright border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary-fixed focus:outline-none font-body-sm text-body-sm transition-all" placeholder="Search tasks, projects..." type="text"/>
+                </div>
+            </div>
+            <!-- Trailing Actions -->
+            <div class="flex items-center gap-sm">
+                <button class="p-sm text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors relative cursor-pointer active:scale-95">
+                    <span class="material-symbols-outlined">notifications</span>
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+                </button>
+                <div class="h-8 w-px bg-outline-variant mx-xs"></div>
+                <a href="profile.html" class="flex items-center gap-sm p-xs pr-md rounded-full border border-outline-variant hover:bg-surface-container-low transition-colors cursor-pointer active:scale-95">
+                    <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container overflow-hidden">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+                    </div>
+                    <span class="font-label-md text-label-md hidden sm:inline-block">Alex Doe</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <div class="w-full max-w-container-max mx-auto p-md md:p-gutter flex flex-col gap-xl">
+        <!-- Page Header -->
+        <div>
+            <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold">Welcome back, Alex</h2>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-xs">Here's what's happening with your internship today.</p>
+        </div>
+        <!-- Top Stats Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
+            <!-- Stat: Attendance -->
+            <a href="attendance.html" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 relative overflow-hidden group block">
+                <div class="flex justify-between items-start">
+                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Attendance</span>
+                    <div class="p-xs rounded-full bg-surface-container-high text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+                        <span class="material-symbols-outlined text-[20px]">event_available</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="font-headline-xl text-headline-xl text-on-surface">95%</div>
+                    <div class="flex items-center gap-xs mt-1">
+                        <span class="material-symbols-outlined text-[14px] text-green-600">trending_up</span>
+                        <span class="font-body-sm text-body-sm text-on-surface-variant">+2% from last month</span>
+                    </div>
+                </div>
+            </a>
+            <!-- Stat: Tasks Done -->
+            <a href="tasks.html" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block">
+                <div class="flex justify-between items-start">
+                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Tasks Done</span>
+                    <div class="p-xs rounded-full bg-surface-container-high text-primary">
+                        <span class="material-symbols-outlined text-[20px]">task_alt</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="font-headline-xl text-headline-xl text-on-surface">24</div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">This sprint</p>
+                </div>
+            </a>
+            <!-- Stat: Active Projects -->
+            <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32">
+                <div class="flex justify-between items-start">
+                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Active Projects</span>
+                    <div class="p-xs rounded-full bg-surface-container-high text-primary">
+                        <span class="material-symbols-outlined text-[20px]">rocket_launch</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="font-headline-xl text-headline-xl text-on-surface">3</div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Cross-functional</p>
+                </div>
+            </div>
+            <!-- Stat: Current Rank -->
+            <a href="profile.html" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 bg-gradient-to-br from-surface-container-lowest to-surface-container-high block">
+                <div class="flex justify-between items-start">
+                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Current Rank</span>
+                    <div class="p-xs rounded-full bg-tertiary-container text-on-tertiary-container">
+                        <span class="material-symbols-outlined text-[20px]">military_tech</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="font-headline-md text-headline-md text-on-surface font-bold text-primary">Senior Intern</div>
+                    <div class="mt-2 w-full h-2 bg-outline-variant rounded-full overflow-hidden flex">
+                        <div class="h-full bg-gradient-to-r from-primary to-inverse-primary w-3/4 rounded-full"></div>
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1 text-right text-[10px]">1,200 / 1,500 XP</p>
+                </div>
+            </a>
+        </div>
+        <!-- Main Bento Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-md items-start">
+            <!-- Center/Left Column -->
+            <div class="lg:col-span-8 flex flex-col gap-md">
+                <!-- Latest Badges -->
+                <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md">
+                    <div class="flex justify-between items-center mb-md">
+                        <h3 class="font-headline-md text-headline-md text-on-surface">Latest Achievements</h3>
+                        <a href="profile.html" class="font-label-md text-label-md text-primary hover:underline">View All</a>
+                    </div>
+                    <div class="flex gap-md overflow-x-auto pb-sm">
+                        <!-- Badge 1 -->
+                        <div class="flex items-center gap-sm p-sm rounded-xl border border-outline-variant bg-surface-bright min-w-[200px]">
+                            <div class="w-12 h-12 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center shadow-sm">
+                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                            </div>
+                            <div>
+                                <p class="font-label-md text-label-md text-on-surface">Speed Runner</p>
+                                <p class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">Finished 5 tasks early</p>
+                            </div>
+                        </div>
+                        <!-- Badge 2 -->
+                        <div class="flex items-center gap-sm p-sm rounded-xl border border-outline-variant bg-surface-bright min-w-[200px]">
+                            <div class="w-12 h-12 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shadow-sm">
+                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+                            </div>
+                            <div>
+                                <p class="font-label-md text-label-md text-on-surface">Task Master</p>
+                                <p class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">100% completion rate</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Recent Activity Log -->
+                <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex-1">
+                    <div class="flex justify-between items-center mb-md">
+                        <h3 class="font-headline-md text-headline-md text-on-surface">Recent Activity</h3>
+                        <span class="material-symbols-outlined text-outline">more_horiz</span>
+                    </div>
+                    <div class="space-y-0 relative before:absolute before:inset-0 before:ml-[1.15rem] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-outline-variant before:to-transparent">
+                        <!-- Activity Item 1 -->
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active py-sm">
+                            <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-surface-container-lowest bg-primary-container text-on-primary-container shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10">
+                                <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                            </div>
+                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-sm rounded-xl border border-outline-variant bg-surface-bright ml-sm md:ml-0 shadow-sm">
+                                <div class="flex items-center justify-between mb-1">
+                                    <h4 class="font-label-md text-label-md text-on-surface">Task Completed</h4>
+                                    <time class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">10:42 AM</time>
+                                </div>
+                                <p class="font-body-sm text-body-sm text-on-surface-variant">Submitted Q3 Marketing Assets for review.</p>
+                            </div>
+                        </div>
+                        <!-- Activity Item 2 -->
+                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active py-sm">
+                            <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-surface-container-lowest bg-surface-container-high text-primary shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10">
+                                <span class="material-symbols-outlined text-[16px]">login</span>
+                            </div>
+                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-sm rounded-xl border border-outline-variant bg-surface-container-lowest ml-sm md:ml-0">
+                                <div class="flex items-center justify-between mb-1">
+                                    <h4 class="font-label-md text-label-md text-on-surface">Clocked In</h4>
+                                    <time class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">08:55 AM</time>
+                                </div>
+                                <p class="font-body-sm text-body-sm text-on-surface-variant">Location: Office HQ</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Column -->
+            <div class="lg:col-span-4 flex flex-col">
+                <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg flex flex-col items-center text-center relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed opacity-30 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                    <div class="mb-sm">
+                        <span class="inline-flex items-center gap-xs px-2 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">
+                            <span class="w-2 h-2 rounded-full bg-primary animate-pulse" id="clock-status-dot"></span>
+                            <span id="clock-status-text">Currently Active</span>
+                        </span>
+                    </div>
+                    <h3 class="font-headline-md text-headline-md text-on-surface mb-xs">Current Shift</h3>
+                    <div class="my-md">
+                        <span class="font-headline-xl text-[48px] leading-tight font-black text-primary tabular-nums tracking-tight" id="live-timer">02:47:15</span>
+                    </div>
+                    <div class="flex items-center gap-sm text-on-surface-variant mb-xl bg-surface-bright px-md py-sm rounded-lg border border-outline-variant">
+                        <span class="material-symbols-outlined text-[18px]">location_on</span>
+                        <span class="font-body-sm text-body-sm">Location: <strong>Office HQ</strong></span>
+                    </div>
+                    <button id="clock-btn" onclick="toggleClock()" class="w-full bg-primary text-on-primary hover:bg-on-primary-fixed hover:shadow-md transition-all rounded-lg py-sm px-md font-label-md text-label-md flex items-center justify-center gap-sm active:scale-[0.98]">
+                        <span class="material-symbols-outlined" id="clock-btn-icon">logout</span>
+                        <span id="clock-btn-text">Clock Out</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="h-md"></div>
+    </div>
+</main>
+
+<script>
+    let secondsElapsed = 10035;
+    let clockInterval = setInterval(updateTimer, 1000);
+    let isClockedIn = true;
+
+    function updateTimer() {
+        secondsElapsed++;
+        const hours = Math.floor(secondsElapsed / 3600);
+        const minutes = Math.floor((secondsElapsed % 3600) / 60);
+        const seconds = secondsElapsed % 60;
+        document.getElementById('live-timer').textContent = 
+            String(hours).padStart(2, '0') + ':' + 
+            String(minutes).padStart(2, '0') + ':' + 
+            String(seconds).padStart(2, '0');
+    }
+
+    function toggleClock() {
+        isClockedIn = !isClockedIn;
+        const btnText = document.getElementById('clock-btn-text');
+        const btnIcon = document.getElementById('clock-btn-icon');
+        const statusText = document.getElementById('clock-status-text');
+        const statusDot = document.getElementById('clock-status-dot');
+        const btn = document.getElementById('clock-btn');
+
+        if (isClockedIn) {
+            clockInterval = setInterval(updateTimer, 1000);
+            btnText.textContent = "Clock Out";
+            btnIcon.textContent = "logout";
+            statusText.textContent = "Currently Active";
+            statusDot.className = "w-2 h-2 rounded-full bg-primary animate-pulse";
+            btn.className = "w-full bg-primary text-on-primary hover:bg-on-primary-fixed hover:shadow-md transition-all rounded-lg py-sm px-md font-label-md text-label-md flex items-center justify-center gap-sm active:scale-[0.98]";
+        } else {
+            clearInterval(clockInterval);
+            btnText.textContent = "Clock In";
+            btnIcon.textContent = "login";
+            statusText.textContent = "Inactive";
+            statusDot.className = "w-2 h-2 rounded-full bg-outline";
+            btn.className = "w-full bg-green-600 text-white hover:bg-green-700 hover:shadow-md transition-all rounded-lg py-sm px-md font-label-md text-label-md flex items-center justify-center gap-sm active:scale-[0.98]";
+        }
+    }
+</script>
+</body>
+</html>
