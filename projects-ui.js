@@ -1,4 +1,5 @@
 const app = document.getElementById('app'), modal = document.getElementById('modal'), toast = document.getElementById('toast');
+if (!window.I18n) { const language = document.createElement('script'); language.src = 'lang.js'; language.onload = () => { const ui = document.createElement('script'); ui.src = 'language-ui.js'; document.head.append(ui); }; document.head.append(language); }
 const params = new URLSearchParams(location.search), projectId = params.get('project');
 const escape = value => String(value || '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 function notify(message) { toast.textContent = message; toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 2800); }
