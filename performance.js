@@ -1,7 +1,7 @@
 /* Lightweight progressive enhancement for lower-power and touch devices. */
 (function () {
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-  const applyMotionPreference = () => document.documentElement.classList.toggle('reduce-motion', reducedMotion.matches);
+  const applyMotionPreference = () => document.documentElement.classList.toggle('reduce-motion', localStorage.getItem('internspace-motion') === 'reduce' || reducedMotion.matches);
   applyMotionPreference(); reducedMotion.addEventListener?.('change', applyMotionPreference);
   document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('img').forEach(image => { image.loading = 'lazy'; image.decoding = 'async'; });

@@ -21,7 +21,7 @@
     button.setAttribute('aria-label', 'Switch language'); button.onclick = () => I18n.toggleLang(); document.body.append(button);
   }
   function refresh() { bind(); I18n.applyLang(); }
-  function start() { refresh(); addSwitcher(); new MutationObserver(() => refresh()).observe(document.body, { childList: true, subtree: true }); }
+  function start() { refresh(); addSwitcher(); new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(node => { if (node.nodeType === Node.ELEMENT_NODE) bind(node); }))).observe(document.body, { childList: true, subtree: true }); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
   window.refreshLanguage = refresh;
 })();
