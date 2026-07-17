@@ -1,0 +1,14 @@
+{
+  "inputs": [],
+  "servers": {
+    "project-filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "e:\\laragon\\www\\WebsiteAnakMagang"
+      ]
+    }
+  }
+}
