@@ -1,0 +1,17 @@
+{
+  "name": "internspace-management-portal",
+  "version": "1.0.0",
+  "description": "Internship Portal Frontend Management System",
+  "main": "project-store.js",
+  "scripts": {
+    "test": "node test-suite.js"
+  },
+  "keywords": [
+    "internship",
+    "portal",
+    "kanban",
+    "management"
+  ],
+  "author": "InternSpace Team",
+  "license": "MIT"
+}

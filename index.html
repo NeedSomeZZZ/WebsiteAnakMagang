@@ -12,106 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <!-- Tailwind Config -->
-    <script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              "colors": {
-                      "secondary-fixed": "#dce1ff",
-                      "surface-container-highest": "#d3e4fe",
-                      "primary": "#00236f",
-                      "on-tertiary-fixed": "#341100",
-                      "on-surface": "#0b1c30",
-                      "inverse-primary": "#b6c4ff",
-                      "tertiary-container": "#6e2c00",
-                      "primary-container": "#1e3a8a",
-                      "outline": "#757682",
-                      "on-error-container": "#93000a",
-                      "surface-bright": "#f8f9ff",
-                      "on-secondary-fixed-variant": "#374475",
-                      "surface-tint": "#4059aa",
-                      "on-tertiary-fixed-variant": "#773205",
-                      "on-tertiary": "#ffffff",
-                      "background": "#f8f9ff",
-                      "secondary-container": "#b7c4fd",
-                      "tertiary": "#4b1c00",
-                      "surface-container-low": "#eff4ff",
-                      "inverse-on-surface": "#eaf1ff",
-                      "on-tertiary-container": "#f39461",
-                      "on-primary-container": "#90a8ff",
-                      "secondary-fixed-dim": "#b7c4fd",
-                      "on-surface-variant": "#444651",
-                      "surface-container-high": "#dce9ff",
-                      "on-background": "#0b1c30",
-                      "surface": "#f8f9ff",
-                      "inverse-surface": "#213145",
-                      "error-container": "#ffdad6",
-                      "surface-container-lowest": "#ffffff",
-                      "on-secondary-container": "#435081",
-                      "surface-dim": "#cbdbf5",
-                      "tertiary-fixed-dim": "#ffb691",
-                      "on-secondary": "#ffffff",
-                      "primary-fixed": "#dce1ff",
-                      "outline-variant": "#c5c5d3",
-                      "on-primary-fixed-variant": "#264191",
-                      "tertiary-fixed": "#ffdbcb",
-                      "error": "#ba1a1a",
-                      "on-primary": "#ffffff",
-                      "secondary": "#4f5c8e",
-                      "on-secondary-fixed": "#071747",
-                      "primary-fixed-dim": "#b6c4ff",
-                      "on-error": "#ffffff",
-                      "surface-container": "#e5eeff",
-                      "on-primary-fixed": "#00164e",
-                      "surface-variant": "#d3e4fe"
-              },
-              "borderRadius": {
-                      "DEFAULT": "0.25rem",
-                      "lg": "0.5rem",
-                      "xl": "0.75rem",
-                      "2xl": "1rem",
-                      "full": "9999px"
-              },
-              "spacing": {
-                      "container-max": "1280px",
-                      "md": "16px",
-                      "base": "4px",
-                      "xs": "4px",
-                      "3xl": "64px",
-                      "gutter": "24px",
-                      "xl": "32px",
-                      "lg": "24px",
-                      "sm": "8px",
-                      "2xl": "48px"
-              },
-              "fontFamily": {
-                      "body-lg": ["Inter"],
-                      "body-md": ["Inter"],
-                      "body-sm": ["Inter"],
-                      "label-md": ["Geist"],
-                      "headline-xl": ["Geist"],
-                      "headline-md": ["Geist"],
-                      "headline-lg-mobile": ["Geist"],
-                      "headline-lg": ["Geist"],
-                      "label-sm": ["Geist"]
-              },
-              "fontSize": {
-                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
-                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                      "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
-                      "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                      "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
-                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                      "label-sm": ["12px", {"lineHeight": "14px", "fontWeight": "500"}]
-              }
-            }
-          }
-        }
-    </script>
+    <script src="shared-config.js"></script>
     <style>
         .glass-card {
             box-shadow: 0 4px 6px -1px rgba(30, 58, 138, 0.05), 0 2px 4px -1px rgba(30, 58, 138, 0.03);
@@ -233,27 +134,27 @@
             <!-- Stat: Tasks Done -->
             <a href="tasks.html" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block">
                 <div class="flex justify-between items-start">
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Tasks Done</span>
+                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" data-i18n="stat_tasks_done">Tasks Done</span>
                     <div class="p-xs rounded-full bg-surface-container-high text-primary">
                         <span class="material-symbols-outlined text-[20px]">task_alt</span>
                     </div>
                 </div>
                 <div>
-                    <div class="font-headline-xl text-headline-xl text-on-surface">24</div>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">This sprint</p>
+                    <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-tasks-done-val">24</div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1" data-i18n="stat_this_sprint">This sprint</p>
                 </div>
             </a>
             <!-- Stat: Active Projects -->
             <a href="projects.html" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block">
                 <div class="flex justify-between items-start">
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Active Projects</span>
+                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" data-i18n="stat_active_proj">Active Projects</span>
                     <div class="p-xs rounded-full bg-surface-container-high text-primary">
                         <span class="material-symbols-outlined text-[20px]">rocket_launch</span>
                     </div>
                 </div>
                 <div>
-                    <div class="font-headline-xl text-headline-xl text-on-surface">3</div>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Cross-functional</p>
+                    <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-active-proj-val">3</div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1" data-i18n="stat_cross_func">Cross-functional</p>
                 </div>
             </a>
             <!-- Stat: Current Rank -->
@@ -372,19 +273,29 @@
 </main>
 
 <script>
-    let secondsElapsed = 10035;
-    let clockInterval = setInterval(updateTimer, 1000);
-    let isClockedIn = true;
+    let clockInterval = null;
+    let isClockedIn = localStorage.getItem('internspace-clock-status') !== 'inactive';
+    let clockStartTime = parseInt(localStorage.getItem('internspace-clock-start') || (Date.now() - 10035000), 10);
 
-    function updateTimer() {
-        secondsElapsed++;
-        const hours = Math.floor(secondsElapsed / 3600);
-        const minutes = Math.floor((secondsElapsed % 3600) / 60);
-        const seconds = secondsElapsed % 60;
-        document.getElementById('live-timer').textContent = 
-            String(hours).padStart(2, '0') + ':' + 
-            String(minutes).padStart(2, '0') + ':' + 
-            String(seconds).padStart(2, '0');
+    function getElapsedSeconds() {
+        if (!isClockedIn) {
+            return parseInt(localStorage.getItem('internspace-clock-accumulated') || '10035', 10);
+        }
+        return Math.floor((Date.now() - clockStartTime) / 1000);
+    }
+
+    function updateTimerDisplay() {
+        const elapsed = getElapsedSeconds();
+        const hours = Math.floor(elapsed / 3600);
+        const minutes = Math.floor((elapsed % 3600) / 60);
+        const seconds = elapsed % 60;
+        const timerElem = document.getElementById('live-timer');
+        if (timerElem) {
+            timerElem.textContent = 
+                String(hours).padStart(2, '0') + ':' + 
+                String(minutes).padStart(2, '0') + ':' + 
+                String(seconds).padStart(2, '0');
+        }
     }
 
     function toggleClock() {
@@ -396,21 +307,55 @@
         const btn = document.getElementById('clock-btn');
 
         if (isClockedIn) {
-            clockInterval = setInterval(updateTimer, 1000);
-            btnText.textContent = "Clock Out";
-            btnIcon.textContent = "logout";
-            statusText.textContent = "Currently Active";
-            statusDot.className = "w-2 h-2 rounded-full bg-primary animate-pulse";
-            btn.className = "w-full bg-primary text-on-primary hover:bg-on-primary-fixed hover:shadow-md transition-all rounded-lg py-sm px-md font-label-md text-label-md flex items-center justify-center gap-sm active:scale-[0.98]";
+            const acc = parseInt(localStorage.getItem('internspace-clock-accumulated') || '10035', 10);
+            clockStartTime = Date.now() - (acc * 1000);
+            localStorage.setItem('internspace-clock-start', clockStartTime);
+            localStorage.setItem('internspace-clock-status', 'active');
+            clockInterval = setInterval(updateTimerDisplay, 1000);
+            if (btnText) btnText.textContent = "Clock Out";
+            if (btnIcon) btnIcon.textContent = "logout";
+            if (statusText) statusText.textContent = "Currently Active";
+            if (statusDot) statusDot.className = "w-2 h-2 rounded-full bg-primary animate-pulse";
+            if (btn) btn.className = "w-full bg-primary text-on-primary hover:bg-on-primary-fixed hover:shadow-md transition-all rounded-lg py-sm px-md font-label-md text-label-md flex items-center justify-center gap-sm active:scale-[0.98]";
         } else {
+            const accumulated = getElapsedSeconds();
+            localStorage.setItem('internspace-clock-accumulated', accumulated);
+            localStorage.setItem('internspace-clock-status', 'inactive');
             clearInterval(clockInterval);
-            btnText.textContent = "Clock In";
-            btnIcon.textContent = "login";
-            statusText.textContent = "Inactive";
-            statusDot.className = "w-2 h-2 rounded-full bg-outline";
-            btn.className = "w-full bg-green-600 text-white hover:bg-green-700 hover:shadow-md transition-all rounded-lg py-sm px-md font-label-md text-label-md flex items-center justify-center gap-sm active:scale-[0.98]";
+            if (btnText) btnText.textContent = "Clock In";
+            if (btnIcon) btnIcon.textContent = "login";
+            if (statusText) statusText.textContent = "Inactive";
+            if (statusDot) statusDot.className = "w-2 h-2 rounded-full bg-outline";
+            if (btn) btn.className = "w-full bg-green-600 text-white hover:bg-green-700 hover:shadow-md transition-all rounded-lg py-sm px-md font-label-md text-label-md flex items-center justify-center gap-sm active:scale-[0.98]";
         }
+        updateTimerDisplay();
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateTimerDisplay();
+        if (isClockedIn) {
+            clockInterval = setInterval(updateTimerDisplay, 1000);
+        } else {
+            toggleClock(); // apply inactive UI states
+            isClockedIn = false;
+        }
+
+        if (window.ProjectStore) {
+            const projects = ProjectStore.projects();
+            let completedCount = 0;
+            projects.forEach(p => {
+                if (p.tasks) completedCount += p.tasks.filter(t => t.status === 'done').length;
+            });
+            const pElem = document.getElementById('stat-active-proj-val');
+            const tElem = document.getElementById('stat-tasks-done-val');
+            if (pElem) pElem.textContent = projects.length;
+            if (tElem) tElem.textContent = completedCount;
+        }
+    });
 </script>
+<script src="project-store.js"></script>
+<script src="lang.js"></script>
+<script src="language-ui.js"></script>
+<script src="performance.js"></script>
 </body>
 </html>
