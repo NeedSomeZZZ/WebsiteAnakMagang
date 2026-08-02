@@ -16,57 +16,61 @@
 </head>
 <body class="bg-background text-on-background font-body-md min-h-screen flex antialiased">
 <!-- SideNavBar (Shared Component) -->
-<aside class="h-full w-64 flex flex-col fixed left-0 top-0 p-md bg-surface-container-lowest border-r border-outline-variant z-10 hidden md:flex">
-    <div class="mb-xl flex items-center gap-sm">
-        <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
-            <span class="material-symbols-outlined font-label-md" style="font-variation-settings: 'FILL' 1;">work</span>
+<aside class="h-full w-[16.5rem] flex flex-col fixed left-0 top-0 p-md bg-surface-container-lowest border-r border-outline-variant z-10 hidden md:flex">
+    <div class="flex items-center gap-sm mb-xl px-sm">
+        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
         </div>
         <div>
             <h1 class="font-headline-md text-headline-md text-primary font-bold">InternSpace</h1>
             <p class="font-label-sm text-label-sm text-on-surface-variant">Management Portal</p>
         </div>
     </div>
-    <!-- Main Navigation -->
-    <nav class="flex-1 flex flex-col gap-sm">
-        <a class="flex items-center gap-sm p-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-all duration-200 active:scale-[0.98] rounded-lg" href="index.html">
+    <nav class="flex-1 space-y-sm">
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200 active:scale-[0.98]" href="index.html">
             <span class="material-symbols-outlined">dashboard</span>
-            <span class="font-label-md text-label-md">Dashboard</span>
+            <span>Dashboard</span>
         </a>
-        <a class="flex items-center gap-sm p-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-all duration-200 active:scale-[0.98] rounded-lg" href="projects.html">
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200 active:scale-[0.98]" href="projects.html">
             <span class="material-symbols-outlined">folder_open</span>
-            <span class="font-label-md text-label-md">Projects</span>
+            <span>Projects</span>
         </a>
-        <a class="flex items-center gap-sm p-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-all duration-200 active:scale-[0.98] rounded-lg" href="attendance.html">
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200 active:scale-[0.98]" href="attendance.html">
             <span class="material-symbols-outlined">event_available</span>
-            <span class="font-label-md text-label-md">Attendance</span>
+            <span>Attendance</span>
         </a>
-        <a class="flex items-center gap-sm p-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-all duration-200 active:scale-[0.98] rounded-lg" href="tasks.html">
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200 active:scale-[0.98]" href="tasks.html">
             <span class="material-symbols-outlined">view_kanban</span>
-            <span class="font-label-md text-label-md">Tasks</span>
+            <span>Tasks</span>
         </a>
-        <a class="flex items-center gap-sm p-sm bg-primary-container text-on-primary-container rounded-lg font-bold hover:bg-surface-container-high transition-all duration-200 active:scale-[0.98]" href="profile.html">
+        <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md active:scale-[0.98] transition-transform" href="profile.html">
             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
-            <span class="font-label-md text-label-md">Profile</span>
+            <span>Profile</span>
         </a>
-        <a class="flex items-center gap-sm p-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-all duration-200 active:scale-[0.98] rounded-lg" href="applications.html">
+        
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200 active:scale-[0.98]" href="applications.html">
             <span class="material-symbols-outlined">description</span>
-            <span class="font-label-md text-label-md">Applications</span>
+            <span>Applications</span>
         </a>
-        <a class="flex items-center gap-sm p-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-all duration-200 active:scale-[0.98] rounded-lg" href="verification.html">
+                <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="recruitment.html">
+            <span class="material-symbols-outlined">group_add</span>
+            <span data-i18n="nav_recruitment">Recruitment</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200 active:scale-[0.98]" href="verification.html">
             <span class="material-symbols-outlined">verified_user</span>
-            <span class="font-label-md text-label-md">Verification</span>
+            <span>Verification</span>
         </a>
     </nav>
     <div class="mt-auto pt-md border-t border-outline-variant space-y-sm">
-        <a class="flex items-center gap-sm p-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-all duration-200 active:scale-[0.98] rounded-lg" href="settings.html">
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200 active:scale-[0.98]" href="settings.html">
             <span class="material-symbols-outlined">settings</span>
-            <span class="font-label-md text-label-md">Settings</span>
+            <span>Settings</span>
         </a>
     </div>
 </aside>
 
 <!-- Main Content Area -->
-<main class="flex-1 ml-0 md:ml-64 p-gutter max-w-container-max mx-auto w-full flex flex-col gap-xl">
+<main class="flex-1 ml-0 md:ml-[16.5rem] p-gutter max-w-container-max mx-auto w-full flex flex-col gap-xl">
     <header>
         <h2 class="font-headline-lg text-headline-lg text-on-background md:block hidden font-bold">Digital Intern Profile</h2>
     </header>

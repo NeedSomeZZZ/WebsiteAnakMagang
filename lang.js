@@ -273,6 +273,9 @@ const I18n = (() => {
   function t(key) {
     const entry = dict[key];
     if (!entry) return key;
+    if (key.startsWith('nav_') || key === 'brand_subtitle') {
+      return entry.en || entry[DEFAULT_LANG] || key;
+    }
     return entry[getLang()] || entry[DEFAULT_LANG] || key;
   }
 

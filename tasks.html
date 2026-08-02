@@ -18,13 +18,15 @@
         .kanban-scroll::-webkit-scrollbar-track { background: #f8f9ff; border-radius: 4px; }
         .kanban-scroll::-webkit-scrollbar-thumb { background: #c5c5d3; border-radius: 4px; }
         .kanban-scroll::-webkit-scrollbar-thumb:hover { background: #757682; }
+        .kanban-scroll { scroll-behavior: smooth; }
         .hover-card-shadow:hover { box-shadow: 0 10px 15px -3px rgba(30, 58, 138, 0.08), 0 4px 6px -2px rgba(30, 58, 138, 0.04); }
         .drag-target-active { outline: 2px dashed #1e3a8a; background-color: rgba(220, 233, 255, 0.5) !important; }
     </style>
 </head>
 <body class="bg-surface text-on-surface font-body-md text-body-md h-screen overflow-hidden flex">
+
 <!-- SideNavBar -->
-<aside class="hidden md:flex flex-col h-full w-64 bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
+<aside class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
     <div class="flex items-center gap-sm mb-xl px-sm">
         <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
@@ -43,13 +45,13 @@
             <span class="material-symbols-outlined">folder_open</span>
             <span data-i18n="nav_projects">Projects</span>
         </a>
-        <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md active:scale-[0.98] transition-transform font-bold" href="tasks.html">
-            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">view_kanban</span>
-            <span data-i18n="nav_tasks">Tasks</span>
-        </a>
         <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="attendance.html">
             <span class="material-symbols-outlined">event_available</span>
             <span data-i18n="nav_attendance">Attendance</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md active:scale-[0.98] transition-transform font-bold" href="tasks.html">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">view_kanban</span>
+            <span data-i18n="nav_tasks">Tasks</span>
         </a>
         <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="profile.html">
             <span class="material-symbols-outlined">person</span>
@@ -76,10 +78,10 @@
     </div>
 </aside>
 
-<!-- Main Content Area -->
-<main class="flex-1 md:ml-64 flex flex-col h-full bg-surface">
+<!-- Main Content Area (Menambahkan overflow-x-auto di main) -->
+<main class="flex-1 md:ml-[16.5rem] flex flex-col h-full bg-surface overflow-x-auto">
     <!-- Top Action Bar -->
-    <header class="min-h-20 px-gutter py-3 flex flex-col md:flex-row items-start md:items-center justify-between border-b border-outline-variant bg-surface-container-lowest flex-shrink-0 gap-md">
+    <header class="min-h-20 px-gutter py-3 flex flex-col md:flex-row items-start md:items-center justify-between border-b border-outline-variant bg-surface-container-lowest flex-shrink-0 gap-md min-w-max">
         <div>
             <h2 class="font-headline-lg text-headline-lg text-on-surface font-bold" data-i18n="tasks_title">Active Sprint</h2>
             <p class="font-body-sm text-body-sm text-on-surface-variant" data-i18n="tasks_subtitle">Week 4: Frontend Implementation</p>
@@ -102,9 +104,10 @@
         </div>
     </header>
 
-    <!-- Kanban Board Container -->
+    <!-- Kanban Board Container dengan Scrollbar Horizontal -->
     <div class="flex-1 overflow-x-auto overflow-y-hidden p-gutter kanban-scroll">
-        <div class="flex gap-gutter h-full pb-sm items-start min-w-max">
+        <div class="flex gap-gutter h-full pb-sm items-start min-w-max pr-8">
+            
             <!-- Column: To Do -->
             <div class="w-80 flex flex-col gap-md h-full flex-shrink-0">
                 <div class="flex items-center justify-between bg-surface-container-low px-md py-sm rounded-lg border border-outline-variant">
@@ -195,7 +198,7 @@
                 </div>
             </div>
 
-            <!-- Column: Done (Gamified) -->
+            <!-- Column: Done -->
             <div class="w-80 flex flex-col gap-md h-full flex-shrink-0">
                 <div class="flex items-center justify-between bg-surface-container-lowest border border-outline-variant px-md py-sm rounded-lg shadow-sm relative overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-r from-surface-container-lowest to-secondary-fixed opacity-50 z-0"></div>
@@ -229,6 +232,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </main>
@@ -281,10 +285,25 @@
     let currentXp = 150;
     let currentPriorityFilter = 'All';
 
+    function autoScrollColumn(ev, colContainer) {
+        const rect = colContainer.getBoundingClientRect();
+        const threshold = 80;
+        const pointerY = ev.clientY;
+
+        if (pointerY < rect.top + threshold) {
+            colContainer.scrollTop = Math.max(0, colContainer.scrollTop - 24);
+        } else if (pointerY > rect.bottom - threshold) {
+            colContainer.scrollTop = Math.min(colContainer.scrollHeight, colContainer.scrollTop + 24);
+        }
+    }
+
     function allowDrop(ev, colId) {
         ev.preventDefault();
         const colContainer = document.getElementById(colId + '-col');
-        if (colContainer) colContainer.classList.add('drag-target-active');
+        if (colContainer) {
+            colContainer.classList.add('drag-target-active');
+            autoScrollColumn(ev, colContainer);
+        }
     }
 
     function removeDragHighlight(colId) {
@@ -293,7 +312,12 @@
     }
 
     function drag(ev) {
-        ev.dataTransfer.setData("text", ev.target.id);
+        const taskCard = ev.target.closest('.task-card');
+        const taskId = taskCard?.id || ev.target.id;
+        if (taskId) {
+            ev.dataTransfer.setData("text", taskId);
+            ev.dataTransfer.effectAllowed = 'move';
+        }
     }
 
     function drop(ev, colId) {

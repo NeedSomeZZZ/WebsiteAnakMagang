@@ -18,58 +18,60 @@
   </style>
 </head>
 <body class="min-h-screen bg-canvas text-slate-900">
-  <aside class="fixed inset-y-0 left-0 hidden w-64 flex-col border-r border-line bg-white p-4 md:flex z-20">
-    <a href="index.html" class="mb-8 flex items-center gap-2 px-2">
-      <span class="material-symbols-outlined rounded-lg bg-primary p-2 text-white">work</span>
-      <span>
-        <strong class="block font-geist text-xl text-primary">InternSpace</strong>
-        <small class="text-slate-600" data-i18n="brand_subtitle">Management Portal</small>
-      </span>
-    </a>
-    <nav class="flex-1 space-y-1 text-sm font-semibold text-slate-600">
-      <a class="flex items-center gap-3 rounded-lg px-4 py-2.5 hover:bg-blue-50" href="index.html">
+  <aside class="fixed inset-y-0 left-0 hidden w-[16.5rem] flex-col border-r border-outline-variant bg-surface-container-lowest p-md md:flex z-20">
+    <div class="flex items-center gap-sm mb-xl px-sm">
+      <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-on-primary">
+        <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">work</span>
+      </div>
+      <div>
+        <h1 class="font-headline-md text-headline-md font-bold text-primary">InternSpace</h1>
+        <p class="font-label-sm text-label-sm text-on-surface-variant">Management Portal</p>
+      </div>
+    </div>
+    <nav class="flex-1 space-y-sm">
+      <a class="flex items-center gap-md rounded-lg px-md py-sm text-on-surface-variant transition-all duration-200 hover:bg-surface-container-high hover:text-primary" href="index.html">
         <span class="material-symbols-outlined">dashboard</span>
-        <span data-i18n="nav_dashboard">Dashboard</span>
+        <span class="font-label-md text-label-md">Dashboard</span>
       </a>
-      <a class="flex items-center gap-3 rounded-lg bg-brand px-4 py-2.5 text-white" href="projects.html">
+      <a class="flex items-center gap-md rounded-lg bg-primary-container px-md py-sm text-on-primary-container transition-transform active:scale-[0.98]" href="projects.html">
         <span class="material-symbols-outlined">folder_open</span>
-        <span data-i18n="nav_projects">Projects</span>
+        <span class="font-label-md text-label-md">Projects</span>
       </a>
-      <a class="flex items-center gap-3 rounded-lg px-4 py-2.5 hover:bg-blue-50" href="tasks.html">
-        <span class="material-symbols-outlined">view_kanban</span>
-        <span data-i18n="nav_tasks">Tasks</span>
-      </a>
-      <a class="flex items-center gap-3 rounded-lg px-4 py-2.5 hover:bg-blue-50" href="attendance.html">
+      <a class="flex items-center gap-md rounded-lg px-md py-sm text-on-surface-variant transition-all duration-200 hover:bg-surface-container-high hover:text-primary" href="attendance.html">
         <span class="material-symbols-outlined">event_available</span>
-        <span data-i18n="nav_attendance">Attendance</span>
+        <span class="font-label-md text-label-md">Attendance</span>
       </a>
-      <a class="flex items-center gap-3 rounded-lg px-4 py-2.5 hover:bg-blue-50" href="profile.html">
+      <a class="flex items-center gap-md rounded-lg px-md py-sm text-on-surface-variant transition-all duration-200 hover:bg-surface-container-high hover:text-primary" href="tasks.html">
+        <span class="material-symbols-outlined">view_kanban</span>
+        <span class="font-label-md text-label-md">Tasks</span>
+      </a>
+      <a class="flex items-center gap-md rounded-lg px-md py-sm text-on-surface-variant transition-all duration-200 hover:bg-surface-container-high hover:text-primary" href="profile.html">
         <span class="material-symbols-outlined">person</span>
-        <span data-i18n="nav_profile">Profile</span>
+        <span class="font-label-md text-label-md">Profile</span>
       </a>
-      <a class="flex items-center gap-3 rounded-lg px-4 py-2.5 hover:bg-blue-50" href="applications.html">
+      <a class="flex items-center gap-md rounded-lg px-md py-sm text-on-surface-variant transition-all duration-200 hover:bg-surface-container-high hover:text-primary" href="applications.html">
         <span class="material-symbols-outlined">description</span>
-        <span data-i18n="nav_applications">Applications</span>
+        <span class="font-label-md text-label-md">Applications</span>
       </a>
-      <a class="flex items-center gap-3 rounded-lg px-4 py-2.5 hover:bg-blue-50" href="recruitment.html">
-        <span class="material-symbols-outlined">group_add</span>
-        <span data-i18n="nav_recruitment">Recruitment</span>
-      </a>
-      <a class="flex items-center gap-3 rounded-lg px-4 py-2.5 hover:bg-blue-50" href="verification.html">
+              <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="recruitment.html">
+            <span class="material-symbols-outlined">group_add</span>
+            <span data-i18n="nav_recruitment">Recruitment</span>
+        </a>
+      <a class="flex items-center gap-md rounded-lg px-md py-sm text-on-surface-variant transition-all duration-200 hover:bg-surface-container-high hover:text-primary" href="verification.html">
         <span class="material-symbols-outlined">verified_user</span>
-        <span data-i18n="nav_verification">Verification</span>
+        <span class="font-label-md text-label-md">Verification</span>
       </a>
     </nav>
-    <div class="mt-auto pt-4 border-t border-line">
-      <a class="flex items-center gap-3 rounded-lg px-4 py-2.5 hover:bg-blue-50 text-sm font-semibold text-slate-600" href="settings.html">
+    <div class="mt-auto space-y-sm border-t border-outline-variant pt-md">
+      <a class="flex items-center gap-md rounded-lg px-md py-sm text-on-surface-variant transition-all duration-200 hover:bg-surface-container-high hover:text-primary" href="settings.html">
         <span class="material-symbols-outlined">settings</span>
-        <span data-i18n="nav_settings">Settings</span>
+        <span class="font-label-md text-label-md">Settings</span>
       </a>
     </div>
   </aside>
-  <main class="md:ml-64">
+  <main class="md:ml-[16.5rem]">
     <header class="flex h-16 items-center justify-between border-b border-line bg-white px-5 md:px-8">
-      <h1 class="font-geist text-lg font-bold text-primary" data-i18n="nav_projects">Project Management</h1>
+      <h1 class="font-geist text-lg font-bold text-primary" data-i18n="nav_projects">Projects</h1>
       <a class="rounded-full border border-line px-3 py-1 text-sm font-semibold hover:bg-slate-50" href="profile.html">Alex Doe</a>
     </header>
     <div id="app" class="mx-auto max-w-7xl p-5 md:p-8"></div>
@@ -83,3 +85,4 @@
   <script src="performance.js"></script>
 </body>
 </html>
+

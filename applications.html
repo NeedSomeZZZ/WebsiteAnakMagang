@@ -17,56 +17,59 @@
   </style>
 </head>
 <body class="min-h-screen bg-canvas text-slate-900">
-  <aside class="fixed inset-y-0 left-0 hidden w-64 flex-col border-r border-line bg-white p-4 md:flex z-20">
-    <a href="index.html" class="mb-8 flex items-center gap-2 px-2">
-      <span class="material-symbols-outlined rounded-lg bg-primary p-2 text-white">work</span>
-      <span>
-        <strong class="block font-geist text-xl text-primary">InternSpace</strong>
-        <small class="text-slate-600" data-i18n="brand_subtitle">Management Portal</small>
-      </span>
-    </a>
-    <nav class="flex-1 space-y-1 text-sm font-semibold text-slate-600">
-      <a class="flex items-center gap-3 rounded-lg px-4 py-2.5 hover:bg-blue-50" href="index.html">
-        <span class="material-symbols-outlined">dashboard</span>
-        <span data-i18n="nav_dashboard">Dashboard</span>
-      </a>
-      <a class="flex items-center gap-3 rounded-lg px-4 py-2.5 hover:bg-blue-50" href="projects.html">
-        <span class="material-symbols-outlined">folder_open</span>
-        <span data-i18n="nav_projects">Projects</span>
-      </a>
-      <a class="flex items-center gap-3 rounded-lg px-4 py-2.5 hover:bg-blue-50" href="tasks.html">
-        <span class="material-symbols-outlined">view_kanban</span>
-        <span data-i18n="nav_tasks">Tasks</span>
-      </a>
-      <a class="flex items-center gap-3 rounded-lg px-4 py-2.5 hover:bg-blue-50" href="attendance.html">
-        <span class="material-symbols-outlined">event_available</span>
-        <span data-i18n="nav_attendance">Attendance</span>
-      </a>
-      <a class="flex items-center gap-3 rounded-lg px-4 py-2.5 hover:bg-blue-50" href="profile.html">
-        <span class="material-symbols-outlined">person</span>
-        <span data-i18n="nav_profile">Profile</span>
-      </a>
-      <a class="flex items-center gap-3 rounded-lg bg-brand px-4 py-2.5 text-white" href="applications.html">
-        <span class="material-symbols-outlined">description</span>
-        <span data-i18n="nav_applications">Applications</span>
-      </a>
-      <a class="flex items-center gap-3 rounded-lg px-4 py-2.5 hover:bg-blue-50" href="recruitment.html">
-        <span class="material-symbols-outlined">group_add</span>
-        <span data-i18n="nav_recruitment">Recruitment</span>
-      </a>
-      <a class="flex items-center gap-3 rounded-lg px-4 py-2.5 hover:bg-blue-50" href="verification.html">
-        <span class="material-symbols-outlined">verified_user</span>
-        <span data-i18n="nav_verification">Verification</span>
-      </a>
-    </nav>
-    <div class="mt-auto pt-4 border-t border-line">
-      <a class="flex items-center gap-3 rounded-lg px-4 py-2.5 hover:bg-blue-50 text-sm font-semibold text-slate-600" href="settings.html">
-        <span class="material-symbols-outlined">settings</span>
-        <span data-i18n="nav_settings">Settings</span>
-      </a>
+<aside class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
+    <div class="flex items-center gap-sm mb-xl px-sm">
+        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
+        </div>
+        <div>
+            <h1 class="font-headline-md text-headline-md text-primary font-bold">InternSpace</h1>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Management Portal</p>
+        </div>
     </div>
-  </aside>
-  <main class="min-h-screen md:ml-64">
+    <nav class="flex-1 space-y-sm">
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="index.html">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span>Dashboard</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="projects.html">
+            <span class="material-symbols-outlined">folder_open</span>
+            <span>Projects</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="attendance.html">
+            <span class="material-symbols-outlined">event_available</span>
+            <span>Attendance</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="tasks.html">
+            <span class="material-symbols-outlined">view_kanban</span>
+            <span>Tasks</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="profile.html">
+            <span class="material-symbols-outlined">person</span>
+            <span>Profile</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md active:scale-[0.98] transition-transform" href="applications.html">
+            <span class="material-symbols-outlined">description</span>
+            <span>Applications</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="recruitment.html">
+            <span class="material-symbols-outlined">group_add</span>
+            <span>Recruitment</span>
+        </a>
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="verification.html">
+            <span class="material-symbols-outlined">verified_user</span>
+            <span>Verification</span>
+        </a>
+        
+    </nav>
+    <div class="mt-auto pt-md border-t border-outline-variant space-y-sm">
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="settings.html">
+            <span class="material-symbols-outlined">settings</span>
+            <span>Settings</span>
+        </a>
+    </div>
+</aside>
+  <main class="min-h-screen md:ml-[16.5rem]">
     <header class="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-line bg-white px-5 md:px-8">
       <div class="relative hidden w-full max-w-md sm:block">
         <span class="material-symbols-outlined absolute left-3 top-2 text-slate-500">search</span>
