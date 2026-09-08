@@ -26,7 +26,7 @@ InternSpace is designed as a zero-build client-side web application leveraging:
 | [tasks.html](file:///e:/laragon/www/WebsiteAnakMagang/tasks.html) | Active Sprint Kanban | 4-column drag-and-drop Kanban board (To Do, In Progress, Under Review, Done), task creation modal. |
 | [attendance.html](file:///e:/laragon/www/WebsiteAnakMagang/attendance.html) | Attendance & History | Attendance rate overview, weekly calendar breakdown, history table with mentor notes. |
 | [applications.html](file:///e:/laragon/www/WebsiteAnakMagang/applications.html) | Internship Applications | Career center pipeline, application filter tabs (Interviewing, Under review, Offer). |
-| [recruitment.html](file:///e:/laragon/www/WebsiteAnakMagang/recruitment.html) | Recruitment Portal | Public-facing job openings, application modal form, multi-step progress submission. |
+| [pendaftaran.html](file:///e:/laragon/www/WebsiteAnakMagang/pendaftaran.html) | Portal Pendaftaran | Form pendaftaran anak magang, modal aplikasi, dan informasi posisi magang. |
 | [verification.html](file:///e:/laragon/www/WebsiteAnakMagang/verification.html) | Certificate Verification | Certificate lookup by ID, interactive verification status feedback. |
 | [profile.html](file:///e:/laragon/www/WebsiteAnakMagang/profile.html) | Digital Intern Profile | Intern bio, skills badges, mentor review summary, rank progress bar. |
 | [settings.html](file:///e:/laragon/www/WebsiteAnakMagang/settings.html) | System Preferences | Language selection, reduced motion toggle, local data reset button. |

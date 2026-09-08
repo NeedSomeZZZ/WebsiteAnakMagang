@@ -1,366 +1,351 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
+
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>InternSpace Dashboard</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>InternSpace - Pendaftaran Anak Magang</title>
     <!-- Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="shared-config.js"></script>
     <style>
-        .glass-card {
-            box-shadow: 0 4px 6px -1px rgba(30, 58, 138, 0.05), 0 2px 4px -1px rgba(30, 58, 138, 0.03);
-            transition: all 0.3s ease;
-        }
-        .glass-card:hover {
+        .custom-shadow-hover:hover {
             box-shadow: 0 10px 15px -3px rgba(30, 58, 138, 0.05), 0 4px 6px -2px rgba(30, 58, 138, 0.02);
-            transform: translateY(-2px);
         }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #c5c5d3; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #757682; }
     </style>
 </head>
-<body class="bg-background text-on-surface font-body-md flex h-screen overflow-hidden">
-<!-- SideNavBar (Desktop) -->
-<aside class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
-    <div class="flex items-center gap-sm mb-xl px-sm">
-        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
-            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
-        </div>
-        <div>
-            <h1 class="font-headline-md text-headline-md text-primary font-bold">InternSpace</h1>
-            <p class="font-label-sm text-label-sm text-on-surface-variant">Management Portal</p>
-        </div>
-    </div>
-    <nav class="flex-1 space-y-sm">
-        <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md active:scale-[0.98] transition-transform" href="index.html">
-            <span class="material-symbols-outlined">dashboard</span>
-            <span>Dashboard</span>
-        </a>
-        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="projects.html">
-            <span class="material-symbols-outlined">folder_open</span>
-            <span>Projects</span>
-        </a>
-        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="attendance.html">
-            <span class="material-symbols-outlined">event_available</span>
-            <span>Attendance</span>
-        </a>
-        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="tasks.html">
-            <span class="material-symbols-outlined">view_kanban</span>
-            <span>Tasks</span>
-        </a>
-        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="profile.html">
-            <span class="material-symbols-outlined">person</span>
-            <span>Profile</span>
-        </a>
-        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="applications.html">
-            <span class="material-symbols-outlined">description</span>
-            <span>Applications</span>
-        </a>
-              <a class="flex items-center gap-3 rounded-lg px-4 py-2.5 hover:bg-blue-50" href="recruitment.html">
-        <span class="material-symbols-outlined">group_add</span>
-        <span data-i18n="nav_recruitment">Recruitment</span>
-      </a>
-        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="verification.html">
-            <span class="material-symbols-outlined">verified_user</span>
-            <span>Verification</span>
-        </a>
-        
-    </nav>
-    <div class="mt-auto pt-md border-t border-outline-variant space-y-sm">
-        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="settings.html">
-            <span class="material-symbols-outlined">settings</span>
-            <span>Settings</span>
-        </a>
-    </div>
-</aside>
 
-<!-- Main Content Canvas -->
-<main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto relative">
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col antialiased">
     <!-- TopNavBar -->
-    <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10">
-        <div class="flex justify-between items-center px-gutter w-full max-w-container-max mx-auto h-full">
-            <div class="flex-1 flex items-center">
-                <div class="relative w-full max-w-md hidden sm:block">
-                    <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">search</span>
-                    <input class="w-full pl-xl pr-md py-sm rounded-lg bg-surface-bright border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary-fixed focus:outline-none font-body-sm text-body-sm transition-all" placeholder="Search tasks, projects..." type="text"/>
-                </div>
-            </div>
-            <!-- Trailing Actions -->
+    <header class="bg-surface-container-lowest border-b border-outline-variant shadow-sm sticky top-0 z-50">
+        <div class="flex justify-between items-center px-gutter w-full max-w-container-max mx-auto h-16">
             <div class="flex items-center gap-sm">
-                <button class="p-sm text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors relative cursor-pointer active:scale-95">
-                    <span class="material-symbols-outlined">notifications</span>
-                    <span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
-                </button>
-                <div class="h-8 w-px bg-outline-variant mx-xs"></div>
-                <a href="profile.html" class="flex items-center gap-sm p-xs pr-md rounded-full border border-outline-variant hover:bg-surface-container-low transition-colors cursor-pointer active:scale-95">
-                    <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container overflow-hidden">
-                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
-                    </div>
-                    <span class="font-label-md text-label-md hidden sm:inline-block">Alex Doe</span>
-                </a>
+                <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
+                </div>
+                <a href="index.html" class="font-headline-md text-headline-md font-bold text-primary">InternSpace</a>
+            </div>
+            <nav class="hidden md:flex gap-lg">
+                <a class="font-body-md text-body-md text-on-surface-variant font-medium hover:text-primary transition-colors cursor-pointer"
+                    href="#positions" data-i18n="recruit_open_roles">Posisi Magang</a>
+                <a class="font-body-md text-body-md text-on-surface-variant font-medium hover:text-primary transition-colors cursor-pointer"
+                    href="#application-form" data-i18n="recruit_apply">Daftar</a>
+                <a class="font-body-md text-body-md text-on-surface-variant font-medium hover:text-primary transition-colors cursor-pointer"
+                    href="verification.html" data-i18n="nav_verification">Verifikasi</a>
+            </nav>
+            <div class="flex items-center gap-sm">
+                <a href="index.html"
+                    class="bg-primary-container text-on-primary px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors"
+                    data-i18n="btn_portal_login">Masuk Portal</a>
             </div>
         </div>
     </header>
 
-    <!-- Dashboard Content -->
-    <div class="w-full max-w-container-max mx-auto p-md md:p-gutter flex flex-col gap-xl">
-        <!-- Page Header -->
-        <div>
-            <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold">Welcome back, Alex</h2>
-            <p class="font-body-md text-body-md text-on-surface-variant mt-xs">Here's what's happening with your internship today.</p>
-        </div>
-        <!-- Top Stats Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
-            <!-- Stat: Attendance -->
-            <a href="attendance.html" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 relative overflow-hidden group block">
-                <div class="flex justify-between items-start">
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Attendance</span>
-                    <div class="p-xs rounded-full bg-surface-container-high text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
-                        <span class="material-symbols-outlined text-[20px]">event_available</span>
-                    </div>
-                </div>
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section class="w-full px-gutter py-3xl max-w-container-max mx-auto flex flex-col items-center text-center">
+            <span
+                class="inline-block px-md py-xs rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm mb-lg border border-primary-fixed-dim font-semibold"
+                data-i18n="recruit_careers">Pendaftaran</span>
+            <h1 class="font-headline-xl text-headline-xl text-on-surface mb-md max-w-3xl" data-i18n="recruit_title">
+                Pendaftaran Anak Magang</h1>
+            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mb-xl" data-i18n="recruit_subtitle">
+                Mulai perjalanan karir Anda dengan pengalaman nyata, bimbingan mentor industri, dan proyek langsung di
+                Kedayweb.
+            </p>
+            <div
+                class="w-full h-64 md:h-[400px] rounded-[24px] overflow-hidden border border-outline-variant shadow-sm relative group mt-lg">
+                <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAf2c_JxDXo1KbLpFVJDn67XVBHdj1mnsNi7Qu-7UAr2hB9SmuW7CS49bF7djDMStwPzGjvpclkK49Gm3gICdZjnkqfw8eMc1C9LlUFSkErmQKK3ET0KGrdDyMNWDu08Q2u1EtP56g_-1VLvNfqAP18yuc1d9zVmLfS0atyrhngTBfqKaeYzexH-xYF_I88LmVkG9rqfcd2ezl-1Rc9TgUKQMA3dRkKV7M9c7e_8_88cJC15aMskLXb"
+                    alt="Modern collaborative workspace" />
+                <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/40 to-transparent"></div>
+            </div>
+        </section>
+
+        <!-- Available Positions Section -->
+        <section class="w-full px-gutter py-2xl max-w-container-max mx-auto" id="positions">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-xl">
                 <div>
-                    <div class="font-headline-xl text-headline-xl text-on-surface">95%</div>
-                    <div class="flex items-center gap-xs mt-1">
-                        <span class="material-symbols-outlined text-[14px] text-green-600">trending_up</span>
-                        <span class="font-body-sm text-body-sm text-on-surface-variant">+2% from last month</span>
-                    </div>
+                    <h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs font-bold"
+                        data-i18n="recruit_positions">Pilihan Posisi Magang</h2>
+                    <p class="font-body-md text-body-md text-on-surface-variant" data-i18n="recruit_pos_d">Pilih bidang
+                        yang sesuai dengan minat dan keahlian Anda.</p>
                 </div>
-            </a>
-            <!-- Stat: Tasks Done -->
-            <a href="tasks.html" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block">
-                <div class="flex justify-between items-start">
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" data-i18n="stat_tasks_done">Tasks Done</span>
-                    <div class="p-xs rounded-full bg-surface-container-high text-primary">
-                        <span class="material-symbols-outlined text-[20px]">task_alt</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-tasks-done-val">24</div>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1" data-i18n="stat_this_sprint">This sprint</p>
-                </div>
-            </a>
-            <!-- Stat: Active Projects -->
-            <a href="projects.html" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block">
-                <div class="flex justify-between items-start">
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" data-i18n="stat_active_proj">Active Projects</span>
-                    <div class="p-xs rounded-full bg-surface-container-high text-primary">
-                        <span class="material-symbols-outlined text-[20px]">rocket_launch</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-active-proj-val">3</div>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1" data-i18n="stat_cross_func">Cross-functional</p>
-                </div>
-            </a>
-            <!-- Stat: Current Rank -->
-            <a href="profile.html" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 bg-gradient-to-br from-surface-container-lowest to-surface-container-high block">
-                <div class="flex justify-between items-start">
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Current Rank</span>
-                    <div class="p-xs rounded-full bg-tertiary-container text-on-tertiary-container">
-                        <span class="material-symbols-outlined text-[20px]">military_tech</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="font-headline-md text-headline-md text-on-surface font-bold text-primary">Senior Intern</div>
-                    <div class="mt-2 w-full h-2 bg-outline-variant rounded-full overflow-hidden flex">
-                        <div class="h-full bg-gradient-to-r from-primary to-inverse-primary w-3/4 rounded-full"></div>
-                    </div>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1 text-right text-[10px]">1,200 / 1,500 XP</p>
-                </div>
-            </a>
-        </div>
-        <!-- Main Bento Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-md items-start">
-            <!-- Center/Left Column -->
-            <div class="lg:col-span-8 flex flex-col gap-md">
-                <!-- Latest Badges -->
-                <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md">
-                    <div class="flex justify-between items-center mb-md">
-                        <h3 class="font-headline-md text-headline-md text-on-surface">Latest Achievements</h3>
-                        <a href="profile.html" class="font-label-md text-label-md text-primary hover:underline">View All</a>
-                    </div>
-                    <div class="flex gap-md overflow-x-auto pb-sm">
-                        <!-- Badge 1 -->
-                        <div class="flex items-center gap-sm p-sm rounded-xl border border-outline-variant bg-surface-bright min-w-[200px]">
-                            <div class="w-12 h-12 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center shadow-sm">
-                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bolt</span>
-                            </div>
-                            <div>
-                                <p class="font-label-md text-label-md text-on-surface">Speed Runner</p>
-                                <p class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">Finished 5 tasks early</p>
-                            </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+                <!-- Role Card 1 -->
+                <div
+                    class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg custom-shadow-hover transition-all duration-300 flex flex-col h-full group">
+                    <div class="flex justify-between items-start mb-md">
+                        <div
+                            class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+                            <span class="material-symbols-outlined">code</span>
                         </div>
-                        <!-- Badge 2 -->
-                        <div class="flex items-center gap-sm p-sm rounded-xl border border-outline-variant bg-surface-bright min-w-[200px]">
-                            <div class="w-12 h-12 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shadow-sm">
-                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-                            </div>
-                            <div>
-                                <p class="font-label-md text-label-md text-on-surface">Task Master</p>
-                                <p class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">100% completion rate</p>
-                            </div>
+                        <span
+                            class="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm"
+                            data-i18n="recruit_engineering">Teknik</span>
+                    </div>
+                    <h3 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold"
+                        data-i18n="recruit_web_dev">Magang Web Developer</h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant flex-grow mb-xl"
+                        data-i18n="recruit_web_d">
+                        Bergabunglah dengan tim frontend kami untuk membangun antarmuka web modern, cepat, dan
+                        interaktif. Bekerja sama langsung dengan engineer senior.
+                    </p>
+                    <div class="flex items-center gap-md border-t border-outline-variant pt-md mt-auto">
+                        <a href="#application-form"
+                            class="bg-primary-container text-on-primary rounded-lg px-md py-sm font-label-md text-label-md hover:bg-primary transition-colors flex items-center gap-2">
+                            <span data-i18n="btn_apply_now">Daftar Sekarang</span>
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        </a>
+                        <div class="flex items-center text-on-surface-variant font-body-sm text-body-sm gap-1">
+                            <span class="material-symbols-outlined text-[16px]">location_on</span> <span
+                                data-i18n="recruit_remote">Remote / Hybrid</span>
                         </div>
                     </div>
                 </div>
-                <!-- Recent Activity Log -->
-                <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex-1">
-                    <div class="flex justify-between items-center mb-md">
-                        <h3 class="font-headline-md text-headline-md text-on-surface">Recent Activity</h3>
-                        <span class="material-symbols-outlined text-outline">more_horiz</span>
-                    </div>
-                    <div class="space-y-0 relative before:absolute before:inset-0 before:ml-[1.15rem] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-outline-variant before:to-transparent">
-                        <!-- Activity Item 1 -->
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active py-sm">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-surface-container-lowest bg-primary-container text-on-primary-container shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10">
-                                <span class="material-symbols-outlined text-[16px]">check_circle</span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-sm rounded-xl border border-outline-variant bg-surface-bright ml-sm md:ml-0 shadow-sm">
-                                <div class="flex items-center justify-between mb-1">
-                                    <h4 class="font-label-md text-label-md text-on-surface">Task Completed</h4>
-                                    <time class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">10:42 AM</time>
-                                </div>
-                                <p class="font-body-sm text-body-sm text-on-surface-variant">Submitted Q3 Marketing Assets for review.</p>
-                            </div>
+                <!-- Role Card 2 -->
+                <div
+                    class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg custom-shadow-hover transition-all duration-300 flex flex-col h-full group">
+                    <div class="flex justify-between items-start mb-md">
+                        <div
+                            class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+                            <span class="material-symbols-outlined">design_services</span>
                         </div>
-                        <!-- Activity Item 2 -->
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active py-sm">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-surface-container-lowest bg-surface-container-high text-primary shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10">
-                                <span class="material-symbols-outlined text-[16px]">login</span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-sm rounded-xl border border-outline-variant bg-surface-container-lowest ml-sm md:ml-0">
-                                <div class="flex items-center justify-between mb-1">
-                                    <h4 class="font-label-md text-label-md text-on-surface">Clocked In</h4>
-                                    <time class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">08:55 AM</time>
-                                </div>
-                                <p class="font-body-sm text-body-sm text-on-surface-variant">Location: Office HQ</p>
-                            </div>
+                        <span
+                            class="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm"
+                            data-i18n="recruit_design">Desain</span>
+                    </div>
+                    <h3 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold"
+                        data-i18n="recruit_uiux">Magang UI/UX Designer</h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant flex-grow mb-xl"
+                        data-i18n="recruit_uiux_d">
+                        Bantu rancang pengalaman produk terbaik. Buat riset pengguna, wireframe, dan prototipe desain
+                        aplikasi berstandar industri.
+                    </p>
+                    <div class="flex items-center gap-md border-t border-outline-variant pt-md mt-auto">
+                        <a href="#application-form"
+                            class="bg-primary-container text-on-primary rounded-lg px-md py-sm font-label-md text-label-md hover:bg-primary transition-colors flex items-center gap-2">
+                            <span data-i18n="btn_apply_now">Daftar Sekarang</span>
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        </a>
+                        <div class="flex items-center text-on-surface-variant font-body-sm text-body-sm gap-1">
+                            <span class="material-symbols-outlined text-[16px]">location_on</span> Banyuwangi / Remote
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- Right Column -->
-            <div class="lg:col-span-4 flex flex-col">
-                <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg flex flex-col items-center text-center relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed opacity-30 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-                    <div class="mb-sm">
-                        <span class="inline-flex items-center gap-xs px-2 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">
-                            <span class="w-2 h-2 rounded-full bg-primary animate-pulse" id="clock-status-dot"></span>
-                            <span id="clock-status-text">Currently Active</span>
-                        </span>
+        </section>
+
+        <!-- Application Form Section -->
+        <section class="w-full px-gutter py-2xl max-w-container-max mx-auto" id="application-form">
+            <div
+                class="bg-surface-container-lowest border border-outline-variant rounded-[24px] shadow-sm overflow-hidden flex flex-col md:flex-row">
+                <!-- Left Side: Stepper -->
+                <div
+                    class="w-full md:w-1/3 bg-surface-container-low p-xl border-r border-outline-variant flex flex-col">
+                    <h3 class="font-headline-md text-headline-md text-on-surface mb-sm font-bold"
+                        data-i18n="recruit_submit">Formulir Pendaftaran Magang</h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mb-xl" data-i18n="recruit_submit_d">
+                        Lengkapi formulir di bawah ini untuk mendaftar program magang.</p>
+                    <div class="flex flex-col gap-lg relative">
+                        <div class="absolute left-4 top-4 bottom-4 w-px bg-outline-variant -z-10"></div>
+                        <!-- Step 1 -->
+                        <div class="flex items-start gap-md relative">
+                            <div id="step1-dot"
+                                class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-label-sm text-label-sm shrink-0 z-10 border-[3px] border-surface-container-lowest ring-2 ring-surface-container-low font-bold">
+                                1</div>
+                            <div class="pt-1">
+                                <h4 class="font-label-md text-label-md text-on-surface" data-i18n="recruit_step1">Data
+                                    Diri</h4>
+                                <p class="font-body-sm text-body-sm text-on-surface-variant"
+                                    data-i18n="recruit_step1_d">Informasi kontak dasar</p>
+                            </div>
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="flex items-start gap-md relative">
+                            <div id="step2-dot"
+                                class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-label-sm text-label-sm shrink-0 z-10 border-[3px] border-surface-container-lowest font-bold">
+                                2</div>
+                            <div class="pt-1">
+                                <h4 class="font-label-md text-label-md text-on-surface-variant"
+                                    data-i18n="recruit_step2">Pendidikan &amp; Posisi</h4>
+                                <p class="font-body-sm text-body-sm text-outline" data-i18n="recruit_step2_d">Asal
+                                    kampus dan pilihan posisi</p>
+                            </div>
+                        </div>
+                        <!-- Step 3 -->
+                        <div class="flex items-start gap-md relative">
+                            <div id="step3-dot"
+                                class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-label-sm text-label-sm shrink-0 z-10 border-[3px] border-surface-container-lowest font-bold">
+                                3</div>
+                            <div class="pt-1">
+                                <h4 class="font-label-md text-label-md text-on-surface-variant"
+                                    data-i18n="recruit_step3">Berkas</h4>
+                                <p class="font-body-sm text-body-sm text-outline" data-i18n="recruit_step3_d">CV &amp;
+                                    Tautan Portofolio</p>
+                            </div>
+                        </div>
                     </div>
-                    <h3 class="font-headline-md text-headline-md text-on-surface mb-xs">Current Shift</h3>
-                    <div class="my-md">
-                        <span class="font-headline-xl text-[48px] leading-tight font-black text-primary tabular-nums tracking-tight" id="live-timer">02:47:15</span>
-                    </div>
-                    <div class="flex items-center gap-sm text-on-surface-variant mb-xl bg-surface-bright px-md py-sm rounded-lg border border-outline-variant">
-                        <span class="material-symbols-outlined text-[18px]">location_on</span>
-                        <span class="font-body-sm text-body-sm">Location: <strong>Office HQ</strong></span>
-                    </div>
-                    <button id="clock-btn" onclick="toggleClock()" class="w-full bg-primary text-on-primary hover:bg-on-primary-fixed hover:shadow-md transition-all rounded-lg py-sm px-md font-label-md text-label-md flex items-center justify-center gap-sm active:scale-[0.98]">
-                        <span class="material-symbols-outlined" id="clock-btn-icon">logout</span>
-                        <span id="clock-btn-text">Clock Out</span>
-                    </button>
+                </div>
+                <!-- Right Side: Form -->
+                <div class="w-full md:w-2/3 p-xl">
+                    <form id="application-form-el" class="flex flex-col gap-lg" onsubmit="return false;">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+                            <div class="flex flex-col gap-xs">
+                                <label class="font-label-md text-label-md text-on-surface"
+                                    data-i18n="recruit_fname">Nama Depan</label>
+                                <input id="firstName"
+                                    class="w-full bg-surface border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-container/20 transition-all"
+                                    placeholder="Alex" type="text" />
+                            </div>
+                            <div class="flex flex-col gap-xs">
+                                <label class="font-label-md text-label-md text-on-surface"
+                                    data-i18n="recruit_lname">Nama Belakang</label>
+                                <input id="lastName"
+                                    class="w-full bg-surface border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-container/20 transition-all"
+                                    placeholder="Chen" type="text" />
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-xs">
+                            <label class="font-label-md text-label-md text-on-surface" data-i18n="recruit_email">Alamat
+                                Email</label>
+                            <input id="email"
+                                class="w-full bg-surface border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-container/20 transition-all"
+                                placeholder="alex.chen@kampus.ac.id" type="email" />
+                        </div>
+                        <div class="flex flex-col gap-xs">
+                            <label class="font-label-md text-label-md text-on-surface" data-i18n="recruit_role">Posisi
+                                yang Dilamar</label>
+                            <select id="role"
+                                class="w-full bg-surface border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-container/20 transition-all appearance-none cursor-pointer">
+                                <option value="" data-i18n="recruit_select">Pilih posisi magang...</option>
+                                <option value="Web Developer Intern">Web Developer Intern</option>
+                                <option value="UI/UX Designer Intern">UI/UX Designer Intern</option>
+                            </select>
+                        </div>
+                        <!-- Upload area -->
+                        <div class="flex flex-col gap-xs mt-md">
+                            <label class="font-label-md text-label-md text-on-surface" data-i18n="recruit_cv">Resume /
+                                CV</label>
+                            <div id="upload-area" onclick="document.getElementById('fileInput').click()"
+                                class="w-full border-2 border-dashed border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center bg-surface hover:bg-surface-container-low transition-colors cursor-pointer group">
+                                <input type="file" id="fileInput" accept=".pdf,.docx" class="hidden"
+                                    onchange="handleFileUpload(this)" />
+                                <div
+                                    class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant mb-sm group-hover:bg-primary-fixed group-hover:text-primary transition-colors">
+                                    <span class="material-symbols-outlined">upload_file</span>
+                                </div>
+                                <span id="upload-text" class="font-label-md text-label-md text-on-surface text-center"
+                                    data-i18n="recruit_upload">Klik untuk mengunggah atau seret file ke sini</span>
+                                <span class="font-body-sm text-body-sm text-on-surface-variant text-center"
+                                    data-i18n="recruit_upload_f">PDF, DOCX maksimal 10MB</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-xs">
+                            <label class="font-label-md text-label-md text-on-surface"
+                                data-i18n="recruit_portfolio">Tautan Portofolio (Opsional)</label>
+                            <div class="relative">
+                                <span
+                                    class="absolute left-md top-1/2 -translate-y-1/2 text-outline material-symbols-outlined text-[20px]">link</span>
+                                <input id="portfolio"
+                                    class="w-full bg-surface border border-outline-variant rounded-lg pl-10 pr-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-container/20 transition-all"
+                                    placeholder="https://github.com/username" type="url" />
+                            </div>
+                        </div>
+                        <div class="flex justify-end pt-md mt-sm border-t border-outline-variant">
+                            <button onclick="submitApplication()"
+                                class="bg-primary text-on-primary rounded-lg px-xl py-sm font-label-md text-label-md hover:bg-primary-container transition-colors active:scale-95 shadow-md font-bold"
+                                type="button" data-i18n="recruit_submit_btn">
+                                Kirim Pendaftaran
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-surface-container-high border-t border-outline-variant w-full py-xl mt-auto">
+        <div
+            class="flex flex-col md:flex-row justify-between items-center px-gutter w-full max-w-container-max mx-auto gap-md">
+            <div class="flex flex-col items-center md:items-start">
+                <span class="font-label-md text-label-md font-black text-on-surface mb-xs">InternSpace</span>
+                <span class="font-body-sm text-body-sm text-on-surface-variant" data-i18n="footer_copy">© 2024 Platform
+                    InternSpace. Hak cipta dilindungi.</span>
+            </div>
+            <nav class="flex flex-wrap justify-center gap-md">
+                <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+                    href="#" data-i18n="footer_privacy">Kebijakan Privasi</a>
+                <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+                    href="#" data-i18n="footer_terms">Syarat Layanan</a>
+                <a class="font-body-sm text-body-sm text-primary font-semibold" href="index.html"
+                    data-i18n="nav_recruitment">Pendaftaran Anak Magang</a>
+                <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+                    href="verification.html" data-i18n="nav_verification">Verifikasi</a>
+            </nav>
         </div>
-        <div class="h-md"></div>
-    </div>
-</main>
+    </footer>
 
-<script>
-    let clockInterval = null;
-    let isClockedIn = localStorage.getItem('internspace-clock-status') !== 'inactive';
-    let clockStartTime = parseInt(localStorage.getItem('internspace-clock-start') || (Date.now() - 10035000), 10);
-
-    function getElapsedSeconds() {
-        if (!isClockedIn) {
-            return parseInt(localStorage.getItem('internspace-clock-accumulated') || '10035', 10);
-        }
-        return Math.floor((Date.now() - clockStartTime) / 1000);
-    }
-
-    function updateTimerDisplay() {
-        const elapsed = getElapsedSeconds();
-        const hours = Math.floor(elapsed / 3600);
-        const minutes = Math.floor((elapsed % 3600) / 60);
-        const seconds = elapsed % 60;
-        const timerElem = document.getElementById('live-timer');
-        if (timerElem) {
-            timerElem.textContent = 
-                String(hours).padStart(2, '0') + ':' + 
-                String(minutes).padStart(2, '0') + ':' + 
-                String(seconds).padStart(2, '0');
-        }
-    }
-
-    function toggleClock() {
-        isClockedIn = !isClockedIn;
-        const btnText = document.getElementById('clock-btn-text');
-        const btnIcon = document.getElementById('clock-btn-icon');
-        const statusText = document.getElementById('clock-status-text');
-        const statusDot = document.getElementById('clock-status-dot');
-        const btn = document.getElementById('clock-btn');
-
-        if (isClockedIn) {
-            const acc = parseInt(localStorage.getItem('internspace-clock-accumulated') || '10035', 10);
-            clockStartTime = Date.now() - (acc * 1000);
-            localStorage.setItem('internspace-clock-start', clockStartTime);
-            localStorage.setItem('internspace-clock-status', 'active');
-            clockInterval = setInterval(updateTimerDisplay, 1000);
-            if (btnText) btnText.textContent = "Clock Out";
-            if (btnIcon) btnIcon.textContent = "logout";
-            if (statusText) statusText.textContent = "Currently Active";
-            if (statusDot) statusDot.className = "w-2 h-2 rounded-full bg-primary animate-pulse";
-            if (btn) btn.className = "w-full bg-primary text-on-primary hover:bg-on-primary-fixed hover:shadow-md transition-all rounded-lg py-sm px-md font-label-md text-label-md flex items-center justify-center gap-sm active:scale-[0.98]";
-        } else {
-            const accumulated = getElapsedSeconds();
-            localStorage.setItem('internspace-clock-accumulated', accumulated);
-            localStorage.setItem('internspace-clock-status', 'inactive');
-            clearInterval(clockInterval);
-            if (btnText) btnText.textContent = "Clock In";
-            if (btnIcon) btnIcon.textContent = "login";
-            if (statusText) statusText.textContent = "Inactive";
-            if (statusDot) statusDot.className = "w-2 h-2 rounded-full bg-outline";
-            if (btn) btn.className = "w-full bg-green-600 text-white hover:bg-green-700 hover:shadow-md transition-all rounded-lg py-sm px-md font-label-md text-label-md flex items-center justify-center gap-sm active:scale-[0.98]";
-        }
-        updateTimerDisplay();
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        updateTimerDisplay();
-        if (isClockedIn) {
-            clockInterval = setInterval(updateTimerDisplay, 1000);
-        } else {
-            toggleClock(); // apply inactive UI states
-            isClockedIn = false;
+    <script>
+        function handleFileUpload(input) {
+            if (input.files && input.files[0]) {
+                document.getElementById('upload-text').textContent = '✓ ' + input.files[0].name;
+                document.getElementById('upload-area').classList.add('border-primary', 'bg-primary-fixed');
+            }
         }
 
-        if (window.ProjectStore) {
-            const projects = ProjectStore.projects();
-            let completedCount = 0;
-            projects.forEach(p => {
-                if (p.tasks) completedCount += p.tasks.filter(t => t.status === 'done').length;
-            });
-            const pElem = document.getElementById('stat-active-proj-val');
-            const tElem = document.getElementById('stat-tasks-done-val');
-            if (pElem) pElem.textContent = projects.length;
-            if (tElem) tElem.textContent = completedCount;
+        function submitApplication() {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const role = document.getElementById('role').value;
+
+            const fillMsg = (typeof t === 'function' ? t('recruit_fill') : null) || 'Silakan lengkapi semua kolom wajib.';
+            const successMsg = (typeof t === 'function' ? t('recruit_success') : null) || 'Pendaftaran magang berhasil dikirim!';
+            const touchMsg = (typeof t === 'function' ? t('recruit_touch') : null) || 'Tim Kedayweb akan segera menghubungi Anda!';
+
+            if (!firstName || !lastName || !email || !role) {
+                alert(fillMsg);
+                return;
+            }
+
+            // Simulate stepping through
+            document.getElementById('step1-dot').classList.remove('bg-surface-container-highest');
+            document.getElementById('step1-dot').classList.add('bg-green-600', 'text-white');
+            document.getElementById('step1-dot').innerHTML = '✓';
+
+            setTimeout(() => {
+                document.getElementById('step2-dot').classList.remove('bg-surface-container-highest');
+                document.getElementById('step2-dot').classList.add('bg-green-600', 'text-white');
+                document.getElementById('step2-dot').innerHTML = '✓';
+            }, 400);
+
+            setTimeout(() => {
+                document.getElementById('step3-dot').classList.remove('bg-surface-container-highest');
+                document.getElementById('step3-dot').classList.add('bg-green-600', 'text-white');
+                document.getElementById('step3-dot').innerHTML = '✓';
+            }, 800);
+
+            setTimeout(() => {
+                alert(`${successMsg}\n\nNama: ${firstName} ${lastName}\nEmail: ${email}\nPosisi: ${role}\n\n${touchMsg}`);
+            }, 1200);
         }
-    });
-</script>
-<script src="project-store.js"></script>
-<script src="lang.js"></script>
-<script src="language-ui.js"></script>
-<script src="performance.js"></script>
+    </script>
+    <script src="lang.js"></script>
+    <script src="language-ui.js"></script>
+    <script src="performance.js"></script>
 </body>
+
 </html>

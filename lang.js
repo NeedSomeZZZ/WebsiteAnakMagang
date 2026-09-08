@@ -14,8 +14,8 @@ const I18n = (() => {
     nav_applications:  { en: 'Applications',   id: 'Lamaran' },
     nav_verification:  { en: 'Verification',   id: 'Verifikasi' },
     nav_settings:      { en: 'Settings',       id: 'Pengaturan' },
-    nav_recruitment:   { en: 'Recruitment',     id: 'Rekrutmen' },
-    brand_subtitle:    { en: 'Management Portal', id: 'Portal Manajemen' },
+    nav_recruitment:   { en: 'Intern Registration', id: 'Pendaftaran Anak Magang' },
+    brand_subtitle:    { en: 'Kedayweb', id: 'Kedayweb' },
     search_placeholder:{ en: 'Search tasks, projects...', id: 'Cari tugas, proyek...' },
     btn_portal_login:  { en: 'Portal Login',   id: 'Masuk Portal' },
 
@@ -108,6 +108,13 @@ const I18n = (() => {
     profile_per_task:  { en: 'Per Task Assignment', id: 'Per Penugasan' },
     profile_mastery:   { en: 'Overall Mastery', id: 'Penguasaan Keseluruhan' },
     profile_tech:      { en: 'Tech Stack & Tools', id: 'Stack Teknologi & Alat' },
+    cert_section_title:{ en: 'Internship Completion Certificate', id: 'Sertifikat Kelulusan Magang' },
+    cert_status_done:  { en: 'Internship Completed', id: 'Magang Selesai' },
+    cert_status_desc:  { en: 'Congratulations! You have completed all requirements of your internship program.', id: 'Selamat! Anda telah menyelesaikan seluruh persyaratan program magang Anda.' },
+    btn_download_cert: { en: 'Download Certificate (PDF)', id: 'Unduh Sertifikat (PDF)' },
+    btn_view_cert:     { en: 'View Certificate', id: 'Lihat Sertifikat' },
+    btn_print_cert:    { en: 'Print / Save as PDF', id: 'Cetak / Simpan PDF' },
+    btn_close_cert:    { en: 'Close Preview', id: 'Tutup Pratinjau' },
 
     /* ─── APPLICATIONS ─── */
     apps_section:      { en: 'Career center',  id: 'Pusat Karir' },
@@ -167,42 +174,42 @@ const I18n = (() => {
     footer_terms:      { en: 'Terms of Service', id: 'Syarat Layanan' },
     footer_copy:       { en: '© 2024 InternSpace Platform. All rights reserved.', id: '© 2024 Platform InternSpace. Hak cipta dilindungi.' },
 
-    /* ─── RECRUITMENT ─── */
-    recruit_careers:   { en: 'Careers',        id: 'Karir' },
-    recruit_title:     { en: 'Join Our Team as an Intern', id: 'Bergabunglah dengan Tim Kami sebagai Magang' },
-    recruit_subtitle:  { en: 'Kickstart your career with hands-on experience, mentorship from industry leaders, and the opportunity to work on projects that shape the future of tech.', id: 'Mulai karir Anda dengan pengalaman langsung, bimbingan dari pemimpin industri, dan kesempatan bekerja pada proyek yang membentuk masa depan teknologi.' },
-    recruit_positions: { en: 'Open Positions', id: 'Posisi Terbuka' },
-    recruit_pos_d:     { en: 'Find the perfect role to accelerate your growth.', id: 'Temukan peran yang tepat untuk mempercepat perkembangan Anda.' },
-    btn_apply_now:     { en: 'Apply Now',      id: 'Lamar Sekarang' },
-    recruit_open_roles:{ en: 'Open Roles',     id: 'Posisi Terbuka' },
-    recruit_apply:     { en: 'Apply',          id: 'Melamar' },
-    recruit_web_dev:   { en: 'Web Developer Intern', id: 'Magang Pengembang Web' },
-    recruit_web_d:     { en: 'Join our frontend team to build performant, accessible, and beautiful user interfaces using modern web technologies. You\'ll work closely with senior engineers on core product features.', id: 'Bergabunglah dengan tim frontend kami untuk membangun antarmuka pengguna yang cepat, aksesibel, dan indah menggunakan teknologi web modern. Anda akan bekerja erat dengan insinyur senior pada fitur produk utama.' },
-    recruit_uiux:      { en: 'UI/UX Designer Intern', id: 'Magang Desainer UI/UX' },
-    recruit_uiux_d:    { en: 'Help shape the future of our product experience. You will assist in user research, wireframing, and creating high-fidelity prototypes that define our brand aesthetic.', id: 'Bantu membentuk masa depan pengalaman produk kami. Anda akan membantu dalam riset pengguna, wireframing, dan membuat prototipe fidelitas tinggi yang mendefinisikan estetika merek kami.' },
+    /* ─── RECRUITMENT / PENDAFTARAN ─── */
+    recruit_careers:   { en: 'Registration',   id: 'Pendaftaran' },
+    recruit_title:     { en: 'Internship Registration Portal', id: 'Pendaftaran Anak Magang' },
+    recruit_subtitle:  { en: 'Kickstart your career with hands-on experience, mentorship from industry leaders, and work on real-world projects at Kedayweb.', id: 'Mulai perjalanan karir Anda dengan pengalaman nyata, bimbingan mentor industri, dan proyek langsung di Kedayweb.' },
+    recruit_positions: { en: 'Available Internship Roles', id: 'Pilihan Posisi Magang' },
+    recruit_pos_d:     { en: 'Choose the role that fits your passion and background.', id: 'Pilih bidang yang sesuai dengan minat dan keahlian Anda.' },
+    btn_apply_now:     { en: 'Register Now',   id: 'Daftar Sekarang' },
+    recruit_open_roles:{ en: 'Internship Roles', id: 'Posisi Magang' },
+    recruit_apply:     { en: 'Register',       id: 'Daftar' },
+    recruit_web_dev:   { en: 'Web Developer Intern', id: 'Magang Web Developer' },
+    recruit_web_d:     { en: 'Join our frontend team to build performant, accessible, and beautiful user interfaces using modern web technologies. You\'ll work closely with senior engineers on core product features.', id: 'Bergabunglah dengan tim frontend kami untuk membangun antarmuka web modern, cepat, dan interaktif. Bekerja sama langsung dengan engineer senior.' },
+    recruit_uiux:      { en: 'UI/UX Designer Intern', id: 'Magang UI/UX Designer' },
+    recruit_uiux_d:    { en: 'Help shape the future of our product experience. You will assist in user research, wireframing, and creating high-fidelity prototypes that define our brand aesthetic.', id: 'Bantu rancang pengalaman produk terbaik. Buat riset pengguna, wireframe, dan prototipe desain aplikasi berstandar industri.' },
     recruit_engineering:{ en: 'Engineering',   id: 'Teknik' },
     recruit_design:    { en: 'Design',         id: 'Desain' },
-    recruit_submit:    { en: 'Submit Your Application', id: 'Kirim Lamaran Anda' },
-    recruit_submit_d:  { en: 'Complete the steps below to apply for your desired internship role.', id: 'Selesaikan langkah-langkah di bawah ini untuk melamar peran magang yang Anda inginkan.' },
-    recruit_step1:     { en: 'Personal Info',  id: 'Info Pribadi' },
-    recruit_step1_d:   { en: 'Basic contact details', id: 'Detail kontak dasar' },
-    recruit_step2:     { en: 'Education & Experience', id: 'Pendidikan & Pengalaman' },
-    recruit_step2_d:   { en: 'University and background', id: 'Universitas dan latar belakang' },
-    recruit_step3:     { en: 'Documents',      id: 'Dokumen' },
-    recruit_step3_d:   { en: 'CV and Portfolio Link', id: 'CV dan Tautan Portfolio' },
+    recruit_submit:    { en: 'Submit Internship Application', id: 'Formulir Pendaftaran Magang' },
+    recruit_submit_d:  { en: 'Complete the steps below to apply for your desired internship role.', id: 'Lengkapi formulir di bawah ini untuk mendaftar program magang.' },
+    recruit_step1:     { en: 'Personal Info',  id: 'Data Diri' },
+    recruit_step1_d:   { en: 'Basic contact details', id: 'Informasi kontak dasar' },
+    recruit_step2:     { en: 'Education & Role', id: 'Pendidikan & Posisi' },
+    recruit_step2_d:   { en: 'Campus and role selection', id: 'Asal kampus dan pilihan posisi' },
+    recruit_step3:     { en: 'Documents',      id: 'Berkas' },
+    recruit_step3_d:   { en: 'CV and Portfolio Link', id: 'CV & Tautan Portofolio' },
     recruit_fname:     { en: 'First Name',     id: 'Nama Depan' },
     recruit_lname:     { en: 'Last Name',      id: 'Nama Belakang' },
     recruit_email:     { en: 'Email Address',  id: 'Alamat Email' },
-    recruit_role:      { en: 'Role Applying For', id: 'Peran yang Dilamar' },
-    recruit_select:    { en: 'Select a role...', id: 'Pilih peran...' },
+    recruit_role:      { en: 'Role Applying For', id: 'Posisi yang Dilamar' },
+    recruit_select:    { en: 'Select a role...', id: 'Pilih posisi magang...' },
     recruit_cv:        { en: 'Resume / CV',    id: 'Resume / CV' },
-    recruit_upload:    { en: 'Click to upload or drag and drop', id: 'Klik untuk mengunggah atau seret dan lepas' },
-    recruit_upload_f:  { en: 'PDF, DOCX up to 10MB', id: 'PDF, DOCX hingga 10MB' },
-    recruit_portfolio: { en: 'Portfolio Link (Optional)', id: 'Tautan Portfolio (Opsional)' },
-    recruit_submit_btn:{ en: 'Submit Application', id: 'Kirim Lamaran' },
-    recruit_success:   { en: 'Application submitted successfully!', id: 'Lamaran berhasil dikirim!' },
+    recruit_upload:    { en: 'Click to upload or drag and drop', id: 'Klik untuk mengunggah atau seret file ke sini' },
+    recruit_upload_f:  { en: 'PDF, DOCX up to 10MB', id: 'PDF, DOCX maksimal 10MB' },
+    recruit_portfolio: { en: 'Portfolio Link (Optional)', id: 'Tautan Portofolio (Opsional)' },
+    recruit_submit_btn:{ en: 'Submit Registration', id: 'Kirim Pendaftaran' },
+    recruit_success:   { en: 'Registration submitted successfully!', id: 'Pendaftaran magang berhasil dikirim!' },
     recruit_fill:      { en: 'Please fill in all required fields.', id: 'Silakan lengkapi semua kolom wajib.' },
-    recruit_touch:     { en: "We'll be in touch soon!", id: 'Kami akan segera menghubungi Anda!' },
+    recruit_touch:     { en: "We'll be in touch soon!", id: 'Tim Kedayweb akan segera menghubungi Anda!' },
     recruit_remote:    { en: 'Remote / Hybrid', id: 'Remote / Hybrid' },
 
     /* ─── PROJECTS (dynamic – used by projects-ui.js) ─── */
@@ -273,9 +280,6 @@ const I18n = (() => {
   function t(key) {
     const entry = dict[key];
     if (!entry) return key;
-    if (key.startsWith('nav_') || key === 'brand_subtitle') {
-      return entry.en || entry[DEFAULT_LANG] || key;
-    }
     return entry[getLang()] || entry[DEFAULT_LANG] || key;
   }
 

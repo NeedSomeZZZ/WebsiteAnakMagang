@@ -12,16 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script src="shared-config.js"></script>
-    <style>
-        .kanban-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
-        .kanban-scroll::-webkit-scrollbar-track { background: #f8f9ff; border-radius: 4px; }
-        .kanban-scroll::-webkit-scrollbar-thumb { background: #c5c5d3; border-radius: 4px; }
-        .kanban-scroll::-webkit-scrollbar-thumb:hover { background: #757682; }
-        .kanban-scroll { scroll-behavior: smooth; }
-        .hover-card-shadow:hover { box-shadow: 0 10px 15px -3px rgba(30, 58, 138, 0.08), 0 4px 6px -2px rgba(30, 58, 138, 0.04); }
-        .drag-target-active { outline: 2px dashed #1e3a8a; background-color: rgba(220, 233, 255, 0.5) !important; }
-    </style>
+   <script src="shared-config.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-surface text-on-surface font-body-md text-body-md h-screen overflow-hidden flex">
 
@@ -33,7 +25,7 @@
         </div>
         <div>
             <h1 class="font-headline-md text-headline-md text-primary font-bold">InternSpace</h1>
-            <p class="font-label-sm text-label-sm text-on-surface-variant" data-i18n="brand_subtitle">Management Portal</p>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Kedayweb</p>
         </div>
     </div>
     <nav class="flex-1 space-y-sm">
@@ -61,7 +53,7 @@
             <span class="material-symbols-outlined">description</span>
             <span data-i18n="nav_applications">Applications</span>
         </a>
-        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="recruitment.html">
+        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="pendaftaran.html">
             <span class="material-symbols-outlined">group_add</span>
             <span data-i18n="nav_recruitment">Recruitment</span>
         </a>

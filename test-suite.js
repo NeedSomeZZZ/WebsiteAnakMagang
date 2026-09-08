@@ -37,7 +37,7 @@ jsFiles.forEach(file => {
 
 // 2. Check HTML pages & script references
 console.log('\n📄 2. Auditing HTML Page Template Integrity...');
-const htmlPages = ['index.html', 'projects.html', 'tasks.html', 'attendance.html', 'applications.html', 'recruitment.html', 'verification.html', 'profile.html', 'settings.html'];
+const htmlPages = ['index.html', 'projects.html', 'tasks.html', 'attendance.html', 'applications.html', 'pendaftaran.html', 'verification.html', 'profile.html', 'settings.html'];
 
 htmlPages.forEach(page => {
   const pagePath = path.join(WORKSPACE, page);

@@ -23,7 +23,7 @@
         </div>
         <div>
             <h1 class="font-headline-md text-headline-md text-primary font-bold">InternSpace</h1>
-            <p class="font-label-sm text-label-sm text-on-surface-variant">Management Portal</p>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Kedayweb</p>
         </div>
     </div>
     <nav class="flex-1 space-y-sm">
@@ -52,7 +52,7 @@
             <span class="material-symbols-outlined">description</span>
             <span>Applications</span>
         </a>
-                <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="recruitment.html">
+                <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="pendaftaran.html">
             <span class="material-symbols-outlined">group_add</span>
             <span data-i18n="nav_recruitment">Recruitment</span>
         </a>
@@ -71,8 +71,8 @@
 
 <!-- Main Content Area -->
 <main class="flex-1 ml-0 md:ml-[16.5rem] p-gutter max-w-container-max mx-auto w-full flex flex-col gap-xl">
-    <header>
-        <h2 class="font-headline-lg text-headline-lg text-on-background md:block hidden font-bold">Digital Intern Profile</h2>
+    <header class="flex items-center min-h-12">
+        <h2 class="font-headline-lg text-headline-lg text-on-background font-bold">Digital Intern Profile</h2>
     </header>
     <!-- Bento Grid Layout -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
@@ -91,8 +91,8 @@
                     <span class="px-3 py-1 bg-surface-container-highest text-primary font-label-sm text-label-sm rounded-full font-semibold">Fall 2024</span>
                     <span class="px-3 py-1 bg-surface-container-highest text-primary font-label-sm text-label-sm rounded-full font-semibold">On-Site</span>
                 </div>
-                <button onclick="alert('Downloading resume...')" class="w-full bg-primary-container text-white h-10 rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity active:scale-[0.98]">
-                    Download Resume
+                <button onclick="downloadResumeDoc()" class="w-full bg-primary-container text-white h-10 rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity active:scale-[0.98] flex items-center justify-center gap-2" data-i18n="btn_download_cv">
+                    <span class="material-symbols-outlined text-[18px]">download</span> Download Resume
                 </button>
             </div>
             <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-lg hover:shadow-lg transition-shadow duration-300">
@@ -150,7 +150,7 @@
             </div>
             <!-- Skills & Tech -->
             <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-lg hover:shadow-lg transition-shadow duration-300">
-                <h3 class="font-headline-md text-headline-md text-on-surface mb-lg font-bold">Tech Stack &amp; Tools</h3>
+                <h3 class="font-headline-md text-headline-md text-on-surface mb-lg font-bold" data-i18n="profile_tech">Tech Stack &amp; Tools</h3>
                 <div class="flex flex-wrap gap-sm">
                     <span class="px-4 py-2 bg-surface-container-low border border-surface-container-high rounded-lg font-body-sm text-body-sm text-on-surface flex items-center gap-xs">
                         <span class="material-symbols-outlined text-[16px] text-primary">code</span> React
@@ -163,9 +163,223 @@
                     </span>
                 </div>
             </div>
+
+            <!-- Internship Completion Certificate Card -->
+            <div class="bg-gradient-to-br from-primary/5 via-surface-container-lowest to-secondary/5 rounded-2xl border-2 border-primary/20 p-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-md">
+                    <div class="flex items-start gap-md">
+                        <div class="w-14 h-14 rounded-2xl bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-md">
+                            <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">verified</span>
+                                    <span data-i18n="cert_status_done">Internship Completed</span>
+                                </span>
+                                <span class="text-xs text-on-surface-variant font-mono font-semibold">ID: IS-2024-00482</span>
+                            </div>
+                            <h3 class="font-headline-md text-headline-md text-on-surface font-bold" data-i18n="cert_section_title">Internship Completion Certificate</h3>
+                            <p class="font-body-sm text-body-sm text-on-surface-variant mt-1 max-w-xl" data-i18n="cert_status_desc">Congratulations! You have completed all requirements of your internship program with grade <strong>A+</strong>.</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                        <button onclick="openCertificateModal()" class="flex-1 md:flex-none bg-surface-container-high hover:bg-surface-container-highest text-primary px-4 py-2.5 rounded-xl font-label-md text-label-md font-semibold transition-all flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">visibility</span>
+                            <span data-i18n="btn_view_cert">View Certificate</span>
+                        </button>
+                        <button onclick="downloadCertificatePDF()" class="flex-1 md:flex-none bg-primary text-on-primary hover:bg-primary-container px-5 py-2.5 rounded-xl font-label-md text-label-md font-bold transition-all shadow-md active:scale-95 flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+                            <span data-i18n="btn_download_cert">Download Certificate (PDF)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </main>
+
+<!-- Certificate Preview & Download Modal -->
+<div id="cert-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+    <div class="bg-white rounded-3xl border border-outline-variant w-full max-w-4xl p-6 md:p-8 shadow-2xl animate-in fade-in zoom-in duration-200 my-8">
+        <div class="flex justify-between items-center mb-6 pb-4 border-b border-outline-variant">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center">
+                    <span class="material-symbols-outlined">workspace_premium</span>
+                </div>
+                <div>
+                    <h3 class="font-headline-md text-lg font-bold text-slate-900" data-i18n="cert_section_title">Internship Completion Certificate</h3>
+                    <p class="text-xs text-slate-500">Official verified document from InternSpace &amp; Kedayweb</p>
+                </div>
+            </div>
+            <button onclick="closeCertificateModal()" class="text-slate-500 hover:text-slate-900 p-2 rounded-full hover:bg-slate-100 transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <!-- Printable Certificate Canvas -->
+        <div id="printable-certificate" class="bg-gradient-to-br from-slate-50 via-white to-blue-50/40 p-8 md:p-12 rounded-2xl border-4 border-double border-primary/40 relative shadow-inner text-center font-sans overflow-hidden">
+            <!-- Corner Decorative Badges -->
+            <div class="absolute top-4 left-4 w-12 h-12 border-t-2 border-l-2 border-primary/50"></div>
+            <div class="absolute top-4 right-4 w-12 h-12 border-t-2 border-r-2 border-primary/50"></div>
+            <div class="absolute bottom-4 left-4 w-12 h-12 border-b-2 border-l-2 border-primary/50"></div>
+            <div class="absolute bottom-4 right-4 w-12 h-12 border-b-2 border-r-2 border-primary/50"></div>
+            
+            <div class="flex items-center justify-center gap-2 mb-4">
+                <div class="w-10 h-10 rounded-lg bg-primary text-white flex items-center justify-center font-bold">
+                    <span class="material-symbols-outlined">work</span>
+                </div>
+                <span class="text-xl font-black text-primary tracking-wider uppercase">InternSpace &times; Kedayweb</span>
+            </div>
+
+            <p class="text-xs uppercase tracking-[0.3em] text-slate-500 font-bold mb-2">Certificate of Internship Completion</p>
+            <h1 class="text-3xl md:text-4xl font-serif font-bold text-slate-900 mb-4">CERTIFICATE OF EXCELLENCE</h1>
+            <p class="text-sm text-slate-600 mb-6">This is proudly awarded to</p>
+
+            <h2 class="text-3xl md:text-4xl font-bold text-primary font-serif mb-2 tracking-wide">Alex Chen</h2>
+            <div class="w-48 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-4"></div>
+            
+            <p class="text-sm md:text-base text-slate-700 max-w-2xl mx-auto leading-relaxed mb-6">
+                for outstanding completion of the internship program as <strong>UI/UX &amp; Frontend Engineering Intern</strong> at <strong>Kedayweb</strong> from <strong>July 2024 to October 2024</strong> with an overall performance grade of <strong>A+ (96/100)</strong>.
+            </p>
+
+            <!-- Certificate Meta & Signatures -->
+            <div class="grid grid-cols-3 gap-6 mt-10 pt-6 border-t border-slate-200 items-end">
+                <div class="text-left">
+                    <p class="text-[11px] text-slate-500 uppercase font-semibold">Certificate ID</p>
+                    <p class="text-sm font-mono font-bold text-slate-800">IS-2024-00482</p>
+                    <p class="text-[10px] text-emerald-700 font-semibold mt-1">✓ Cryptographically Verified</p>
+                </div>
+                <div class="text-center">
+                    <div class="inline-block p-2 rounded-full border-2 border-primary text-primary font-bold text-xs uppercase tracking-wider mb-1">
+                        ★ Verified Honors ★
+                    </div>
+                    <p class="text-[10px] text-slate-400">Issue Date: October 22, 2024</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm font-serif italic font-bold text-slate-800 mb-1 border-b border-slate-300 pb-1 inline-block">Sarah Jenkins</div>
+                    <p class="text-[11px] text-slate-500 uppercase font-semibold">Lead Mentor &amp; Program Director</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="flex justify-between items-center mt-6 pt-4 border-t border-outline-variant">
+            <a href="verification.html" class="text-xs text-primary font-semibold hover:underline flex items-center gap-1">
+                <span class="material-symbols-outlined text-[16px]">verified</span>
+                Verify this certificate on public ledger
+            </a>
+            <div class="flex gap-3">
+                <button onclick="closeCertificateModal()" class="px-5 py-2.5 rounded-xl border border-outline-variant font-label-md text-slate-700 hover:bg-slate-100 font-semibold transition-colors" data-i18n="btn_close_cert">Close</button>
+                <button onclick="downloadCertificatePDF()" class="px-6 py-2.5 rounded-xl bg-primary text-white font-label-md font-bold hover:bg-primary-container transition-all shadow-md active:scale-95 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">download</span>
+                    <span data-i18n="btn_print_cert">Print / Save as PDF</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openCertificateModal() {
+        const modal = document.getElementById('cert-modal');
+        if (modal) modal.classList.remove('hidden');
+        if (modal) modal.classList.add('flex');
+    }
+
+    function closeCertificateModal() {
+        const modal = document.getElementById('cert-modal');
+        if (modal) modal.classList.add('hidden');
+        if (modal) modal.classList.remove('flex');
+    }
+
+    function downloadCertificatePDF() {
+        const certElement = document.getElementById('printable-certificate');
+        if (!certElement) return;
+
+        // Open print window configured for direct clean PDF export
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Internship_Certificate_Alex_Chen_IS-2024-00482.pdf</title>
+                <meta charset="utf-8">
+                <script src="https://cdn.tailwindcss.com"><\/script>
+                <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+                <style>
+                    @page { size: landscape; margin: 12mm; }
+                    body { font-family: Inter, sans-serif; background: #fff; margin: 0; padding: 20px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                </style>
+            </head>
+            <body class="flex items-center justify-center min-h-screen">
+                <div class="w-full max-w-4xl border-4 border-double border-blue-900/60 rounded-2xl p-12 bg-white text-center shadow-lg relative">
+                    ${certElement.innerHTML}
+                </div>
+                <script>
+                    window.onload = function() {
+                        setTimeout(() => {
+                            window.print();
+                        }, 500);
+                    };
+                <\/script>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+
+    function downloadResumeDoc() {
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Resume_Alex_Chen.pdf</title>
+                <meta charset="utf-8">
+                <script src="https://cdn.tailwindcss.com"><\/script>
+                <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+                <style>
+                    body { font-family: Inter, sans-serif; background: #fff; margin: 0; padding: 24px; color: #0f172a; }
+                    @page { size: portrait; margin: 15mm; }
+                </style>
+            </head>
+            <body class="max-w-3xl mx-auto">
+                <header class="border-b-2 border-slate-900 pb-4 mb-6">
+                    <h1 class="text-3xl font-bold font-serif text-slate-900">Alex Chen</h1>
+                    <p class="text-sm font-semibold text-blue-900">UI/UX Designer &amp; Frontend Developer Intern</p>
+                    <p class="text-xs text-slate-500 mt-1">alex.chen@example.com · +62 812-3456-7890 · Banyuwangi, Indonesia</p>
+                </header>
+                <section class="mb-6">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-700 border-b border-slate-200 pb-1 mb-2">Education &amp; Institution</h2>
+                    <p class="font-bold text-sm">UI/UX Design Institute • Digital Arts &amp; Engineering</p>
+                    <p class="text-xs text-slate-600">Fall 2024 · Overall Grade: A+ (96/100)</p>
+                </section>
+                <section class="mb-6">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-700 border-b border-slate-200 pb-1 mb-2">Internship Experience</h2>
+                    <p class="font-bold text-sm">Kedayweb — Frontend &amp; Product Design Intern</p>
+                    <p class="text-xs text-slate-500 mb-1">July 2024 - October 2024 · Assigned Mentor: Sarah Jenkins</p>
+                    <ul class="list-disc list-inside text-xs text-slate-700 space-y-1">
+                        <li>Successfully completed 42 sprint tasks with 100% completion rate and zero overdue assignments.</li>
+                        <li>Designed and developed responsive web interfaces using Tailwind CSS, Vanilla JavaScript, and Figma.</li>
+                        <li>Collaborated in cross-functional agile sprints with senior engineering teams.</li>
+                    </ul>
+                </section>
+                <section class="mb-6">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-700 border-b border-slate-200 pb-1 mb-2">Technical Skills &amp; Mastery</h2>
+                    <p class="text-xs text-slate-700"><strong>Languages &amp; Frameworks:</strong> HTML5, CSS3, JavaScript (ES6+), React, Tailwind CSS</p>
+                    <p class="text-xs text-slate-700 mt-1"><strong>Design &amp; Prototyping:</strong> Figma, Wireframing, User Research, Material Design 3</p>
+                    <p class="text-xs text-slate-700 mt-1"><strong>Certifications:</strong> InternSpace Verified Certificate (ID: IS-2024-00482)</p>
+                </section>
+                <script>
+                    window.onload = function() { setTimeout(() => { window.print(); }, 400); };
+                <\/script>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+</script>
 <script src="lang.js"></script>
 <script src="language-ui.js"></script>
 <script src="performance.js"></script>
