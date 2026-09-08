@@ -22,16 +22,7 @@
     });
   }
 
-  function addSwitcher() {
-    if (document.querySelector('[data-language-switcher]')) return;
-    const button = document.createElement('button');
-    button.type = 'button'; button.dataset.languageSwitcher = 'true';
-    button.className = 'fixed bottom-4 left-4 z-[100] rounded-full bg-primary px-4 py-2 text-xs font-bold text-white shadow-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-transform active:scale-95 flex items-center gap-1.5';
-    button.innerHTML = '<span class="material-symbols-outlined text-[16px]">language</span><span data-i18n-toggle>EN / ID</span>';
-    button.setAttribute('aria-label', 'Switch language');
-    button.onclick = () => window.I18n && window.I18n.toggleLang();
-    document.body.append(button);
-  }
+
 
   function setupMobileDrawer() {
     const sidebar = document.querySelector('aside');
@@ -97,7 +88,6 @@
 
   function start() {
     refresh();
-    addSwitcher();
     setupMobileDrawer();
     setupKeyboardShortcuts();
     new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(node => {

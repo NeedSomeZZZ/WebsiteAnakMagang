@@ -340,6 +340,8 @@
 
             setTimeout(() => {
                 alert(`${successMsg}\n\nNama: ${firstName} ${lastName}\nEmail: ${email}\nPosisi: ${role}\n\n${touchMsg}`);
+                // Redirect to dashboard after successful registration
+                window.location.href = 'dashboard.html';
             }, 1200);
         }
     </script>
