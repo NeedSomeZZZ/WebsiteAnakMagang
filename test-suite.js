@@ -1,4 +1,4 @@
-/* InternSpace – Automated Project Health Test Suite */
+/* Kedayweb – Automated Project Health Test Suite */
 const fs = require('fs');
 const path = require('path');
 
@@ -17,7 +17,7 @@ function assert(condition, message) {
 }
 
 console.log('====================================================');
-console.log('🧪 InternSpace Portal - Workspace Health Test Suite');
+console.log('🧪 Kedayweb Portal - Workspace Health Test Suite');
 console.log('====================================================\n');
 
 // 1. Check required JavaScript modules
@@ -37,7 +37,7 @@ jsFiles.forEach(file => {
 
 // 2. Check HTML pages & script references
 console.log('\n📄 2. Auditing HTML Page Template Integrity...');
-const htmlPages = ['index.html', 'projects.html', 'tasks.html', 'attendance.html', 'applications.html', 'pendaftaran.html', 'verification.html', 'profile.html', 'settings.html'];
+const htmlPages = ['index.html', 'projects.html', 'tasks.html', 'attendance.html', 'applications.html', 'verification.html', 'profile.html', 'settings.html'];
 
 htmlPages.forEach(page => {
   const pagePath = path.join(WORKSPACE, page);

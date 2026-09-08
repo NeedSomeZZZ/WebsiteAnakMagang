@@ -1,4 +1,4 @@
-/* InternSpace – Shared Tailwind Config (single source of truth) */
+/* Kedayweb – Shared Tailwind Config (single source of truth) */
 tailwind.config = {
   darkMode: "class",
   theme: {

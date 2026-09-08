@@ -158,7 +158,7 @@ const I18n = (() => {
     btn_verify:        { en: 'Verify',         id: 'Verifikasi' },
     verify_try_demo:   { en: 'Try the demo ID:', id: 'Coba ID demo:' },
     verify_validated:  { en: 'Certificate Validated', id: 'Sertifikat Tervalidasi' },
-    verify_valid_d:    { en: 'This document has been securely verified via InternSpace cryptographic ledger.', id: 'Dokumen ini telah diverifikasi secara aman melalui buku besar kriptografi InternSpace.' },
+    verify_valid_d:    { en: 'This document has been securely verified via Kedayweb cryptographic ledger.', id: 'Dokumen ini telah diverifikasi secara aman melalui buku besar kriptografi Kedayweb.' },
     verify_status:     { en: 'Status: Verified', id: 'Status: Terverifikasi' },
     verify_preview:    { en: 'Original Document Preview', id: 'Pratinjau Dokumen Asli' },
     verify_full_size:  { en: 'View Full Size', id: 'Lihat Ukuran Penuh' },
@@ -172,7 +172,7 @@ const I18n = (() => {
     verify_alert_empty:{ en: 'Please enter a certificate ID.', id: 'Silakan masukkan ID sertifikat.' },
     footer_privacy:    { en: 'Privacy Policy',  id: 'Kebijakan Privasi' },
     footer_terms:      { en: 'Terms of Service', id: 'Syarat Layanan' },
-    footer_copy:       { en: '© 2024 InternSpace Platform. All rights reserved.', id: '© 2024 Platform InternSpace. Hak cipta dilindungi.' },
+    footer_copy:       { en: '© 2024 Kedayweb Platform. All rights reserved.', id: '© 2024 Platform Kedayweb. Hak cipta dilindungi.' },
 
     /* ─── RECRUITMENT / PENDAFTARAN ─── */
     recruit_careers:   { en: 'Registration',   id: 'Pendaftaran' },
