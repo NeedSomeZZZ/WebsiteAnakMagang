@@ -26,7 +26,7 @@
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
             </div>
             <div>
-                <h1 class="font-headline-md text-headline-md text-primary font-bold">Admin</h1>
+                <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold">Welcome back, <span id="intern-name">Alex</span></h2>
                 <p class="font-label-sm text-label-sm text-on-surface-variant">Kedayweb</p>
             </div>
         </div>
@@ -79,7 +79,77 @@
                 </a>
             </div>
         </header>
-        <section class="mt-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          <section class="mt-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            <!-- Intern Dashboards Card -->
+            <div class="glass-card p-4 rounded-xl border border-outline-variant">
+                <h3 class="font-headline-md mb-2">Intern Dashboards</h3>
+                <p class="text-sm text-on-surface-variant mb-3">Pilih intern untuk melihat dashboard mereka.</p>
+                <ul class="space-y-2">
+                    <li><a href="dashboard.html?intern=John%20Doe" class="text-primary hover:underline">John Doe</a></li>
+                    <li><a href="dashboard.html?intern=Jane%20Smith" class="text-primary hover:underline">Jane Smith</a></li>
+                    <!-- Tambahkan intern lainnya secara dinamis bila diperlukan -->
+                </ul>
+            </div>
+            <!-- Penilaian & Hapus Pekerjaan Intern Card -->
+            <div class="glass-card p-4 rounded-xl border border-outline-variant">
+                <h3 class="font-headline-md mb-2">Penilaian & Hapus Pekerjaan Intern</h3>
+                <p class="text-sm text-on-surface-variant mb-3" id="intern-task-title">Pilih intern untuk menilai pekerjaan mereka.</p>
+                <table class="min-w-full text-sm" id="intern-tasks-table" style="display:none;">
+                    <thead class="bg-surface-container-lowest">
+                        <tr>
+                            <th class="px-2 py-1 text-left">Pekerjaan</th>
+                            <th class="px-2 py-1 text-left">Penilaian</th>
+                            <th class="px-2 py-1 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Contoh data, akan dihapus ketika klik hapus -->
+                        <tr data-task-id="1">
+                            <td class="px-2 py-1">Membuat halaman profil</td>
+                            <td class="px-2 py-1">
+                                <select class="rating-select" data-task-id="1">
+                                    <option value="">-- Pilih --</option>
+                                    <option value="1">1 ⭐</option>
+                                    <option value="2">2 ⭐⭐</option>
+                                    <option value="3">3 ⭐⭐⭐</option>
+                                    <option value="4">4 ⭐⭐⭐⭐</option>
+                                    <option value="5">5 ⭐⭐⭐⭐⭐</option>
+                                </select>
+                            </td>
+                            <td class="px-2 py-1 text-center">
+                                <button class="text-error delete-task" data-task-id="1" title="Hapus"><span class="material-symbols-outlined">delete</span></button>
+                            </td>
+                        </tr>
+                        <tr data-task-id="2">
+                            <td class="px-2 py-1">Implementasi API login</td>
+                            <td class="px-2 py-1">
+                                <select class="rating-select" data-task-id="2">
+                                    <option value="">-- Pilih --</option>
+                                    <option value="1">1 ⭐</option>
+                                    <option value="2">2 ⭐⭐</option>
+                                    <option value="3">3 ⭐⭐⭐</option>
+                                    <option value="4">4 ⭐⭐⭐⭐</option>
+                                    <option value="5">5 ⭐⭐⭐⭐⭐</option>
+                                </select>
+                            </td>
+                            <td class="px-2 py-1 text-center">
+                                <button class="text-error delete-task" data-task-id="2" title="Hapus"><span class="material-symbols-outlined">delete</span></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Fitur Intern Card -->
+            <div class="glass-card p-4 rounded-xl border border-outline-variant">
+                <h3 class="font-headline-md mb-2">Fitur Intern</h3>
+                <p class="text-sm text-on-surface-variant mb-3">Berikut adalah fitur yang dapat diakses oleh intern:</p>
+                <ul class="list-disc list-inside">
+                    <li>Dashboard pribadi (lihat progres tugas)</li>
+                    <li>Profil (ubah informasi pribadi)</li>
+                    <li>Daftar tugas (lihat dan selesaikan tugas)</li>
+                    <li>Pengaturan (atur preferensi akun)</li>
+                </ul>
+            </div>
             <!-- User Management Card -->
             <div class="glass-card p-4 rounded-xl border border-outline-variant">
                 <h3 class="font-headline-md mb-2">User Management</h3>
@@ -186,6 +256,14 @@
         </section>
     </main>
     <script>
+        // Determine intern name from URL parameter (admin view)
+        const params = new URLSearchParams(window.location.search);
+        const internParam = params.get('intern');
+        if (internParam) {
+            const nameElem = document.getElementById('intern-name');
+            if (nameElem) nameElem.textContent = decodeURIComponent(internParam);
+        }
+        // Existing dashboard script continues below
         document.getElementById('maintenance-toggle')?.addEventListener('change', e => {
             const label = e.target.nextElementSibling.nextElementSibling;
             if (label) label.textContent = e.target.checked ? 'On' : 'Off';
@@ -196,6 +274,38 @@
         });
         document.getElementById('save-settings')?.addEventListener('click', () => {
             alert('System settings saved (demo).');
+        });
+
+        // Admin Intern Tasks: show table when intern parameter exists
+        const internName = document.getElementById('intern-name')?.textContent;
+        if (internName) {
+            const titleElem = document.getElementById('intern-task-title');
+            if (titleElem) titleElem.textContent = `Pekerjaan ${internName}`;
+            const table = document.getElementById('intern-tasks-table');
+            if (table) table.style.display = 'table';
+        }
+        // Handle rating change
+        document.querySelectorAll('.rating-select').forEach(select => {
+            select.addEventListener('change', e => {
+                const taskId = e.target.dataset.taskId;
+                const rating = e.target.value;
+                if (rating) {
+                    // Simpan rating ke localStorage (demo)
+                    localStorage.setItem(`internTaskRating_${taskId}`, rating);
+                    alert(`Penilaian ${rating} bintang disimpan untuk pekerjaan ID ${taskId}.`);
+                }
+            });
+        });
+        // Handle delete task
+        document.querySelectorAll('.delete-task').forEach(btn => {
+            btn.addEventListener('click', e => {
+                const taskId = btn.dataset.taskId;
+                const row = document.querySelector(`tr[data-task-id="${taskId}"]`);
+                if (row) {
+                    row.remove();
+                    alert(`Pekerjaan ID ${taskId} telah dihapus.`);
+                }
+            });
         });
     </script>
 </body>
