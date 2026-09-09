@@ -7,7 +7,7 @@ const ProjectStore = (() => {
   const seed = () => {
     if (load().length) return;
     const created = now(), id = uid();
-    save([{ id, name: 'Website Anak Magang', description: 'Improve the intern portal experience.', created_by: 'Alex Doe', created_at: created, updated_at: created, tasks: [
+    save([{ id, name: 'Website Anak Magang', description: 'Improve the intern portal experience.', created_by: 'Alex Doe', created_at: created, updated_at: created, progressUpdates: [], comments: [], tasks: [
       { id: uid(), title: 'Review onboarding flow', description: 'Audit the first-week journey and capture improvements.', status: 'todo', priority: 'Medium', assignee: 'Alex Doe', due_date: '', created_at: created, updated_at: created },
       { id: uid(), title: 'Build project dashboard', description: 'Create the project overview and key metrics.', status: 'progress', priority: 'High', assignee: 'Alex Doe', due_date: '', created_at: created, updated_at: created },
       { id: uid(), title: 'Prepare mentor feedback', description: 'Gather final notes for the sprint review.', status: 'review', priority: 'Low', assignee: 'Sarah Jenkins', due_date: '', created_at: created, updated_at: created }
@@ -21,6 +21,26 @@ const ProjectStore = (() => {
   const createTask = (projectId, values) => { const created_at = now(); const task = { id: uid(), project_id: projectId, title: values.title.trim(), description: values.description.trim(), status: values.status, priority: values.priority, assignee: values.assignee.trim(), due_date: values.due_date, created_at, updated_at: created_at }; const all = projects().map(project => project.id === projectId ? { ...project, updated_at: created_at, tasks: [...project.tasks, task] } : project); save(all); return task; };
   const updateTask = (projectId, taskId, values) => { const all = projects().map(project => project.id === projectId ? { ...project, updated_at: now(), tasks: project.tasks.map(task => task.id === taskId ? { ...task, ...values, title: values.title.trim(), description: values.description.trim(), assignee: values.assignee.trim(), updated_at: now() } : task) } : project); save(all); };
   const deleteTask = (projectId, taskId) => { const all = projects().map(project => project.id === projectId ? { ...project, updated_at: now(), tasks: project.tasks.filter(task => task.id !== taskId) } : project); save(all); };
+  const addProgress = (projectId, update) => {
+    const all = projects().map(project => {
+      if (project.id === projectId) {
+        const arr = project.progressUpdates ? [...project.progressUpdates, update] : [update];
+        return { ...project, progressUpdates: arr, updated_at: now() };
+      }
+      return project;
+    });
+    save(all);
+  };
+  const addComment = (projectId, comment) => {
+    const all = projects().map(project => {
+      if (project.id === projectId) {
+        const arr = project.comments ? [...project.comments, comment] : [comment];
+        return { ...project, comments: arr, updated_at: now() };
+      }
+      return project;
+    });
+    save(all);
+  };
   const moveTask = (projectId, taskId, status) => { const project = get(projectId), task = project?.tasks.find(item => item.id === taskId); if (task) updateTask(projectId, taskId, { ...task, status }); };
-  return { projects, get, createProject, updateProject, deleteProject, createTask, updateTask, deleteTask, moveTask };
+  return { projects, get, createProject, updateProject, deleteProject, createTask, updateTask, deleteTask, moveTask, addProgress, addComment };
 })();

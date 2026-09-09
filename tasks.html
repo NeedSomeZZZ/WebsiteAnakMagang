@@ -52,11 +52,6 @@
         <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="applications.html">
             <span class="material-symbols-outlined">description</span>
             <span data-i18n="nav_applications">Applications</span>
-        </a>
-        
-            
-            
-        </a>
         <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="verification.html">
             <span class="material-symbols-outlined">verified_user</span>
             <span data-i18n="nav_verification">Verification</span>
@@ -75,8 +70,19 @@
     <!-- Top Action Bar -->
     <header class="min-h-20 px-gutter py-3 flex flex-col md:flex-row items-start md:items-center justify-between border-b border-outline-variant bg-surface-container-lowest flex-shrink-0 gap-md min-w-max">
         <div>
-            <h2 class="font-headline-lg text-headline-lg text-on-surface font-bold" data-i18n="tasks_title">Active Sprint</h2>
-            <p class="font-body-sm text-body-sm text-on-surface-variant" data-i18n="tasks_subtitle">Week 4: Frontend Implementation</p>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="material-symbols-outlined text-primary text-[20px]">folder_open</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-primary">Active Project</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <select id="project-selector" onchange="onProjectChange(this.value)" class="bg-surface-bright border border-outline-variant rounded-lg px-2.5 py-1 text-sm font-bold text-on-surface focus:ring-2 focus:ring-primary focus:outline-none min-w-[200px]">
+                    <!-- Populated dynamically -->
+                </select>
+                <button id="toggle-project-panel-btn" onclick="toggleProjectPanel()" class="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border border-outline-variant text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors">
+                    <span class="material-symbols-outlined text-[16px]">info</span>
+                    <span id="toggle-project-panel-text">Project Info & Updates</span>
+                </button>
+            </div>
         </div>
         <div class="flex flex-wrap items-center gap-sm w-full md:w-auto">
             <div class="relative flex-1 md:w-64">
@@ -96,6 +102,69 @@
         </div>
     </header>
 
+    <!-- Project Details & Collaboration Drawer / Panel -->
+    <section id="project-panel" class="hidden border-b border-outline-variant bg-surface-container-lowest p-4 md:px-gutter transition-all duration-300">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <!-- Project Overview Card -->
+            <div class="bg-surface-bright border border-outline-variant rounded-xl p-4 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-container text-on-primary-container">
+                            <span class="material-symbols-outlined text-[14px]">corporate_fare</span>
+                            <span id="panel-creator">Alex Doe</span>
+                        </span>
+                        <span id="panel-date" class="text-xs text-on-surface-variant">Active</span>
+                    </div>
+                    <h3 id="panel-project-name" class="font-headline-md text-headline-md font-bold text-on-surface mb-1">Website Anak Magang</h3>
+                    <p id="panel-project-desc" class="font-body-sm text-body-sm text-on-surface-variant line-clamp-3">Improve the intern portal experience.</p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-outline-variant flex items-center justify-between text-xs text-on-surface-variant">
+                    <span id="panel-task-stats">3 Tasks Total</span>
+                    <a href="projects.html" class="inline-flex items-center gap-1 text-primary hover:underline font-semibold">
+                        <span>All Projects</span>
+                        <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Progress Updates Card -->
+            <div class="bg-surface-bright border border-outline-variant rounded-xl p-4 flex flex-col">
+                <div class="flex items-center justify-between mb-2 pb-1 border-b border-outline-variant">
+                    <h4 class="font-label-md text-label-md font-bold text-on-surface flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[18px] text-primary">trending_up</span>
+                        <span>Progress Updates</span>
+                    </h4>
+                    <span id="progress-count" class="text-xs font-bold text-on-surface-variant">0</span>
+                </div>
+                <div class="flex-1 overflow-y-auto max-h-32 mb-3 pr-1 space-y-2" id="progress-list">
+                    <!-- Dynamic updates -->
+                </div>
+                <div class="mt-auto flex gap-2">
+                    <input id="progress-input" type="text" placeholder="Add progress note..." class="flex-1 px-3 py-1.5 text-xs bg-surface-container-lowest border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:outline-none"/>
+                    <button onclick="addProgressUpdate()" class="px-3 py-1.5 bg-primary text-on-primary text-xs font-semibold rounded-lg hover:bg-primary-container transition-colors">Add</button>
+                </div>
+            </div>
+
+            <!-- Admin / Mentor Comments Card -->
+            <div class="bg-surface-bright border border-outline-variant rounded-xl p-4 flex flex-col">
+                <div class="flex items-center justify-between mb-2 pb-1 border-b border-outline-variant">
+                    <h4 class="font-label-md text-label-md font-bold text-on-surface flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[18px] text-secondary">forum</span>
+                        <span>Mentor &amp; Admin Notes</span>
+                    </h4>
+                    <span id="comment-count" class="text-xs font-bold text-on-surface-variant">0</span>
+                </div>
+                <div class="flex-1 overflow-y-auto max-h-32 mb-3 pr-1 space-y-2" id="comment-list">
+                    <!-- Dynamic comments -->
+                </div>
+                <div class="mt-auto flex gap-2">
+                    <input id="comment-input" type="text" placeholder="Add mentor comment..." class="flex-1 px-3 py-1.5 text-xs bg-surface-container-lowest border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:outline-none"/>
+                    <button onclick="addAdminComment()" class="px-3 py-1.5 bg-primary text-on-primary text-xs font-semibold rounded-lg hover:bg-primary-container transition-colors">Send</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Kanban Board Container dengan Scrollbar Horizontal -->
     <div class="flex-1 overflow-x-auto overflow-y-hidden p-gutter kanban-scroll">
         <div class="flex gap-gutter h-full pb-sm items-start min-w-max pr-8">
@@ -107,33 +176,9 @@
                         <span class="w-3 h-3 rounded-full bg-outline"></span>
                         <span data-i18n="col_todo">To Do</span>
                     </h3>
-                    <span id="todo-count" class="bg-surface-container-highest text-on-surface px-sm py-xs rounded-full font-label-sm text-label-sm font-bold">2</span>
+                    <span id="todo-count" class="bg-surface-container-highest text-on-surface px-sm py-xs rounded-full font-label-sm text-label-sm font-bold">0</span>
                 </div>
                 <div id="todo-col" class="flex-1 overflow-y-auto kanban-scroll flex flex-col gap-sm pr-xs pb-xl transition-all duration-150" ondragover="allowDrop(event, 'todo')" ondragleave="removeDragHighlight('todo')" ondrop="drop(event, 'todo')">
-                    <!-- Task Card 1 -->
-                    <div id="task-1" data-priority="High" draggable="true" ondragstart="drag(event)" class="task-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md hover-card-shadow transition-all duration-200 cursor-pointer group">
-                        <div class="flex justify-between items-start mb-sm">
-                            <span class="bg-error-container text-on-error-container px-sm py-xs rounded-full font-label-sm text-label-sm flex items-center gap-xs">
-                                <span class="material-symbols-outlined text-[14px]">local_fire_department</span> High
-                            </span>
-                        </div>
-                        <h4 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold task-title">Implement Auth Middleware</h4>
-                        <p class="font-body-sm text-body-sm text-on-surface-variant mb-md line-clamp-2 task-desc">Set up JWT validation on all protected routes and handle token refresh logic.</p>
-                        <div class="flex justify-end gap-2">
-                            <button onclick="moveTask('task-1', 'inprogress')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-primary-container hover:text-white transition-colors">Start Task</button>
-                        </div>
-                    </div>
-                    <!-- Task Card 2 -->
-                    <div id="task-2" data-priority="Medium" draggable="true" ondragstart="drag(event)" class="task-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md hover-card-shadow transition-all duration-200 cursor-pointer group">
-                        <div class="flex justify-between items-start mb-sm">
-                            <span class="bg-tertiary-fixed text-on-tertiary-fixed px-sm py-xs rounded-full font-label-sm text-label-sm">Medium</span>
-                        </div>
-                        <h4 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold task-title">Design System Audit</h4>
-                        <p class="font-body-sm text-body-sm text-on-surface-variant mb-md line-clamp-2 task-desc">Review current components against Figma designs for margin inconsistencies.</p>
-                        <div class="flex justify-end gap-2">
-                            <button onclick="moveTask('task-2', 'inprogress')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-primary-container hover:text-white transition-colors">Start Task</button>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -144,24 +189,9 @@
                         <span class="w-3 h-3 rounded-full bg-primary animate-pulse"></span>
                         <span data-i18n="col_progress">In Progress</span>
                     </h3>
-                    <span id="inprogress-count" class="bg-primary text-on-primary px-sm py-xs rounded-full font-label-sm text-label-sm shadow-sm font-bold">1</span>
+                    <span id="inprogress-count" class="bg-primary text-on-primary px-sm py-xs rounded-full font-label-sm text-label-sm shadow-sm font-bold">0</span>
                 </div>
                 <div id="inprogress-col" class="flex-1 overflow-y-auto kanban-scroll flex flex-col gap-sm pr-xs pb-xl transition-all duration-150" ondragover="allowDrop(event, 'inprogress')" ondragleave="removeDragHighlight('inprogress')" ondrop="drop(event, 'inprogress')">
-                    <!-- Task Card 3 -->
-                    <div id="task-3" data-priority="High" draggable="true" ondragstart="drag(event)" class="task-card bg-surface-container-lowest border-2 border-primary-fixed-dim rounded-2xl p-md hover-card-shadow transition-all duration-200 cursor-pointer group relative overflow-hidden">
-                        <div class="absolute bottom-0 left-0 h-1 bg-primary w-2/3"></div>
-                        <div class="flex justify-between items-start mb-sm">
-                            <span class="bg-error-container text-on-error-container px-sm py-xs rounded-full font-label-sm text-label-sm flex items-center gap-xs">
-                                <span class="material-symbols-outlined text-[14px]">local_fire_department</span> High
-                            </span>
-                        </div>
-                        <h4 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold task-title">Build Kanban UI</h4>
-                        <p class="font-body-sm text-body-sm text-on-surface-variant mb-md line-clamp-2 task-desc">Implement the drag-and-drop interface for task management using strict Tailwind tokens.</p>
-                        <div class="flex justify-between items-center">
-                            <button onclick="moveTask('task-3', 'todo')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-slate-400 hover:text-white transition-colors">Move Back</button>
-                            <button onclick="moveTask('task-3', 'underreview')" class="px-2 py-1 bg-primary text-white rounded text-[11px] hover:bg-primary-container transition-colors">Submit Review</button>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -172,21 +202,9 @@
                         <span class="material-symbols-outlined text-[18px]">visibility</span>
                         <span data-i18n="col_review">Under Review</span>
                     </h3>
-                    <span id="underreview-count" class="bg-secondary-fixed-dim text-on-secondary-fixed px-sm py-xs rounded-full font-label-sm text-label-sm font-bold">1</span>
+                    <span id="underreview-count" class="bg-secondary-fixed-dim text-on-secondary-fixed px-sm py-xs rounded-full font-label-sm text-label-sm font-bold">0</span>
                 </div>
                 <div id="underreview-col" class="flex-1 overflow-y-auto kanban-scroll flex flex-col gap-sm pr-xs pb-xl transition-all duration-150" ondragover="allowDrop(event, 'underreview')" ondragleave="removeDragHighlight('underreview')" ondrop="drop(event, 'underreview')">
-                    <!-- Task Card 4 -->
-                    <div id="task-4" data-priority="Low" draggable="true" ondragstart="drag(event)" class="task-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md hover-card-shadow transition-all duration-200 cursor-pointer">
-                        <div class="flex justify-between items-start mb-sm">
-                            <span class="bg-surface-container-high text-on-surface-variant px-sm py-xs rounded-full font-label-sm text-label-sm">Low</span>
-                        </div>
-                        <h4 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold task-title">Update Onboarding Copy</h4>
-                        <p class="font-body-sm text-body-sm text-on-surface-variant mb-md line-clamp-2 task-desc">Revise the welcome emails to align with new brand voice guidelines.</p>
-                        <div class="flex justify-between items-center">
-                            <button onclick="moveTask('task-4', 'inprogress')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-slate-400 hover:text-white transition-colors">Request Changes</button>
-                            <button onclick="moveTask('task-4', 'done')" class="px-2 py-1 bg-green-600 text-white rounded text-[11px] hover:bg-green-700 transition-colors">Approve & Done</button>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -198,7 +216,7 @@
                         <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">task_alt</span>
                         <span data-i18n="col_done">Done</span>
                     </h3>
-                    <span id="done-count" class="relative z-10 bg-slate-200 text-on-surface px-sm py-xs rounded-full font-label-sm text-label-sm font-bold">1</span>
+                    <span id="done-count" class="relative z-10 bg-slate-200 text-on-surface px-sm py-xs rounded-full font-label-sm text-label-sm font-bold">0</span>
                 </div>
                 <div id="done-col" class="flex-1 overflow-y-auto kanban-scroll flex flex-col gap-md pr-xs pb-xl transition-all duration-150" ondragover="allowDrop(event, 'done')" ondragleave="removeDragHighlight('done')" ondrop="drop(event, 'done')">
                     <!-- Gamification Widget: Task Master Badge -->
@@ -273,9 +291,256 @@
     </div>
 </div>
 
+<script src="project-store.js"></script>
 <script>
+    let currentProjectId = null;
     let currentXp = 150;
     let currentPriorityFilter = 'All';
+
+    function initProjectSelector() {
+        if (!window.ProjectStore) return;
+        const selector = document.getElementById('project-selector');
+        if (!selector) return;
+
+        const projects = ProjectStore.projects();
+        selector.innerHTML = '';
+
+        if (!projects || projects.length === 0) {
+            selector.innerHTML = '<option value="">No projects</option>';
+            return;
+        }
+
+        projects.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.id;
+            opt.textContent = p.name;
+            selector.appendChild(opt);
+        });
+
+        // Check URL param or default to first project
+        const urlParams = new URLSearchParams(window.location.search);
+        const paramProj = urlParams.get('project');
+        if (paramProj && projects.some(p => p.id === paramProj)) {
+            currentProjectId = paramProj;
+        } else {
+            currentProjectId = projects[0].id;
+        }
+
+        selector.value = currentProjectId;
+        renderActiveProject();
+    }
+
+    function onProjectChange(newId) {
+        currentProjectId = newId;
+        // Update URL query param quietly
+        const url = new URL(window.location);
+        url.searchParams.set('project', newId);
+        window.history.replaceState({}, '', url);
+
+        renderActiveProject();
+    }
+
+    function toggleProjectPanel() {
+        const panel = document.getElementById('project-panel');
+        const btnText = document.getElementById('toggle-project-panel-text');
+        if (!panel) return;
+
+        const isHidden = panel.classList.contains('hidden');
+        if (isHidden) {
+            panel.classList.remove('hidden');
+            if (btnText) btnText.textContent = 'Hide Project Info';
+        } else {
+            panel.classList.add('hidden');
+            if (btnText) btnText.textContent = 'Project Info & Updates';
+        }
+    }
+
+    function renderActiveProject() {
+        if (!window.ProjectStore || !currentProjectId) return;
+        const project = ProjectStore.get(currentProjectId);
+        if (!project) return;
+
+        // Render Panel Details
+        const nameElem = document.getElementById('panel-project-name');
+        const descElem = document.getElementById('panel-project-desc');
+        const creatorElem = document.getElementById('panel-creator');
+        const dateElem = document.getElementById('panel-date');
+        const statsElem = document.getElementById('panel-task-stats');
+
+        if (nameElem) nameElem.textContent = project.name;
+        if (descElem) descElem.textContent = project.description || 'No description provided.';
+        if (creatorElem) creatorElem.textContent = project.created_by || 'Intern';
+        if (dateElem && project.created_at) {
+            dateElem.textContent = new Date(project.created_at).toLocaleDateString('id-ID');
+        }
+
+        const taskCount = (project.tasks || []).length;
+        if (statsElem) statsElem.textContent = `${taskCount} Tasks Total`;
+
+        // Render Progress Updates
+        const progressList = document.getElementById('progress-list');
+        const progressCount = document.getElementById('progress-count');
+        if (progressList) {
+            progressList.innerHTML = '';
+            const updates = project.progressUpdates || [];
+            if (progressCount) progressCount.textContent = updates.length;
+
+            if (updates.length === 0) {
+                progressList.innerHTML = '<p class="text-xs text-on-surface-variant italic py-2 text-center">No progress updates recorded yet.</p>';
+            } else {
+                updates.forEach((item, idx) => {
+                    const el = document.createElement('div');
+                    el.className = 'p-2 bg-surface-container-low rounded-lg text-xs border border-outline-variant/60 flex items-start gap-2';
+                    el.innerHTML = `
+                        <span class="material-symbols-outlined text-[14px] text-primary mt-0.5">check_circle</span>
+                        <span class="flex-1 text-on-surface leading-relaxed">${escapeHtml(item)}</span>
+                    `;
+                    progressList.appendChild(el);
+                });
+                progressList.scrollTop = progressList.scrollHeight;
+            }
+        }
+
+        // Render Admin Comments
+        const commentList = document.getElementById('comment-list');
+        const commentCount = document.getElementById('comment-count');
+        if (commentList) {
+            commentList.innerHTML = '';
+            const comments = project.comments || [];
+            if (commentCount) commentCount.textContent = comments.length;
+
+            if (comments.length === 0) {
+                commentList.innerHTML = '<p class="text-xs text-on-surface-variant italic py-2 text-center">No mentor comments yet.</p>';
+            } else {
+                comments.forEach((item, idx) => {
+                    const el = document.createElement('div');
+                    el.className = 'p-2 bg-secondary-fixed/30 rounded-lg text-xs border border-secondary-fixed-dim/40 flex items-start gap-2';
+                    el.innerHTML = `
+                        <span class="material-symbols-outlined text-[14px] text-secondary mt-0.5">chat_bubble</span>
+                        <span class="flex-1 text-on-surface leading-relaxed">${escapeHtml(item)}</span>
+                    `;
+                    commentList.appendChild(el);
+                });
+                commentList.scrollTop = commentList.scrollHeight;
+            }
+        }
+
+        // Render Kanban Tasks
+        renderKanbanTasks(project.tasks || []);
+    }
+
+    function addProgressUpdate() {
+        const input = document.getElementById('progress-input');
+        if (!input || !currentProjectId) return;
+        const text = input.value.trim();
+        if (!text) return;
+
+        ProjectStore.addProgress(currentProjectId, text);
+        input.value = '';
+        renderActiveProject();
+    }
+
+    function addAdminComment() {
+        const input = document.getElementById('comment-input');
+        if (!input || !currentProjectId) return;
+        const text = input.value.trim();
+        if (!text) return;
+
+        ProjectStore.addComment(currentProjectId, text);
+        input.value = '';
+        renderActiveProject();
+    }
+
+    function escapeHtml(str) {
+        return String(str || '').replace(/[&<>'"]/g, char => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+        }[char]));
+    }
+
+    function renderKanbanTasks(tasks) {
+        const cols = {
+            todo: document.getElementById('todo-col'),
+            inprogress: document.getElementById('inprogress-col'),
+            underreview: document.getElementById('underreview-col'),
+            done: document.getElementById('done-col')
+        };
+
+        // Clear columns
+        Object.values(cols).forEach(col => {
+            if (col) {
+                // Remove task cards but preserve gamification widget if in done-col
+                const taskCards = col.querySelectorAll('.task-card');
+                taskCards.forEach(c => c.remove());
+            }
+        });
+
+        tasks.forEach(t => {
+            // Map legacy or projects-ui status names: progress -> inprogress, review -> underreview
+            let status = t.status;
+            if (status === 'progress') status = 'inprogress';
+            if (status === 'review') status = 'underreview';
+
+            const targetCol = cols[status] || cols.todo;
+            if (!targetCol) return;
+
+            const card = createTaskCardElement(t, status);
+            // Insert before gamification badge if in done column
+            if (status === 'done') {
+                const gamificationWidget = targetCol.querySelector('.group.cursor-default');
+                if (gamificationWidget) {
+                    targetCol.insertBefore(card, gamificationWidget);
+                } else {
+                    targetCol.appendChild(card);
+                }
+            } else {
+                targetCol.appendChild(card);
+            }
+        });
+
+        updateCounts();
+        filterKanban();
+    }
+
+    function createTaskCardElement(task, status) {
+        const priority = task.priority || 'Medium';
+        const badgeClass = priority === 'High' ? 'bg-error-container text-on-error-container' : priority === 'Medium' ? 'bg-tertiary-fixed text-on-tertiary-fixed' : 'bg-surface-container-high text-on-surface-variant';
+        const priorityIcon = priority === 'High' ? '<span class="material-symbols-outlined text-[14px]">local_fire_department</span>' : '';
+
+        let actionBtnHtml = '';
+        if (status === 'todo') {
+            actionBtnHtml = `<button onclick="moveTask('${task.id}', 'inprogress')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-primary-container hover:text-white transition-colors">Start Task</button>`;
+        } else if (status === 'inprogress') {
+            actionBtnHtml = `
+                <button onclick="moveTask('${task.id}', 'todo')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-slate-400 hover:text-white transition-colors">Move Back</button>
+                <button onclick="moveTask('${task.id}', 'underreview')" class="px-2 py-1 bg-primary text-white rounded text-[11px] hover:bg-primary-container transition-colors ml-auto">Submit Review</button>
+            `;
+        } else if (status === 'underreview') {
+            actionBtnHtml = `
+                <button onclick="moveTask('${task.id}', 'inprogress')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-slate-400 hover:text-white transition-colors">Request Changes</button>
+                <button onclick="moveTask('${task.id}', 'done')" class="px-2 py-1 bg-green-600 text-white rounded text-[11px] hover:bg-green-700 transition-colors ml-auto">Approve &amp; Done</button>
+            `;
+        }
+
+        const card = document.createElement('div');
+        card.id = task.id;
+        card.dataset.priority = priority;
+        card.draggable = true;
+        card.ondragstart = drag;
+        card.className = `task-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md hover-card-shadow transition-all duration-200 cursor-pointer group ${status === 'inprogress' ? 'border-2 border-primary-fixed-dim relative overflow-hidden' : ''}`;
+
+        card.innerHTML = `
+            ${status === 'inprogress' ? '<div class="absolute bottom-0 left-0 h-1 bg-primary w-2/3"></div>' : ''}
+            <div class="flex justify-between items-start mb-sm">
+                <span class="${badgeClass} px-sm py-xs rounded-full font-label-sm text-label-sm flex items-center gap-xs">${priorityIcon} ${priority}</span>
+                ${task.due_date ? `<span class="text-[11px] text-on-surface-variant font-medium">${task.due_date}</span>` : ''}
+            </div>
+            <h4 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold task-title">${escapeHtml(task.title)}</h4>
+            <p class="font-body-sm text-body-sm text-on-surface-variant mb-md line-clamp-2 task-desc">${escapeHtml(task.description) || 'No description provided.'}</p>
+            ${actionBtnHtml ? `<div class="flex justify-between items-center">${actionBtnHtml}</div>` : ''}
+        `;
+
+        return card;
+    }
 
     function autoScrollColumn(ev, colContainer) {
         const rect = colContainer.getBoundingClientRect();
@@ -324,9 +589,19 @@
         const colContainer = document.getElementById(targetColId + '-col');
         if (!taskCard || !colContainer) return;
 
-        colContainer.appendChild(taskCard);
+        // Position in DOM
+        if (targetColId === 'done') {
+            const gamificationWidget = colContainer.querySelector('.group.cursor-default');
+            if (gamificationWidget) {
+                colContainer.insertBefore(taskCard, gamificationWidget);
+            } else {
+                colContainer.appendChild(taskCard);
+            }
+        } else {
+            colContainer.appendChild(taskCard);
+        }
 
-        const actionArea = taskCard.querySelector('div.flex');
+        const actionArea = taskCard.querySelector('div.flex:last-child');
         if (actionArea) {
             if (targetColId === 'todo') {
                 actionArea.innerHTML = `<button onclick="moveTask('${taskId}', 'inprogress')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-primary-container hover:text-white transition-colors">Start Task</button>`;
@@ -338,22 +613,26 @@
             } else if (targetColId === 'underreview') {
                 actionArea.innerHTML = `
                     <button onclick="moveTask('${taskId}', 'inprogress')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-slate-400 hover:text-white transition-colors">Request Changes</button>
-                    <button onclick="moveTask('${taskId}', 'done')" class="px-2 py-1 bg-green-600 text-white rounded text-[11px] hover:bg-green-700 transition-colors ml-auto">Approve & Done</button>
+                    <button onclick="moveTask('${taskId}', 'done')" class="px-2 py-1 bg-green-600 text-white rounded text-[11px] hover:bg-green-700 transition-colors ml-auto">Approve &amp; Done</button>
                 `;
             } else if (targetColId === 'done') {
                 actionArea.remove();
                 currentXp += 15;
                 if (currentXp > 200) currentXp = 200;
-                document.getElementById('xp-bar').style.width = ((currentXp / 200) * 100) + '%';
-                document.getElementById('xp-text').textContent = currentXp + ' XP';
+                const xpBar = document.getElementById('xp-bar');
+                const xpText = document.getElementById('xp-text');
+                if (xpBar) xpBar.style.width = ((currentXp / 200) * 100) + '%';
+                if (xpText) xpText.textContent = currentXp + ' XP';
             }
         }
 
-        if (window.ProjectStore) {
-            const projects = ProjectStore.projects();
-            if (projects.length > 0) {
-                ProjectStore.moveTask(projects[0].id, taskId, targetColId);
-            }
+        // Save into ProjectStore
+        if (window.ProjectStore && currentProjectId) {
+            // Map status back to store representation
+            let storeStatus = targetColId;
+            if (targetColId === 'inprogress') storeStatus = 'progress';
+            if (targetColId === 'underreview') storeStatus = 'review';
+            ProjectStore.moveTask(currentProjectId, taskId, storeStatus);
         }
 
         updateCounts();
@@ -371,7 +650,7 @@
     }
 
     function filterKanban() {
-        const query = (document.getElementById('kanban-search').value || '').toLowerCase().trim();
+        const query = (document.getElementById('kanban-search')?.value || '').toLowerCase().trim();
         document.querySelectorAll('.task-card').forEach(card => {
             const title = (card.querySelector('.task-title')?.textContent || '').toLowerCase();
             const desc = (card.querySelector('.task-desc')?.textContent || '').toLowerCase();
@@ -419,80 +698,53 @@
         const desc = document.getElementById('modal-task-desc').value.trim();
         const priority = document.getElementById('modal-task-priority').value;
         const status = document.getElementById('modal-task-status').value;
-        const id = 'task-' + Date.now();
 
-        if (!title) return;
+        if (!title || !currentProjectId) return;
+
+        let storeStatus = status;
+        if (status === 'inprogress') storeStatus = 'progress';
+        if (status === 'underreview') storeStatus = 'review';
 
         if (window.ProjectStore) {
-            const projects = ProjectStore.projects();
-            if (projects.length > 0) {
-                ProjectStore.createTask(projects[0].id, {
-                    title, description: desc, status, priority, assignee: 'Alex Doe', due_date: ''
-                });
-            }
+            ProjectStore.createTask(currentProjectId, {
+                title,
+                description: desc,
+                status: storeStatus,
+                priority,
+                assignee: 'Alex Doe',
+                due_date: ''
+            });
         }
 
-        const badgeClass = priority === 'High' ? 'bg-error-container text-on-error-container' : priority === 'Medium' ? 'bg-tertiary-fixed text-on-tertiary-fixed' : 'bg-surface-container-high text-on-surface-variant';
-        const priorityIcon = priority === 'High' ? '<span class="material-symbols-outlined text-[14px]">local_fire_department</span>' : '';
-
-        const taskHtml = `
-            <div id="${id}" data-priority="${priority}" draggable="true" ondragstart="drag(event)" class="task-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md hover-card-shadow transition-all duration-200 cursor-pointer group">
-                <div class="flex justify-between items-start mb-sm">
-                    <span class="${badgeClass} px-sm py-xs rounded-full font-label-sm text-label-sm flex items-center gap-xs">${priorityIcon} ${priority}</span>
-                </div>
-                <h4 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold task-title">${title}</h4>
-                <p class="font-body-sm text-body-sm text-on-surface-variant mb-md line-clamp-2 task-desc">${desc || 'No description provided.'}</p>
-                <div class="flex justify-end gap-2">
-                    <button onclick="moveTask('${id}', 'inprogress')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-primary-container hover:text-white transition-colors">Start Task</button>
-                </div>
-            </div>
-        `;
-
-        const container = document.createElement('div');
-        container.innerHTML = taskHtml;
-        const targetCol = document.getElementById(status + '-col');
-        if (targetCol) targetCol.appendChild(container.firstElementChild);
-        
         closeTaskModal();
-        updateCounts();
-        filterKanban();
+        renderActiveProject();
     }
 
+    // Keyboard support for Enter in input fields
     document.addEventListener('DOMContentLoaded', () => {
-        if (window.ProjectStore) {
-            const projects = ProjectStore.projects();
-            if (projects.length > 0 && projects[0].tasks) {
-                projects[0].tasks.forEach(t => {
-                    if (document.getElementById(t.id)) return; // already in HTML
-                    const col = document.getElementById(t.status + '-col');
-                    if (!col) return;
+        initProjectSelector();
 
-                    const priority = t.priority || 'Medium';
-                    const badgeClass = priority === 'High' ? 'bg-error-container text-on-error-container' : priority === 'Medium' ? 'bg-tertiary-fixed text-on-tertiary-fixed' : 'bg-surface-container-high text-on-surface-variant';
-                    const priorityIcon = priority === 'High' ? '<span class="material-symbols-outlined text-[14px]">local_fire_department</span>' : '';
-
-                    const taskHtml = `
-                        <div id="${t.id}" data-priority="${priority}" draggable="true" ondragstart="drag(event)" class="task-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md hover-card-shadow transition-all duration-200 cursor-pointer group">
-                            <div class="flex justify-between items-start mb-sm">
-                                <span class="${badgeClass} px-sm py-xs rounded-full font-label-sm text-label-sm flex items-center gap-xs">${priorityIcon} ${priority}</span>
-                            </div>
-                            <h4 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold task-title">${t.title}</h4>
-                            <p class="font-body-sm text-body-sm text-on-surface-variant mb-md line-clamp-2 task-desc">${t.description || 'No description provided.'}</p>
-                            <div class="flex justify-end gap-2">
-                                <button onclick="moveTask('${t.id}', 'inprogress')" class="px-2 py-1 bg-surface-container-high rounded text-[11px] hover:bg-primary-container hover:text-white transition-colors">Start Task</button>
-                            </div>
-                        </div>
-                    `;
-                    const container = document.createElement('div');
-                    container.innerHTML = taskHtml;
-                    col.appendChild(container.firstElementChild);
-                });
-            }
+        const progInput = document.getElementById('progress-input');
+        if (progInput) {
+            progInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addProgressUpdate();
+                }
+            });
         }
-        updateCounts();
+
+        const commInput = document.getElementById('comment-input');
+        if (commInput) {
+            commInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addAdminComment();
+                }
+            });
+        }
     });
 </script>
-<script src="project-store.js"></script>
 <script src="lang.js"></script>
 <script src="language-ui.js"></script>
 <script src="performance.js"></script>
