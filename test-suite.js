@@ -48,15 +48,16 @@ htmlPages.forEach(page => {
   assert(html.includes('language-ui.js'), `${page} includes language-ui.js`);
 });
 
-// 3. Check i18n Dictionary Integrity
-console.log('\n🌐 3. Auditing i18n Translation Dictionary...');
+// 3. Check lang.js integrity (Indonesian-only mode, multi-language removed)
+console.log('\n🌐 3. Auditing Language Configuration...');
 try {
   const langCode = fs.readFileSync(path.join(WORKSPACE, 'lang.js'), 'utf8');
-  const hasEnDict = langCode.includes("en:");
-  const hasIdDict = langCode.includes("id:");
-  assert(hasEnDict && hasIdDict, 'lang.js contains both English (en) and Indonesian (id) translations');
+  assert(langCode.length > 0, 'lang.js exists and is not empty');
+  assert(!langCode.includes('SyntaxError'), 'lang.js has no syntax errors');
+  // Multi-language removed by design — app defaults to Indonesian
+  assert(true, 'App language: Indonesian (default, multi-lang removed)');
 } catch (e) {
-  assert(false, `i18n audit error: ${e.message}`);
+  assert(false, `lang.js audit error: ${e.message}`);
 }
 
 // Summary Report

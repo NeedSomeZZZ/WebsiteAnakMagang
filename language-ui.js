@@ -1,32 +1,13 @@
-/* InternSpace UI Enhancement Engine (i18n, Mobile Drawer, Keyboard Shortcuts) */
+/* language-ui.js — Mobile Drawer + Keyboard Shortcuts
+   Fitur i18n / penggantian bahasa dihapus.
+   Bahasa default: Indonesia (semua teks langsung ditulis di HTML).
+*/
 (function () {
-  function indexDictionary() {
-    const index = new Map();
-    if (window.I18n && window.I18n.dict) {
-      Object.entries(window.I18n.dict).forEach(([key, value]) => { index.set(value.en, key); index.set(value.id, key); });
-    }
-    return index;
-  }
 
-  function bind(root = document.body) {
-    const lookup = indexDictionary(); if (!lookup.size || !root) return;
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), nodes = [];
-    while (walker.nextNode()) nodes.push(walker.currentNode);
-    nodes.forEach(node => {
-      const text = node.textContent.trim(), parent = node.parentElement, key = lookup.get(text);
-      if (key && parent && !parent.closest('script,style') && !parent.dataset.i18n) parent.dataset.i18n = key;
-    });
-    root.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(input => {
-      const key = lookup.get(input.placeholder);
-      if (key) input.dataset.i18n = key;
-    });
-  }
-
-
-
+  // ── Mobile Sidebar Drawer ─────────────────────────────────────────────
   function setupMobileDrawer() {
     const sidebar = document.querySelector('aside');
-    const header = document.querySelector('header');
+    const header  = document.querySelector('header');
     if (!sidebar || !header) return;
 
     if (!header.querySelector('[data-mobile-menu-btn]')) {
@@ -64,13 +45,19 @@
     }
   }
 
+  // ── Keyboard Shortcuts ────────────────────────────────────────────────
   function setupKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
-      if ((e.key === '/' || (e.ctrlKey && e.key === 'k')) && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+      // '/' or Ctrl+K → focus search
+      if ((e.key === '/' || (e.ctrlKey && e.key === 'k')) &&
+          !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
         e.preventDefault();
-        const searchInput = document.querySelector('input[type="search"], input[placeholder*="Search"], input[placeholder*="Cari"]');
+        const searchInput = document.querySelector(
+          'input[type="search"], input[placeholder*="Search"], input[placeholder*="Cari"]'
+        );
         if (searchInput) searchInput.focus();
       }
+      // Escape → close modal or mobile drawer
       if (e.key === 'Escape') {
         const modal = document.getElementById('modal');
         if (modal && !modal.classList.contains('hidden')) {
@@ -84,18 +71,19 @@
     });
   }
 
-  function refresh() { bind(); if (window.I18n) window.I18n.applyLang(); }
-
+  // ── Init ──────────────────────────────────────────────────────────────
   function start() {
-    refresh();
     setupMobileDrawer();
     setupKeyboardShortcuts();
-    new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(node => {
-      if (node.nodeType === Node.ELEMENT_NODE) bind(node);
-    }))).observe(document.body, { childList: true, subtree: true });
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
-  window.refreshLanguage = refresh;
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+
   window.toggleMobileSidebar = toggleMobileSidebar;
+  // stub agar tidak error jika ada kode yang masih memanggil refreshLanguage
+  window.refreshLanguage = function () {};
 })();

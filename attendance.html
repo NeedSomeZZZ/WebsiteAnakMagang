@@ -1,47 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Kedayweb - Attendance &amp; History</title>
+    <title>Kedayweb - Kehadiran PKL</title>
+    <meta name="description" content="Pantau kehadiran PKL Anda — kalender interaktif, status kehadiran, dan riwayat lengkap."/>
     <!-- Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="shared-config.js"></script>
     <style>
-        .custom-shadow {
-            box-shadow: 0 10px 15px -3px rgba(30, 58, 138, 0.05), 0 4px 6px -2px rgba(30, 58, 138, 0.02);
-        }
-        .status-dot-green { background-color: #10b981; }
-        .status-dot-red { background-color: #ef4444; }
-        .status-dot-yellow { background-color: #f59e0b; }
-        .status-badge-green { background-color: #d1fae5; color: #065f46; }
-        .status-badge-red { background-color: #fee2e2; color: #991b1b; }
-        .status-badge-yellow { background-color: #fef3c7; color: #92400e; }
-        
-        .calendar-cell {
+        body { font-family: 'Inter', sans-serif; }
+        .font-geist { font-family: 'Geist', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 500; }
+
+        /* Calendar */
+        .cal-cell {
             aspect-ratio: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.15s ease;
             position: relative;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1.5px solid transparent;
         }
-        .calendar-dot {
-            width: 6px;
-            height: 6px;
+        .cal-cell:hover { transform: scale(1.07); border-color: var(--color-primary, #2563eb); }
+        .cal-cell.today { box-shadow: 0 0 0 2px #2563eb; }
+        .cal-cell.status-present { background: #dcfce7; color: #166534; }
+        .cal-cell.status-late { background: #fef9c3; color: #854d0e; }
+        .cal-cell.status-absent { background: #fee2e2; color: #991b1b; }
+        .cal-cell.weekend { background: #f8fafc; color: #94a3b8; opacity: 0.7; cursor: default; }
+        .cal-cell.weekend:hover { transform: none; border-color: transparent; }
+        .cal-cell.empty { cursor: default; }
+        .cal-cell.empty:hover { transform: none; border-color: transparent; }
+        .cal-cell.future { background: #f1f5f9; color: #cbd5e1; cursor: not-allowed; }
+        .cal-cell.future:hover { transform: none; border-color: transparent; }
+        .status-dot {
+            width: 6px; height: 6px;
             border-radius: 50%;
             position: absolute;
-            bottom: 6px;
+            bottom: 5px;
+        }
+
+        /* Badge */
+        .badge-present { background: #dcfce7; color: #166534; }
+        .badge-late { background: #fef9c3; color: #854d0e; }
+        .badge-absent { background: #fee2e2; color: #991b1b; }
+
+        /* Modal backdrop */
+        .modal-backdrop {
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        /* Stat card gradient */
+        .stat-present { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); }
+        .stat-late { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); }
+        .stat-absent { background: linear-gradient(135deg, #fee2e2 0%, #fca5a5 100%); }
+        .stat-rate { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); }
+
+        /* Smooth scroll */
+        html { scroll-behavior: smooth; }
+
+        /* Table row hover */
+        .att-row { transition: background 0.12s; }
+        .att-row:hover { background: #f8fafc; }
+
+        /* Toast */
+        #att-toast {
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        #att-toast.show { opacity: 1; transform: translateY(0); }
+        #att-toast.hide { opacity: 0; transform: translateY(12px); }
+
+        /* Streak badge */
+        .streak-badge {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
     </style>
 </head>
 <body class="bg-surface text-on-surface font-body-md min-h-screen flex">
+
 <!-- SideNavBar -->
 <aside class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
     <div class="flex items-center gap-sm mb-xl px-sm">
@@ -49,8 +101,8 @@
             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
         </div>
         <div>
-            <h1 class="font-headline-md text-headline-md text-primary font-bold">Kedayweb</h1>
-            <p class="font-label-sm text-label-sm text-on-surface-variant">Kedayweb</p>
+            <h1 class="font-headline-md text-headline-md text-primary font-bold font-geist">Kedayweb</h1>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Portal PKL</p>
         </div>
     </div>
     <nav class="flex-1 space-y-sm">
@@ -78,10 +130,6 @@
             <span class="material-symbols-outlined">description</span>
             <span>Applications</span>
         </a>
-        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="recruitment.html">
-            <span class="material-symbols-outlined">badge</span>
-            <span>Anak Magang</span>
-        </a>
         <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="verification.html">
             <span class="material-symbols-outlined">verified_user</span>
             <span>Verification</span>
@@ -97,249 +145,909 @@
 
 <!-- TopNavBar (Mobile) -->
 <header class="md:hidden flex justify-between items-center px-md w-full h-16 bg-surface-container-lowest border-b border-outline-variant shadow-sm fixed top-0 z-50">
-    <h1 class="font-headline-md text-headline-md font-bold text-primary">Kedayweb</h1>
+    <h1 class="font-headline-md text-headline-md font-bold text-primary font-geist">Kedayweb</h1>
     <div class="flex gap-sm">
-        <button class="p-sm text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full cursor-pointer active:scale-95 transition-transform"><span class="material-symbols-outlined">schedule</span></button>
-        <button class="p-sm text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full cursor-pointer active:scale-95 transition-transform"><span class="material-symbols-outlined">notifications</span></button>
-        <button class="p-sm text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full cursor-pointer active:scale-95 transition-transform"><span class="material-symbols-outlined">account_circle</span></button>
+        <button class="p-sm text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full cursor-pointer active:scale-95 transition-transform" onclick="openInputModal()">
+            <span class="material-symbols-outlined">add_circle</span>
+        </button>
+        <button class="p-sm text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full cursor-pointer active:scale-95 transition-transform">
+            <span class="material-symbols-outlined">account_circle</span>
+        </button>
     </div>
 </header>
 
 <!-- Main Content -->
-<main class="flex-1 md:ml-[16.5rem] p-md md:p-gutter pt-20 md:pt-gutter max-w-container-max mx-auto w-full">
-    <!-- Header Section -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-xl gap-md">
+<main class="flex-1 md:ml-[16.5rem] pt-20 md:pt-0 pb-10 px-4 md:px-8 max-w-[1400px] mx-auto w-full">
+
+    <!-- Page Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 mt-6 md:mt-8">
         <div>
-            <h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg font-semibold text-on-surface">Attendance &amp; History</h2>
-            <p class="font-body-md text-body-md text-on-surface-variant mt-xs">Track your daily clock-ins and monthly performance.</p>
+            <p class="text-xs font-bold uppercase tracking-widest text-primary mb-1">PKL Tracker</p>
+            <h2 class="font-geist text-3xl md:text-4xl font-bold text-on-surface">Kehadiran Saya</h2>
+            <p class="text-sm text-on-surface-variant mt-1">Pantau presensi, status kedatangan, dan alasan selama masa PKL.</p>
         </div>
-        <div class="flex gap-sm w-full md:w-auto">
-            <button onclick="exportAttendanceCSV()" class="flex-1 md:flex-none bg-surface-container-lowest border border-primary text-primary px-lg py-sm rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-colors flex items-center justify-center gap-1.5" data-i18n="btn_export">
-                <span class="material-symbols-outlined text-[18px]">download</span> Export Record
+        <div class="flex gap-2 w-full md:w-auto">
+            <button onclick="exportAttendanceCSV()" class="flex-1 md:flex-none flex items-center justify-center gap-2 border border-outline-variant text-on-surface bg-surface-container-lowest px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-surface-container-low transition-colors">
+                <span class="material-symbols-outlined text-[18px]">download</span>
+                Export CSV
             </button>
-            <button id="att-clock-btn" onclick="handleAttendanceClock()" class="flex-1 md:flex-none bg-primary text-white px-lg py-sm rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors custom-shadow flex items-center justify-center gap-1.5">
-                <span class="material-symbols-outlined text-[18px]">schedule</span> <span id="att-clock-text">Clock In Now</span>
+            <button onclick="openInputModal()" id="main-input-btn" class="flex-1 md:flex-none flex items-center justify-center gap-2 bg-primary text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:opacity-90 transition-opacity shadow-sm">
+                <span class="material-symbols-outlined text-[18px]">add_circle</span>
+                Catat Kehadiran
             </button>
         </div>
     </div>
-    <!-- Bento Grid Layout -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter mb-xl">
-        <!-- Summary Stats (Left Col) -->
-        <div class="lg:col-span-4 flex flex-col gap-gutter">
-            <div class="bg-surface-container-lowest rounded-2xl border border-slate-200 p-lg hover:custom-shadow transition-shadow duration-300">
-                <h3 class="font-label-md text-label-md text-on-surface-variant mb-md uppercase tracking-wider">Current Month Overview</h3>
-                <div class="flex items-center gap-md mb-lg">
-                    <div class="w-16 h-16 rounded-full bg-surface-container-highest flex items-center justify-center text-primary font-headline-md text-headline-md font-bold">
-                        85%
-                    </div>
-                    <div>
-                        <p class="font-body-sm text-body-sm text-on-surface-variant">Attendance Rate</p>
-                        <p class="font-body-sm text-body-sm text-secondary font-medium mt-xs">On track for certificate</p>
-                    </div>
-                </div>
-                <div class="space-y-sm">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-sm">
-                            <span class="w-3 h-3 rounded-full status-dot-green"></span>
-                            <span class="font-body-sm text-body-sm text-on-surface">Present</span>
-                        </div>
-                        <span class="font-label-md text-label-md">18 days</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-sm">
-                            <span class="w-3 h-3 rounded-full status-dot-yellow"></span>
-                            <span class="font-body-sm text-body-sm text-on-surface">Late</span>
-                        </div>
-                        <span class="font-label-md text-label-md">2 days</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-sm">
-                            <span class="w-3 h-3 rounded-full status-dot-red"></span>
-                            <span class="font-body-sm text-body-sm text-on-surface">Absent</span>
-                        </div>
-                        <span class="font-label-md text-label-md">1 day</span>
-                    </div>
-                </div>
+
+    <!-- Stats Row -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+        <div class="stat-present rounded-2xl p-4 border border-green-200">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-green-700 text-[20px]" style="font-variation-settings:'FILL' 1;">check_circle</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-green-700">Hadir</span>
             </div>
-            <div class="bg-surface-container-lowest rounded-2xl border border-slate-200 p-lg hover:custom-shadow transition-shadow duration-300 flex-1 flex flex-col justify-center items-center text-center">
-                <span class="material-symbols-outlined text-[48px] text-primary mb-md" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
-                <h4 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold">Perfect Week!</h4>
-                <p class="font-body-sm text-body-sm text-on-surface-variant">You clocked in on time for 5 consecutive days.</p>
-            </div>
+            <div id="stat-present" class="text-3xl font-geist font-bold text-green-800">0</div>
+            <div class="text-xs text-green-700 mt-0.5">hari</div>
         </div>
-        <!-- Calendar Grid (Right Col) -->
-        <div class="lg:col-span-8 bg-surface-container-lowest rounded-2xl border border-slate-200 p-lg hover:custom-shadow transition-shadow duration-300">
-            <div class="flex justify-between items-center mb-lg">
-                <h3 class="font-headline-md text-headline-md text-on-surface font-semibold">October 2024</h3>
-                <div class="flex gap-xs">
-                    <button class="p-xs hover:bg-surface-container-low rounded"><span class="material-symbols-outlined">chevron_left</span></button>
-                    <button class="p-xs hover:bg-surface-container-low rounded"><span class="material-symbols-outlined">chevron_right</span></button>
-                </div>
+        <div class="stat-late rounded-2xl p-4 border border-amber-200">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-amber-700 text-[20px]" style="font-variation-settings:'FILL' 1;">schedule</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-700">Terlambat</span>
             </div>
-            <div class="grid grid-cols-7 gap-sm text-center mb-sm">
-                <div class="font-label-sm text-label-sm text-on-surface-variant uppercase">Sun</div>
-                <div class="font-label-sm text-label-sm text-on-surface-variant uppercase">Mon</div>
-                <div class="font-label-sm text-label-sm text-on-surface-variant uppercase">Tue</div>
-                <div class="font-label-sm text-label-sm text-on-surface-variant uppercase">Wed</div>
-                <div class="font-label-sm text-label-sm text-on-surface-variant uppercase">Thu</div>
-                <div class="font-label-sm text-label-sm text-on-surface-variant uppercase">Fri</div>
-                <div class="font-label-sm text-label-sm text-on-surface-variant uppercase">Sat</div>
+            <div id="stat-late" class="text-3xl font-geist font-bold text-amber-800">0</div>
+            <div class="text-xs text-amber-700 mt-0.5">hari</div>
+        </div>
+        <div class="stat-absent rounded-2xl p-4 border border-red-200">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-red-700 text-[20px]" style="font-variation-settings:'FILL' 1;">cancel</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-red-700">Tidak Masuk</span>
             </div>
-            <div class="grid grid-cols-7 gap-sm">
-                <!-- Blank days for start of month -->
-                <div class="calendar-cell"></div>
-                <div class="calendar-cell"></div>
-                <!-- Days with status -->
-                <div class="calendar-cell border border-slate-100 rounded-lg hover:border-primary cursor-pointer transition-colors bg-surface-bright">
-                    <span class="font-body-md text-body-md text-on-surface">1</span>
-                    <div class="calendar-dot status-dot-green"></div>
-                </div>
-                <div class="calendar-cell border border-slate-100 rounded-lg hover:border-primary cursor-pointer transition-colors bg-surface-bright">
-                    <span class="font-body-md text-body-md text-on-surface">2</span>
-                    <div class="calendar-dot status-dot-green"></div>
-                </div>
-                <div class="calendar-cell border border-slate-100 rounded-lg hover:border-primary cursor-pointer transition-colors bg-surface-bright">
-                    <span class="font-body-md text-body-md text-on-surface">3</span>
-                    <div class="calendar-dot status-dot-yellow"></div>
-                </div>
-                <div class="calendar-cell border border-slate-100 rounded-lg hover:border-primary cursor-pointer transition-colors bg-surface-bright">
-                    <span class="font-body-md text-body-md text-on-surface">4</span>
-                    <div class="calendar-dot status-dot-green"></div>
-                </div>
-                <div class="calendar-cell border border-slate-100 rounded-lg hover:border-primary cursor-pointer transition-colors bg-surface-bright opacity-50">
-                    <span class="font-body-md text-body-md text-on-surface">5</span>
-                </div>
-                <div class="calendar-cell border border-slate-100 rounded-lg hover:border-primary cursor-pointer transition-colors bg-surface-bright opacity-50">
-                    <span class="font-body-md text-body-md text-on-surface">6</span>
-                </div>
-                <div class="calendar-cell border border-slate-100 rounded-lg hover:border-primary cursor-pointer transition-colors bg-surface-bright">
-                    <span class="font-body-md text-body-md text-on-surface">7</span>
-                    <div class="calendar-dot status-dot-green"></div>
-                </div>
-                <div class="calendar-cell border border-slate-100 rounded-lg hover:border-primary cursor-pointer transition-colors bg-surface-bright">
-                    <span class="font-body-md text-body-md text-on-surface">8</span>
-                    <div class="calendar-dot status-dot-green"></div>
-                </div>
-                <div class="calendar-cell border border-slate-100 rounded-lg hover:border-primary cursor-pointer transition-colors bg-surface-bright">
-                    <span class="font-body-md text-body-md text-on-surface">9</span>
-                    <div class="calendar-dot status-dot-red"></div>
-                </div>
-                <div class="calendar-cell border border-slate-100 rounded-lg hover:border-primary cursor-pointer transition-colors bg-surface-bright">
-                    <span class="font-body-md text-body-md text-on-surface">10</span>
-                    <div class="calendar-dot status-dot-green"></div>
-                </div>
-                <div class="calendar-cell border border-slate-100 rounded-lg border-primary bg-primary-container text-on-primary-container cursor-pointer transition-colors font-bold">
-                    <span class="font-body-md text-body-md">11</span>
-                    <div class="calendar-dot bg-on-primary-container"></div>
-                </div>
-                <div class="calendar-cell border border-slate-100 rounded-lg hover:border-primary cursor-pointer transition-colors bg-surface-bright opacity-50">
-                    <span class="font-body-md text-body-md text-on-surface">12</span>
-                </div>
-                <div class="calendar-cell border border-slate-100 rounded-lg hover:border-primary cursor-pointer transition-colors bg-surface-bright opacity-50">
-                    <span class="font-body-md text-body-md text-on-surface">13</span>
-                </div>
-                <div class="calendar-cell border border-slate-100 rounded-lg hover:border-primary cursor-pointer transition-colors bg-surface-bright"><span class="font-body-md text-body-md text-on-surface">14</span></div>
-                <div class="calendar-cell border border-slate-100 rounded-lg hover:border-primary cursor-pointer transition-colors bg-surface-bright"><span class="font-body-md text-body-md text-on-surface">15</span></div>
-                <div class="calendar-cell border border-slate-100 rounded-lg hover:border-primary cursor-pointer transition-colors bg-surface-bright"><span class="font-body-md text-body-md text-on-surface">16</span></div>
-                <div class="calendar-cell border border-slate-100 rounded-lg hover:border-primary cursor-pointer transition-colors bg-surface-bright"><span class="font-body-md text-body-md text-on-surface">17</span></div>
-                <div class="calendar-cell border border-slate-100 rounded-lg hover:border-primary cursor-pointer transition-colors bg-surface-bright"><span class="font-body-md text-body-md text-on-surface">18</span></div>
+            <div id="stat-absent" class="text-3xl font-geist font-bold text-red-800">0</div>
+            <div class="text-xs text-red-700 mt-0.5">hari</div>
+        </div>
+        <div class="stat-rate rounded-2xl p-4 border border-blue-200">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-blue-700 text-[20px]" style="font-variation-settings:'FILL' 1;">insights</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-blue-700">Kehadiran</span>
             </div>
+            <div id="stat-rate" class="text-3xl font-geist font-bold text-blue-800">0%</div>
+            <div class="text-xs text-blue-700 mt-0.5">tingkat hadir</div>
         </div>
     </div>
-    <!-- History Table Section -->
-    <div class="bg-surface-container-lowest rounded-2xl border border-slate-200 overflow-hidden hover:custom-shadow transition-shadow duration-300">
-        <div class="p-lg border-b border-outline-variant flex justify-between items-center bg-surface-bright">
-            <h3 class="font-headline-md text-headline-md text-on-surface font-semibold">Detailed History</h3>
+
+    <!-- Main Bento Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+
+        <!-- Left: Streak + Legend -->
+        <div class="lg:col-span-4 flex flex-col gap-4">
+
+            <!-- Streak Card -->
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-5 flex flex-col items-center text-center">
+                <span class="material-symbols-outlined text-[44px] text-amber-400 mb-2" style="font-variation-settings:'FILL' 1;">local_fire_department</span>
+                <div id="streak-count" class="font-geist text-5xl font-black streak-badge mb-1">0</div>
+                <p class="font-semibold text-on-surface mb-0.5">Hari Berturut-turut</p>
+                <p id="streak-desc" class="text-xs text-on-surface-variant">Belum ada data kehadiran</p>
+            </div>
+
+            <!-- Legend Card -->
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-5">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Keterangan Kalender</h3>
+                <div class="space-y-2.5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-700 text-xs font-bold">12</div>
+                        <div>
+                            <div class="text-sm font-semibold text-on-surface">Hadir Tepat Waktu</div>
+                            <div class="text-xs text-on-surface-variant">Masuk sebelum pukul 09:00</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700 text-xs font-bold">12</div>
+                        <div>
+                            <div class="text-sm font-semibold text-on-surface">Terlambat</div>
+                            <div class="text-xs text-on-surface-variant">Masuk setelah pukul 09:00</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-700 text-xs font-bold">12</div>
+                        <div>
+                            <div class="text-sm font-semibold text-on-surface">Tidak Masuk</div>
+                            <div class="text-xs text-on-surface-variant">Izin / Sakit / Alpha</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 text-xs font-bold">12</div>
+                        <div>
+                            <div class="text-sm font-semibold text-on-surface">Akhir Pekan / Kosong</div>
+                            <div class="text-xs text-on-surface-variant">Weekend atau belum diisi</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick summary for current month -->
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-5">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Bulan Ini</h3>
+                <div class="space-y-2" id="monthly-summary">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-on-surface-variant">Hadir</span>
+                        <span id="month-present" class="font-bold text-green-700">0 hari</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-on-surface-variant">Terlambat</span>
+                        <span id="month-late" class="font-bold text-amber-700">0 hari</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-on-surface-variant">Tidak Masuk</span>
+                        <span id="month-absent" class="font-bold text-red-700">0 hari</span>
+                    </div>
+                    <div class="h-px bg-outline-variant my-1"></div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-on-surface-variant font-semibold">Total Hari Kerja</span>
+                        <span id="month-total" class="font-bold text-on-surface">0 hari</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Calendar -->
+        <div class="lg:col-span-8 bg-surface-container-lowest rounded-2xl border border-outline-variant p-5">
+            <!-- Calendar Header -->
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="cal-title" class="font-geist text-xl font-bold text-on-surface">September 2026</h3>
+                <div class="flex items-center gap-1">
+                    <button id="cal-prev" onclick="changeMonth(-1)" class="p-2 rounded-lg hover:bg-surface-container-low transition-colors text-on-surface-variant hover:text-primary">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <button onclick="goToday()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary-container text-on-primary-container hover:opacity-80 transition-opacity">
+                        Hari Ini
+                    </button>
+                    <button id="cal-next" onclick="changeMonth(1)" class="p-2 rounded-lg hover:bg-surface-container-low transition-colors text-on-surface-variant hover:text-primary">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Day Headers -->
+            <div class="grid grid-cols-7 gap-1.5 mb-2 text-center">
+                <div class="text-xs font-bold uppercase tracking-wider text-red-400">Min</div>
+                <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Sen</div>
+                <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Sel</div>
+                <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Rab</div>
+                <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Kam</div>
+                <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Jum</div>
+                <div class="text-xs font-bold uppercase tracking-wider text-red-400">Sab</div>
+            </div>
+            <!-- Calendar Grid -->
+            <div id="cal-grid" class="grid grid-cols-7 gap-1.5"></div>
+        </div>
+    </div>
+
+    <!-- History Table -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant overflow-hidden">
+        <div class="p-5 border-b border-outline-variant flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+                <h3 class="font-geist text-lg font-bold text-on-surface">Riwayat Kehadiran</h3>
+                <p class="text-xs text-on-surface-variant mt-0.5">Semua catatan kehadiran selama PKL</p>
+            </div>
+            <!-- Filter -->
+            <div class="flex items-center gap-1.5 bg-surface-container-low rounded-xl p-1 border border-outline-variant text-xs">
+                <button onclick="setFilter('all')" id="filter-all" class="px-3 py-1.5 rounded-lg font-semibold bg-white text-primary shadow-sm">Semua</button>
+                <button onclick="setFilter('present')" id="filter-present" class="px-3 py-1.5 rounded-lg font-semibold text-on-surface-variant hover:text-green-700">Hadir</button>
+                <button onclick="setFilter('late')" id="filter-late" class="px-3 py-1.5 rounded-lg font-semibold text-on-surface-variant hover:text-amber-700">Terlambat</button>
+                <button onclick="setFilter('absent')" id="filter-absent" class="px-3 py-1.5 rounded-lg font-semibold text-on-surface-variant hover:text-red-700">Tidak Masuk</button>
+            </div>
         </div>
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-sm">
                 <thead>
-                    <tr class="bg-surface-container-lowest border-b border-outline-variant">
-                        <th class="p-md font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Date</th>
-                        <th class="p-md font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Clock In</th>
-                        <th class="p-md font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Clock Out</th>
-                        <th class="p-md font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Status</th>
-                        <th class="p-md font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Mentor Notes</th>
+                    <tr class="bg-surface-container-low border-b border-outline-variant">
+                        <th class="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider text-on-surface-variant">Tanggal</th>
+                        <th class="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider text-on-surface-variant">Jam Masuk</th>
+                        <th class="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider text-on-surface-variant">Jam Keluar</th>
+                        <th class="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider text-on-surface-variant">Status</th>
+                        <th class="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider text-on-surface-variant">Alasan / Keterangan</th>
+                        <th class="px-5 py-3 text-center text-xs font-bold uppercase tracking-wider text-on-surface-variant">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-outline-variant">
-                    <tr class="hover:bg-surface-container-low transition-colors">
-                        <td class="p-md font-body-sm text-body-sm text-on-surface font-medium">Oct 11, 2024</td>
-                        <td class="p-md font-body-sm text-body-sm text-on-surface-variant">08:55 AM</td>
-                        <td class="p-md font-body-sm text-body-sm text-on-surface-variant">--:--</td>
-                        <td class="p-md">
-                            <span class="inline-block px-sm py-xs rounded-full status-badge-green font-label-sm text-label-sm">Present</span>
-                        </td>
-                        <td class="p-md font-body-sm text-body-sm text-on-surface-variant italic">-</td>
-                    </tr>
-                    <tr class="hover:bg-surface-container-low transition-colors">
-                        <td class="p-md font-body-sm text-body-sm text-on-surface font-medium">Oct 10, 2024</td>
-                        <td class="p-md font-body-sm text-body-sm text-on-surface-variant">08:58 AM</td>
-                        <td class="p-md font-body-sm text-body-sm text-on-surface-variant">05:05 PM</td>
-                        <td class="p-md">
-                            <span class="inline-block px-sm py-xs rounded-full status-badge-green font-label-sm text-label-sm">Present</span>
-                        </td>
-                        <td class="p-md font-body-sm text-body-sm text-on-surface-variant truncate max-w-[200px]" title="Great presentation today.">Great presentation today.</td>
-                    </tr>
-                    <tr class="hover:bg-surface-container-low transition-colors">
-                        <td class="p-md font-body-sm text-body-sm text-on-surface font-medium">Oct 09, 2024</td>
-                        <td class="p-md font-body-sm text-body-sm text-on-surface-variant">--:--</td>
-                        <td class="p-md font-body-sm text-body-sm text-on-surface-variant">--:--</td>
-                        <td class="p-md">
-                            <span class="inline-block px-sm py-xs rounded-full status-badge-red font-label-sm text-label-sm">Absent</span>
-                        </td>
-                        <td class="p-md font-body-sm text-body-sm text-on-surface-variant truncate max-w-[200px]" title="Sick leave approved.">Sick leave approved.</td>
-                    </tr>
+                <tbody id="att-table-body" class="divide-y divide-outline-variant">
+                    <!-- Populated by JS -->
                 </tbody>
             </table>
+            <div id="att-empty" class="hidden text-center py-16">
+                <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-3">event_busy</span>
+                <p class="font-semibold text-on-surface">Belum ada catatan kehadiran</p>
+                <p class="text-xs text-on-surface-variant mt-1">Klik "Catat Kehadiran" untuk menambahkan</p>
+            </div>
         </div>
     </div>
 </main>
+
+<!-- ============================================================
+     INPUT MODAL (Tambah Kehadiran)
+     ============================================================ -->
+<div id="input-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-outline-variant overflow-hidden">
+        <div class="p-5 border-b border-outline-variant flex justify-between items-center bg-surface-container-lowest">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">edit_calendar</span>
+                <h3 class="font-geist font-bold text-on-surface" id="input-modal-title">Catat Kehadiran</h3>
+            </div>
+            <button onclick="closeInputModal()" class="text-on-surface-variant hover:text-primary transition-colors p-1 rounded-lg hover:bg-surface-container-low">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <form id="att-form" onsubmit="saveAttendance(event)" class="p-5 space-y-4">
+            <!-- Date -->
+            <div>
+                <label class="block text-xs font-bold text-on-surface uppercase tracking-wide mb-1.5">Tanggal</label>
+                <input type="date" id="att-date" required
+                    class="w-full rounded-xl border border-outline-variant bg-surface-bright px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:outline-none"/>
+            </div>
+            <!-- Status -->
+            <div>
+                <label class="block text-xs font-bold text-on-surface uppercase tracking-wide mb-1.5">Status Kehadiran</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <label id="status-btn-present" onclick="selectStatus('present')" class="flex flex-col items-center gap-1 border-2 border-outline-variant rounded-xl p-3 cursor-pointer hover:border-green-400 transition-all">
+                        <span class="material-symbols-outlined text-green-600 text-[22px]" style="font-variation-settings:'FILL' 1;">check_circle</span>
+                        <span class="text-xs font-bold text-green-700">Hadir</span>
+                        <input type="radio" name="status" value="present" class="sr-only" required/>
+                    </label>
+                    <label id="status-btn-late" onclick="selectStatus('late')" class="flex flex-col items-center gap-1 border-2 border-outline-variant rounded-xl p-3 cursor-pointer hover:border-amber-400 transition-all">
+                        <span class="material-symbols-outlined text-amber-600 text-[22px]" style="font-variation-settings:'FILL' 1;">schedule</span>
+                        <span class="text-xs font-bold text-amber-700">Terlambat</span>
+                        <input type="radio" name="status" value="late" class="sr-only"/>
+                    </label>
+                    <label id="status-btn-absent" onclick="selectStatus('absent')" class="flex flex-col items-center gap-1 border-2 border-outline-variant rounded-xl p-3 cursor-pointer hover:border-red-400 transition-all">
+                        <span class="material-symbols-outlined text-red-600 text-[22px]" style="font-variation-settings:'FILL' 1;">cancel</span>
+                        <span class="text-xs font-bold text-red-700">Tidak Masuk</span>
+                        <input type="radio" name="status" value="absent" class="sr-only"/>
+                    </label>
+                </div>
+                <input type="hidden" id="att-status-hidden" name="status-val"/>
+            </div>
+            <!-- Clock In & Out -->
+            <div id="clock-fields" class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-on-surface uppercase tracking-wide mb-1.5">Jam Masuk</label>
+                    <input type="time" id="att-clock-in"
+                        class="w-full rounded-xl border border-outline-variant bg-surface-bright px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:outline-none"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-on-surface uppercase tracking-wide mb-1.5">Jam Keluar</label>
+                    <input type="time" id="att-clock-out"
+                        class="w-full rounded-xl border border-outline-variant bg-surface-bright px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:outline-none"/>
+                </div>
+            </div>
+            <!-- Reason -->
+            <div id="reason-field">
+                <label class="block text-xs font-bold text-on-surface uppercase tracking-wide mb-1.5">
+                    Alasan / Keterangan
+                    <span id="reason-required-mark" class="text-red-500 ml-0.5 hidden">*</span>
+                </label>
+                <textarea id="att-reason" rows="3" placeholder="Contoh: Sakit demam, sudah izin ke mentor..."
+                    class="w-full rounded-xl border border-outline-variant bg-surface-bright px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:outline-none resize-none"></textarea>
+                <p id="reason-hint" class="text-xs text-on-surface-variant mt-1 hidden">Wajib diisi jika status Terlambat atau Tidak Masuk.</p>
+            </div>
+            <!-- Actions -->
+            <div class="flex justify-end gap-2 pt-2 border-t border-outline-variant">
+                <button type="button" onclick="closeInputModal()" class="px-4 py-2.5 rounded-xl border border-outline-variant text-sm font-semibold text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                    Batal
+                </button>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:opacity-90 transition-opacity shadow-sm">
+                    Simpan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ============================================================
+     DETAIL MODAL (Lihat Detail Hari)
+     ============================================================ -->
+<div id="detail-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl border border-outline-variant overflow-hidden">
+        <div id="detail-header" class="p-5 border-b border-outline-variant flex justify-between items-start">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-0.5">Detail Kehadiran</p>
+                <h3 id="detail-date-label" class="font-geist font-bold text-on-surface text-lg"></h3>
+            </div>
+            <button onclick="closeDetailModal()" class="text-on-surface-variant hover:text-primary transition-colors p-1 rounded-lg hover:bg-surface-container-low">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="p-5 space-y-3">
+            <div class="flex justify-center mb-2">
+                <span id="detail-badge" class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-bold"></span>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-surface-container-low rounded-xl p-3 text-center">
+                    <p class="text-xs text-on-surface-variant mb-1">Jam Masuk</p>
+                    <p id="detail-clock-in" class="font-geist font-bold text-on-surface">--:--</p>
+                </div>
+                <div class="bg-surface-container-low rounded-xl p-3 text-center">
+                    <p class="text-xs text-on-surface-variant mb-1">Jam Keluar</p>
+                    <p id="detail-clock-out" class="font-geist font-bold text-on-surface">--:--</p>
+                </div>
+            </div>
+            <div id="detail-reason-wrap" class="bg-amber-50 border border-amber-200 rounded-xl p-3 hidden">
+                <p class="text-xs font-bold text-amber-700 uppercase mb-1">Alasan</p>
+                <p id="detail-reason" class="text-sm text-amber-900"></p>
+            </div>
+            <div class="flex gap-2 pt-1">
+                <button id="detail-edit-btn" onclick="editFromDetail()" class="flex-1 flex items-center justify-center gap-1.5 border border-outline-variant text-sm font-semibold text-on-surface py-2 rounded-xl hover:bg-surface-container-low transition-colors">
+                    <span class="material-symbols-outlined text-[16px]">edit</span> Edit
+                </button>
+                <button id="detail-delete-btn" onclick="deleteFromDetail()" class="flex-1 flex items-center justify-center gap-1.5 border border-red-200 text-sm font-semibold text-red-600 py-2 rounded-xl hover:bg-red-50 transition-colors">
+                    <span class="material-symbols-outlined text-[16px]">delete</span> Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="att-toast" class="fixed bottom-6 right-6 z-[100] flex items-center gap-3 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-xl hide pointer-events-none text-sm font-semibold">
+    <span id="att-toast-icon" class="material-symbols-outlined text-[18px]">check_circle</span>
+    <span id="att-toast-msg">Tersimpan!</span>
+</div>
+
 <script>
-    function exportAttendanceCSV() {
-        const rows = [
-            ['Date', 'Clock In', 'Clock Out', 'Status', 'Mentor Notes'],
-            ['2024-10-11', '08:55 AM', '--:--', 'Present', '-'],
-            ['2024-10-10', '08:58 AM', '05:05 PM', 'Present', 'Great presentation today.'],
-            ['2024-10-09', '--:--', '--:--', 'Absent', 'Sick leave approved.']
-        ];
-        const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(e => e.map(i => `"${i}"`).join(',')).join('\n');
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement('a');
-        link.setAttribute('href', encodedUri);
-        link.setAttribute('download', 'Kedayweb_Attendance_Report_October_2024.csv');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+// ============================================================
+// DATA STORE
+// ============================================================
+const STORAGE_KEY = 'internspace-attendance-v1';
+const CUTOFF_HOUR = 9; // 09:00 = batas tepat waktu
+
+function loadData() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+    catch { return []; }
+}
+
+function saveData(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function getRecord(dateStr) {
+    return loadData().find(r => r.date === dateStr) || null;
+}
+
+function seedSampleData() {
+    if (loadData().length > 0) return;
+    // Seed beberapa data contoh
+    const samples = [
+        { date: '2026-09-01', status: 'present',  clockIn: '08:45', clockOut: '17:00', reason: '' },
+        { date: '2026-09-02', status: 'present',  clockIn: '08:30', clockOut: '17:05', reason: '' },
+        { date: '2026-09-03', status: 'late',     clockIn: '09:22', clockOut: '17:00', reason: 'Bus kota terlambat datang' },
+        { date: '2026-09-04', status: 'present',  clockIn: '08:50', clockOut: '17:00', reason: '' },
+        { date: '2026-09-05', status: 'present',  clockIn: '08:55', clockOut: '17:10', reason: '' },
+        { date: '2026-09-08', status: 'absent',   clockIn: '',      clockOut: '',      reason: 'Sakit demam, sudah izin ke mentor via WhatsApp' },
+        { date: '2026-09-09', status: 'late',     clockIn: '09:45', clockOut: '17:00', reason: 'Kendaraan mogok di jalan, menunggu derek' },
+    ];
+    saveData(samples);
+}
+
+// ============================================================
+// CALENDAR STATE
+// ============================================================
+let calYear, calMonth;
+let currentFilter = 'all';
+let detailDate = null;
+
+function initCalendar() {
+    const now = new Date();
+    calYear = now.getFullYear();
+    calMonth = now.getMonth(); // 0-indexed
+}
+
+function changeMonth(dir) {
+    calMonth += dir;
+    if (calMonth > 11) { calMonth = 0; calYear++; }
+    if (calMonth < 0)  { calMonth = 11; calYear--; }
+    renderCalendar();
+    renderMonthlySummary();
+}
+
+function goToday() {
+    const now = new Date();
+    calYear = now.getFullYear();
+    calMonth = now.getMonth();
+    renderCalendar();
+    renderMonthlySummary();
+}
+
+// ============================================================
+// RENDER CALENDAR
+// ============================================================
+function renderCalendar() {
+    const data = loadData();
+    const dataMap = {};
+    data.forEach(r => { dataMap[r.date] = r; });
+
+    const monthNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    document.getElementById('cal-title').textContent = `${monthNames[calMonth]} ${calYear}`;
+
+    const grid = document.getElementById('cal-grid');
+    grid.innerHTML = '';
+
+    const firstDay = new Date(calYear, calMonth, 1).getDay(); // 0=Sun
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+    const today = new Date();
+    const todayStr = formatDate(today);
+
+    // Empty cells before first day
+    for (let i = 0; i < firstDay; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cal-cell empty';
+        grid.appendChild(cell);
     }
 
-    function syncAttendanceClockStatus() {
-        const status = localStorage.getItem('internspace-clock-status') || 'active';
-        const btn = document.getElementById('att-clock-btn');
-        const text = document.getElementById('att-clock-text');
-        if (!btn || !text) return;
+    for (let d = 1; d <= daysInMonth; d++) {
+        const dateObj = new Date(calYear, calMonth, d);
+        const dateStr = formatDate(dateObj);
+        const dayOfWeek = dateObj.getDay(); // 0=Sun, 6=Sat
+        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+        const isFuture = dateObj > today && dateStr !== todayStr;
+        const isToday = dateStr === todayStr;
+        const rec = dataMap[dateStr];
 
-        if (status === 'active') {
-            text.textContent = 'Clocked In (Active)';
-            btn.className = 'flex-1 md:flex-none bg-emerald-600 text-white px-lg py-sm rounded-lg font-label-md text-label-md hover:bg-emerald-700 transition-colors custom-shadow flex items-center justify-center gap-1.5';
+        const cell = document.createElement('div');
+        cell.classList.add('cal-cell');
+
+        if (isWeekend) {
+            cell.classList.add('weekend');
+        } else if (isFuture) {
+            cell.classList.add('future');
+        } else if (rec) {
+            cell.classList.add(`status-${rec.status}`);
+            cell.addEventListener('click', () => openDetailModal(dateStr));
         } else {
-            text.textContent = 'Clock In Now';
-            btn.className = 'flex-1 md:flex-none bg-primary text-white px-lg py-sm rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors custom-shadow flex items-center justify-center gap-1.5';
+            cell.style.background = '#f8fafc';
+            cell.style.color = '#64748b';
+            cell.addEventListener('click', () => openInputModal(dateStr));
+        }
+
+        if (isToday) cell.classList.add('today');
+
+        cell.innerHTML = `<span>${d}</span>`;
+        if (rec && !isWeekend) {
+            const dot = document.createElement('div');
+            dot.className = 'status-dot';
+            dot.style.background = rec.status === 'present' ? '#16a34a' : rec.status === 'late' ? '#d97706' : '#dc2626';
+            cell.appendChild(dot);
+        }
+        grid.appendChild(cell);
+    }
+}
+
+// ============================================================
+// RENDER STATS
+// ============================================================
+function renderStats() {
+    const data = loadData();
+    const present = data.filter(r => r.status === 'present').length;
+    const late    = data.filter(r => r.status === 'late').length;
+    const absent  = data.filter(r => r.status === 'absent').length;
+    const total   = present + late + absent;
+    const rate    = total > 0 ? Math.round(((present + late) / total) * 100) : 0;
+
+    document.getElementById('stat-present').textContent = present;
+    document.getElementById('stat-late').textContent    = late;
+    document.getElementById('stat-absent').textContent  = absent;
+    document.getElementById('stat-rate').textContent    = rate + '%';
+
+    // Streak
+    const streak = calcStreak(data);
+    document.getElementById('streak-count').textContent = streak;
+    document.getElementById('streak-desc').textContent = streak > 0
+        ? `Anda hadir ${streak} hari berturut-turut!`
+        : 'Belum ada streak kehadiran';
+}
+
+function calcStreak(data) {
+    const workdays = data
+        .filter(r => r.status === 'present' || r.status === 'late')
+        .map(r => r.date)
+        .sort()
+        .reverse();
+
+    if (!workdays.length) return 0;
+
+    let streak = 0;
+    let checkDate = new Date();
+    checkDate.setHours(0,0,0,0);
+
+    for (let i = 0; i < 60; i++) {
+        const ds = formatDate(checkDate);
+        const dow = checkDate.getDay();
+        // Skip weekends
+        if (dow === 0 || dow === 6) {
+            checkDate.setDate(checkDate.getDate() - 1);
+            continue;
+        }
+        if (workdays.includes(ds)) {
+            streak++;
+        } else {
+            break;
+        }
+        checkDate.setDate(checkDate.getDate() - 1);
+    }
+    return streak;
+}
+
+function renderMonthlySummary() {
+    const data = loadData();
+    const prefix = `${calYear}-${String(calMonth + 1).padStart(2, '0')}`;
+    const monthly = data.filter(r => r.date.startsWith(prefix));
+    const p = monthly.filter(r => r.status === 'present').length;
+    const l = monthly.filter(r => r.status === 'late').length;
+    const a = monthly.filter(r => r.status === 'absent').length;
+    document.getElementById('month-present').textContent = `${p} hari`;
+    document.getElementById('month-late').textContent    = `${l} hari`;
+    document.getElementById('month-absent').textContent  = `${a} hari`;
+    document.getElementById('month-total').textContent   = `${p + l + a} hari`;
+}
+
+// ============================================================
+// RENDER TABLE
+// ============================================================
+function renderTable(filter = 'all') {
+    const all = loadData().sort((a, b) => b.date.localeCompare(a.date));
+    const data = filter === 'all' ? all : all.filter(r => r.status === filter);
+
+    const tbody = document.getElementById('att-table-body');
+    const empty = document.getElementById('att-empty');
+    tbody.innerHTML = '';
+
+    if (!data.length) {
+        empty.classList.remove('hidden');
+        return;
+    }
+    empty.classList.add('hidden');
+
+    data.forEach(rec => {
+        const tr = document.createElement('tr');
+        tr.className = 'att-row';
+        const statusHtml = {
+            present: `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold badge-present"><span class="material-symbols-outlined text-[13px]" style="font-variation-settings:'FILL' 1;">check_circle</span>Hadir</span>`,
+            late:    `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold badge-late"><span class="material-symbols-outlined text-[13px]" style="font-variation-settings:'FILL' 1;">schedule</span>Terlambat</span>`,
+            absent:  `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold badge-absent"><span class="material-symbols-outlined text-[13px]" style="font-variation-settings:'FILL' 1;">cancel</span>Tidak Masuk</span>`,
+        }[rec.status];
+
+        tr.innerHTML = `
+            <td class="px-5 py-3.5 font-semibold text-on-surface text-sm whitespace-nowrap">${formatDateDisplay(rec.date)}</td>
+            <td class="px-5 py-3.5 text-on-surface-variant text-sm">${rec.clockIn ? formatTime12(rec.clockIn) : '<span class="text-slate-400">--:--</span>'}</td>
+            <td class="px-5 py-3.5 text-on-surface-variant text-sm">${rec.clockOut ? formatTime12(rec.clockOut) : '<span class="text-slate-400">--:--</span>'}</td>
+            <td class="px-5 py-3.5">${statusHtml}</td>
+            <td class="px-5 py-3.5 text-sm text-on-surface-variant max-w-[220px]">
+                ${rec.reason ? `<span class="truncate block" title="${escHtml(rec.reason)}">${escHtml(rec.reason)}</span>` : '<span class="text-slate-400 italic">–</span>'}
+            </td>
+            <td class="px-5 py-3.5 text-center">
+                <button onclick="handleEditRow('${rec.date}')" class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors mr-1" title="Edit">
+                    <span class="material-symbols-outlined text-[16px]">edit</span>
+                </button>
+                <button onclick="handleDeleteRow('${rec.date}')" class="p-1.5 rounded-lg text-on-surface-variant hover:text-red-600 hover:bg-red-50 transition-colors" title="Hapus">
+                    <span class="material-symbols-outlined text-[16px]">delete</span>
+                </button>
+            </td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+// ============================================================
+// FILTER
+// ============================================================
+function setFilter(f) {
+    currentFilter = f;
+    ['all','present','late','absent'].forEach(id => {
+        const btn = document.getElementById(`filter-${id}`);
+        if (!btn) return;
+        btn.className = f === id
+            ? 'px-3 py-1.5 rounded-lg font-semibold bg-white text-primary shadow-sm'
+            : 'px-3 py-1.5 rounded-lg font-semibold text-on-surface-variant hover:text-primary';
+    });
+    renderTable(f);
+}
+
+// ============================================================
+// INPUT MODAL
+// ============================================================
+let editingDate = null;
+
+function openInputModal(preDate = null) {
+    editingDate = null;
+    const modal = document.getElementById('input-modal');
+    const form  = document.getElementById('att-form');
+    form.reset();
+    clearStatusSelection();
+
+    const today = formatDate(new Date());
+    document.getElementById('att-date').value = preDate || today;
+    document.getElementById('input-modal-title').textContent = 'Catat Kehadiran';
+
+    // Pre-fill time
+    const now = new Date();
+    document.getElementById('att-clock-in').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    document.getElementById('att-clock-out').value = '';
+    document.getElementById('att-reason').value = '';
+    document.getElementById('reason-required-mark').classList.add('hidden');
+    document.getElementById('reason-hint').classList.add('hidden');
+    document.getElementById('clock-fields').classList.remove('hidden');
+
+    // If date already has a record → pre-fill
+    if (preDate) {
+        const rec = getRecord(preDate);
+        if (rec) {
+            editingDate = preDate;
+            document.getElementById('input-modal-title').textContent = 'Edit Kehadiran';
+            selectStatus(rec.status);
+            document.getElementById('att-clock-in').value  = rec.clockIn || '';
+            document.getElementById('att-clock-out').value = rec.clockOut || '';
+            document.getElementById('att-reason').value    = rec.reason || '';
+            if (rec.status === 'absent') {
+                document.getElementById('clock-fields').classList.add('hidden');
+            }
         }
     }
 
-    function handleAttendanceClock() {
-        const current = localStorage.getItem('internspace-clock-status') || 'active';
-        if (current === 'active') {
-            localStorage.setItem('internspace-clock-status', 'inactive');
-        } else {
-            localStorage.setItem('internspace-clock-status', 'active');
-            localStorage.setItem('internspace-clock-start', Date.now());
-        }
-        syncAttendanceClockStatus();
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeInputModal() {
+    const modal = document.getElementById('input-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    editingDate = null;
+}
+
+let selectedStatus = null;
+function selectStatus(status) {
+    selectedStatus = status;
+    ['present','late','absent'].forEach(s => {
+        const btn = document.getElementById(`status-btn-${s}`);
+        btn.classList.remove('border-green-500','border-amber-500','border-red-500','bg-green-50','bg-amber-50','bg-red-50');
+        btn.classList.add('border-outline-variant');
+    });
+    const colors = { present: ['border-green-500','bg-green-50'], late: ['border-amber-500','bg-amber-50'], absent: ['border-red-500','bg-red-50'] };
+    const btn = document.getElementById(`status-btn-${status}`);
+    btn.classList.remove('border-outline-variant');
+    colors[status].forEach(c => btn.classList.add(c));
+    // Also check radio
+    document.querySelector(`input[name="status"][value="${status}"]`).checked = true;
+    document.getElementById('att-status-hidden').value = status;
+
+    // Toggle clock fields & reason required
+    const clockFields = document.getElementById('clock-fields');
+    const reasonMark  = document.getElementById('reason-required-mark');
+    const reasonHint  = document.getElementById('reason-hint');
+    if (status === 'absent') {
+        clockFields.classList.add('hidden');
+        reasonMark.classList.remove('hidden');
+        reasonHint.classList.remove('hidden');
+    } else if (status === 'late') {
+        clockFields.classList.remove('hidden');
+        reasonMark.classList.remove('hidden');
+        reasonHint.classList.remove('hidden');
+    } else {
+        clockFields.classList.remove('hidden');
+        reasonMark.classList.add('hidden');
+        reasonHint.classList.add('hidden');
+    }
+}
+
+function clearStatusSelection() {
+    selectedStatus = null;
+    ['present','late','absent'].forEach(s => {
+        const btn = document.getElementById(`status-btn-${s}`);
+        btn.classList.remove('border-green-500','border-amber-500','border-red-500','bg-green-50','bg-amber-50','bg-red-50');
+        btn.classList.add('border-outline-variant');
+        document.querySelector(`input[name="status"][value="${s}"]`).checked = false;
+    });
+}
+
+function saveAttendance(e) {
+    e.preventDefault();
+    const date     = document.getElementById('att-date').value;
+    const clockIn  = document.getElementById('att-clock-in').value;
+    const clockOut = document.getElementById('att-clock-out').value;
+    const reason   = document.getElementById('att-reason').value.trim();
+    const status   = selectedStatus;
+
+    if (!status) { showToast('Pilih status kehadiran!', 'warning'); return; }
+    if (!date)   { showToast('Pilih tanggal!', 'warning'); return; }
+    if ((status === 'late' || status === 'absent') && !reason) {
+        showToast('Alasan wajib diisi untuk status ini!', 'warning');
+        document.getElementById('att-reason').focus();
+        return;
     }
 
-    document.addEventListener('DOMContentLoaded', syncAttendanceClockStatus);
+    const data = loadData().filter(r => r.date !== date); // remove existing
+    data.push({ date, status, clockIn: status === 'absent' ? '' : (clockIn || ''), clockOut: status === 'absent' ? '' : (clockOut || ''), reason });
+    saveData(data);
+    closeInputModal();
+    refreshAll();
+    showToast('Kehadiran berhasil disimpan!', 'success');
+}
+
+// ============================================================
+// DETAIL MODAL
+// ============================================================
+function openDetailModal(dateStr) {
+    const rec = getRecord(dateStr);
+    if (!rec) return;
+    detailDate = dateStr;
+
+    const statusLabel = { present: 'Hadir', late: 'Terlambat', absent: 'Tidak Masuk' }[rec.status];
+    const badgeClass  = { present: 'badge-present', late: 'badge-late', absent: 'badge-absent' }[rec.status];
+    const iconName    = { present: 'check_circle', late: 'schedule', absent: 'cancel' }[rec.status];
+
+    document.getElementById('detail-date-label').textContent = formatDateDisplay(dateStr);
+    const badge = document.getElementById('detail-badge');
+    badge.className = `inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-bold ${badgeClass}`;
+    badge.innerHTML = `<span class="material-symbols-outlined text-[15px]" style="font-variation-settings:'FILL' 1;">${iconName}</span>${statusLabel}`;
+
+    document.getElementById('detail-clock-in').textContent  = rec.clockIn  ? formatTime12(rec.clockIn)  : '--:--';
+    document.getElementById('detail-clock-out').textContent = rec.clockOut ? formatTime12(rec.clockOut) : '--:--';
+
+    const reasonWrap = document.getElementById('detail-reason-wrap');
+    if (rec.reason) {
+        reasonWrap.classList.remove('hidden');
+        document.getElementById('detail-reason').textContent = rec.reason;
+        // Different color for absent vs late
+        if (rec.status === 'absent') {
+            reasonWrap.className = 'bg-red-50 border border-red-200 rounded-xl p-3';
+            document.getElementById('detail-reason').className = 'text-sm text-red-900';
+            reasonWrap.querySelector('p').className = 'text-xs font-bold text-red-700 uppercase mb-1';
+        } else {
+            reasonWrap.className = 'bg-amber-50 border border-amber-200 rounded-xl p-3';
+            document.getElementById('detail-reason').className = 'text-sm text-amber-900';
+            reasonWrap.querySelector('p').className = 'text-xs font-bold text-amber-700 uppercase mb-1';
+        }
+    } else {
+        reasonWrap.classList.add('hidden');
+    }
+
+    const modal = document.getElementById('detail-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeDetailModal() {
+    document.getElementById('detail-modal').classList.add('hidden');
+    document.getElementById('detail-modal').classList.remove('flex');
+    detailDate = null;
+}
+
+function editFromDetail() {
+    const d = detailDate;
+    closeDetailModal();
+    openInputModal(d);
+}
+
+function deleteFromDetail() {
+    if (!detailDate) return;
+    if (!confirm(`Hapus catatan kehadiran tanggal ${formatDateDisplay(detailDate)}?`)) return;
+    const data = loadData().filter(r => r.date !== detailDate);
+    saveData(data);
+    closeDetailModal();
+    refreshAll();
+    showToast('Catatan berhasil dihapus.', 'success');
+}
+
+// ============================================================
+// TABLE ROW ACTIONS
+// ============================================================
+function handleEditRow(dateStr) { openInputModal(dateStr); }
+
+function handleDeleteRow(dateStr) {
+    if (!confirm(`Hapus catatan kehadiran tanggal ${formatDateDisplay(dateStr)}?`)) return;
+    const data = loadData().filter(r => r.date !== dateStr);
+    saveData(data);
+    refreshAll();
+    showToast('Catatan berhasil dihapus.', 'success');
+}
+
+// ============================================================
+// EXPORT CSV
+// ============================================================
+function exportAttendanceCSV() {
+    const data = loadData().sort((a,b) => a.date.localeCompare(b.date));
+    if (!data.length) { showToast('Belum ada data untuk diekspor.', 'warning'); return; }
+
+    const statusLabel = { present: 'Hadir', late: 'Terlambat', absent: 'Tidak Masuk' };
+    const rows = [['Tanggal','Jam Masuk','Jam Keluar','Status','Alasan']];
+    data.forEach(r => {
+        rows.push([
+            formatDateDisplay(r.date),
+            r.clockIn  || '--:--',
+            r.clockOut || '--:--',
+            statusLabel[r.status] || r.status,
+            r.reason || '-'
+        ]);
+    });
+
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href  = url;
+    link.download = `Kehadiran_PKL_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showToast('Data berhasil diekspor!', 'success');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg, type = 'success') {
+    const toast = document.getElementById('att-toast');
+    const icon  = document.getElementById('att-toast-icon');
+    const text  = document.getElementById('att-toast-msg');
+    text.textContent = msg;
+    icon.textContent = type === 'success' ? 'check_circle' : type === 'warning' ? 'warning' : 'info';
+    toast.classList.remove('hide');
+    toast.classList.add('show');
+    toast.style.pointerEvents = 'none';
+    setTimeout(() => {
+        toast.classList.remove('show');
+        toast.classList.add('hide');
+    }, 2800);
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function formatDate(d) {
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function formatDateDisplay(ds) {
+    const [y, m, d] = ds.split('-');
+    const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const days   = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const dateObj = new Date(+y, +m - 1, +d);
+    return `${days[dateObj.getDay()]}, ${+d} ${months[+m-1]} ${y}`;
+}
+
+function formatTime12(t) {
+    if (!t) return '--:--';
+    const [h, min] = t.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12  = h % 12 || 12;
+    return `${String(h12).padStart(2,'0')}:${String(min).padStart(2,'0')} ${ampm}`;
+}
+
+function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Close modals on backdrop click
+document.getElementById('input-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeInputModal();
+});
+document.getElementById('detail-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeDetailModal();
+});
+
+// ============================================================
+// REFRESH ALL
+// ============================================================
+function refreshAll() {
+    renderCalendar();
+    renderStats();
+    renderMonthlySummary();
+    renderTable(currentFilter);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+    seedSampleData();
+    initCalendar();
+    refreshAll();
+});
 </script>
 <script src="lang.js"></script>
 <script src="language-ui.js"></script>

@@ -15,10 +15,24 @@ const ProjectStore = (() => {
   };
   const projects = () => { seed(); return load(); };
   const get = id => projects().find(project => project.id === id);
-  const createProject = values => { const created_at = now(); const project = { id: uid(), name: values.name.trim(), description: values.description.trim(), created_by: 'Alex Doe', created_at, updated_at: created_at, tasks: [] }; save([...projects(), project]); return project; };
+  const createProject = values => { const created_at = now(); const project = { id: uid(), name: values.name.trim(), description: values.description.trim(), created_by: values.created_by || 'Admin', created_at, updated_at: created_at, tasks: [] }; save([...projects(), project]); return project; };
   const updateProject = (id, values) => { const all = projects().map(project => project.id === id ? { ...project, name: values.name.trim(), description: values.description.trim(), updated_at: now() } : project); save(all); };
-  const deleteProject = id => save(projects().filter(project => project.id !== id));
-  const createTask = (projectId, values) => { const created_at = now(); const task = { id: uid(), project_id: projectId, title: values.title.trim(), description: values.description.trim(), status: values.status, priority: values.priority, assignee: values.assignee.trim(), due_date: values.due_date, created_at, updated_at: created_at }; const all = projects().map(project => project.id === projectId ? { ...project, updated_at: created_at, tasks: [...project.tasks, task] } : project); save(all); return task; };
+  
+  const ROLE_KEY = 'internspace-current-role';
+  const getRole = () => localStorage.getItem(ROLE_KEY) || (window.location.pathname.includes('admin') ? 'admin' : 'intern');
+  const setRole = role => localStorage.setItem(ROLE_KEY, role);
+  const isAdmin = () => getRole() === 'admin' || window.location.pathname.includes('admin');
+
+  const deleteProject = id => {
+    if (!isAdmin()) {
+      alert('Akses Ditolak: Hanya Admin yang memiliki wewenang untuk menghapus project.');
+      return false;
+    }
+    save(projects().filter(project => project.id !== id));
+    return true;
+  };
+
+  const createTask = (projectId, values) => { const created_at = now(); const task = { id: uid(), project_id: projectId, title: values.title.trim(), description: values.description.trim(), status: values.status || 'todo', priority: values.priority || 'Medium', assignee: (values.assignee || 'Unassigned').trim(), due_date: values.due_date || '', created_at, updated_at: created_at }; const all = projects().map(project => project.id === projectId ? { ...project, updated_at: created_at, tasks: [...project.tasks, task] } : project); save(all); return task; };
   const updateTask = (projectId, taskId, values) => { const all = projects().map(project => project.id === projectId ? { ...project, updated_at: now(), tasks: project.tasks.map(task => task.id === taskId ? { ...task, ...values, title: values.title.trim(), description: values.description.trim(), assignee: values.assignee.trim(), updated_at: now() } : task) } : project); save(all); };
   const deleteTask = (projectId, taskId) => { const all = projects().map(project => project.id === projectId ? { ...project, updated_at: now(), tasks: project.tasks.filter(task => task.id !== taskId) } : project); save(all); };
   const addProgress = (projectId, update) => {
@@ -42,5 +56,5 @@ const ProjectStore = (() => {
     save(all);
   };
   const moveTask = (projectId, taskId, status) => { const project = get(projectId), task = project?.tasks.find(item => item.id === taskId); if (task) updateTask(projectId, taskId, { ...task, status }); };
-  return { projects, get, createProject, updateProject, deleteProject, createTask, updateTask, deleteTask, moveTask, addProgress, addComment };
+  return { projects, get, createProject, updateProject, deleteProject, createTask, updateTask, deleteTask, moveTask, addProgress, addComment, getRole, setRole, isAdmin };
 })();
