@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <title>Kedayweb Admin - Kehadiran Semua Intern</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="shared-config.js"></script>
+    <script src="intern-store.js"></script>
+    <link rel="stylesheet" href="style.css"/>
+    <style>
+        .glass-card { background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); }
+        .cal-cell {
+            aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-radius: 10px; cursor: pointer; transition: all 0.15s ease; position: relative;
+            font-size: 0.8rem; font-weight: 600; border: 1.5px solid transparent;
+        }
+        .cal-cell:hover { transform: scale(1.07); border-color: #2563eb; }
+        .cal-cell.today { box-shadow: 0 0 0 2px #2563eb; }
+        .cal-cell.status-complete { background: #dcfce7; color: #166534; }
+        .cal-cell.status-late { background: #fef9c3; color: #854d0e; }
+        .cal-cell.status-absent { background: #fee2e2; color: #991b1b; }
+        .cal-cell.status-pending { background: #f1f5f9; color: #475569; }
+        .cal-cell.weekend { background: #f8fafc; color: #94a3b8; opacity: 0.7; cursor: default; }
+        .cal-cell.weekend:hover { transform: none; border-color: transparent; }
+        .cal-cell.empty { cursor: default; }
+        .cal-cell.empty:hover { transform: none; border-color: transparent; }
+        .cal-cell.future { background: #f8fafc; color: #cbd5e1; cursor: not-allowed; opacity: 0.6; }
+        .cal-cell.future:hover { transform: none; border-color: transparent; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; position: absolute; bottom: 5px; }
+        .modal-backdrop { background: rgba(15,23,42,0.5); backdrop-filter: blur(4px); }
+        .badge-present { background:#dcfce7; color:#166534; }
+        .badge-late { background:#fef9c3; color:#854d0e; }
+        .badge-absent { background:#fee2e2; color:#991b1b; }
+        .badge-pending { background:#f1f5f9; color:#475569; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
+        <div class="flex items-center gap-sm mb-xl px-sm">
+            <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
+            </div>
+            <div>
+                <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold">Kedayweb</h2>
+                <p class="font-label-sm text-label-sm text-on-surface-variant">Admin Panel</p>
+            </div>
+        </div>
+        <nav class="flex-1 space-y-sm">
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-dashboard.html">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span>Dashboard</span>
+            </a>
+            <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md" href="admin-attendance.html">
+                <span class="material-symbols-outlined">event_available</span>
+                <span>Kehadiran Intern</span>
+            </a>
+        </nav>
+        <div class="mt-auto pt-md border-t border-outline-variant space-y-sm">
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="settings.html">
+                <span class="material-symbols-outlined">settings</span>
+                <span>Personal Settings</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto p-5 md:p-10">
+        <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 flex justify-between items-center px-4 z-10">
+            <div>
+                <h2 class="font-headline-lg">Kehadiran Semua Intern</h2>
+            </div>
+            <a href="admin-dashboard.html" class="text-sm text-primary hover:underline flex items-center gap-1">
+                <span class="material-symbols-outlined text-[18px]">arrow_back</span> Kembali ke Dashboard
+            </a>
+        </header>
+
+        <!-- Stats -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 mb-6">
+            <div class="p-3 bg-surface-container-low rounded-lg border border-outline-variant/60">
+                <span class="text-xs font-bold uppercase tracking-wider text-primary">Total Intern</span>
+                <div class="text-2xl font-bold mt-1" id="stat-total-interns">0</div>
+            </div>
+            <div class="p-3 rounded-lg border border-green-200 bg-green-50">
+                <span class="text-xs font-bold uppercase tracking-wider text-green-700">Hari Lengkap</span>
+                <div class="text-2xl font-bold mt-1 text-green-800" id="stat-days-complete">0</div>
+            </div>
+            <div class="p-3 rounded-lg border border-amber-200 bg-amber-50">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-700">Hari Ada Keterlambatan</span>
+                <div class="text-2xl font-bold mt-1 text-amber-800" id="stat-days-late">0</div>
+            </div>
+            <div class="p-3 rounded-lg border border-red-200 bg-red-50">
+                <span class="text-xs font-bold uppercase tracking-wider text-red-700">Hari Ada Yang Absen</span>
+                <div class="text-2xl font-bold mt-1 text-red-800" id="stat-days-absent">0</div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Legend -->
+            <div class="lg:col-span-4 flex flex-col gap-4">
+                <div class="glass-card rounded-2xl border border-outline-variant p-5">
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Keterangan Warna</h3>
+                    <div class="space-y-2.5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-700 text-xs font-bold">12</div>
+                            <div>
+                                <div class="text-sm font-semibold text-on-surface">Lengkap</div>
+                                <div class="text-xs text-on-surface-variant">Semua intern hadir tepat waktu</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700 text-xs font-bold">12</div>
+                            <div>
+                                <div class="text-sm font-semibold text-on-surface">Ada Keterlambatan</div>
+                                <div class="text-xs text-on-surface-variant">Semua tercatat, namun ada yang telat</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-700 text-xs font-bold">12</div>
+                            <div>
+                                <div class="text-sm font-semibold text-on-surface">Ada Yang Tidak Masuk</div>
+                                <div class="text-xs text-on-surface-variant">Minimal satu intern absen</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 text-xs font-bold">12</div>
+                            <div>
+                                <div class="text-sm font-semibold text-on-surface">Belum Lengkap Diisi</div>
+                                <div class="text-xs text-on-surface-variant">Masih ada intern yang belum absen</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card rounded-2xl border border-outline-variant p-5">
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Cara Pakai</h3>
+                    <p class="text-sm text-on-surface-variant">Klik salah satu tanggal pada kalender untuk melihat rincian kehadiran setiap intern pada hari itu &mdash; termasuk jam masuk, keterlambatan, dan alasan tidak masuk.</p>
+                </div>
+            </div>
+
+            <!-- Calendar -->
+            <div class="lg:col-span-8 glass-card rounded-2xl border border-outline-variant p-5">
+                <div class="flex justify-between items-center mb-5">
+                    <h3 id="cal-title" class="font-headline-md font-bold text-on-surface"></h3>
+                    <div class="flex items-center gap-1">
+                        <button onclick="changeMonth(-1)" class="p-2 rounded-lg hover:bg-surface-container-low transition-colors text-on-surface-variant hover:text-primary">
+                            <span class="material-symbols-outlined">chevron_left</span>
+                        </button>
+                        <button onclick="goToday()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary-container text-on-primary-container hover:opacity-80 transition-opacity">Hari Ini</button>
+                        <button onclick="changeMonth(1)" class="p-2 rounded-lg hover:bg-surface-container-low transition-colors text-on-surface-variant hover:text-primary">
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-7 gap-1.5 mb-2 text-center">
+                    <div class="text-xs font-bold uppercase tracking-wider text-red-400">Min</div>
+                    <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Sen</div>
+                    <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Sel</div>
+                    <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Rab</div>
+                    <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Kam</div>
+                    <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Jum</div>
+                    <div class="text-xs font-bold uppercase tracking-wider text-red-400">Sab</div>
+                </div>
+                <div id="cal-grid" class="grid grid-cols-7 gap-1.5"></div>
+            </div>
+        </section>
+
+        <!-- Intern roster quick table -->
+        <section class="glass-card p-5 rounded-2xl border border-outline-variant mt-6">
+            <h3 class="font-headline-md mb-3">Daftar Intern</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-surface-container-lowest">
+                        <tr>
+                            <th class="px-3 py-2 text-left">Nama</th>
+                            <th class="px-3 py-2 text-left">Divisi</th>
+                            <th class="px-3 py-2 text-center">Hadir</th>
+                            <th class="px-3 py-2 text-center">Telat</th>
+                            <th class="px-3 py-2 text-center">Tidak Masuk</th>
+                            <th class="px-3 py-2 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="intern-roster-body" class="divide-y divide-outline-variant"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Detail modal: rincian kehadiran per-intern pada satu tanggal -->
+    <div id="detail-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl border border-outline-variant overflow-hidden max-h-[85vh] flex flex-col">
+            <div class="p-5 border-b border-outline-variant flex justify-between items-start">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-0.5">Rincian Kehadiran</p>
+                    <h3 id="detail-date-label" class="font-headline-md font-bold text-on-surface text-lg"></h3>
+                </div>
+                <button onclick="closeDetailModal()" class="text-on-surface-variant hover:text-primary transition-colors p-1 rounded-lg hover:bg-surface-container-low">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div id="detail-list" class="p-5 space-y-3 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <script>
+        let calYear, calMonth;
+
+        function fmt(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+
+        function formatDateDisplay(ds) {
+            const [y,m,d] = ds.split('-');
+            const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+            const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+            const dateObj = new Date(+y, +m-1, +d);
+            return `${days[dateObj.getDay()]}, ${+d} ${months[+m-1]} ${y}`;
+        }
+
+        function formatTime12(t) {
+            if (!t) return '--:--';
+            const [h,min] = t.split(':').map(Number);
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            const h12 = h % 12 || 12;
+            return `${String(h12).padStart(2,'0')}:${String(min).padStart(2,'0')} ${ampm}`;
+        }
+
+        function initCalendar() {
+            const now = new Date();
+            calYear = now.getFullYear();
+            calMonth = now.getMonth();
+        }
+
+        function changeMonth(dir) {
+            calMonth += dir;
+            if (calMonth > 11) { calMonth = 0; calYear++; }
+            if (calMonth < 0) { calMonth = 11; calYear--; }
+            renderAll();
+        }
+
+        function goToday() {
+            const now = new Date();
+            calYear = now.getFullYear();
+            calMonth = now.getMonth();
+            renderAll();
+        }
+
+        function dayClass(summary, isFuture) {
+            if (isFuture) return 'future';
+            if (summary.total === 0) return 'pending';
+            if (summary.absent > 0) return 'absent';
+            if (summary.late > 0) return 'late';
+            if (summary.unmarked > 0) return 'pending';
+            return 'complete';
+        }
+
+        function renderCalendar() {
+            const monthNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+            document.getElementById('cal-title').textContent = `${monthNames[calMonth]} ${calYear}`;
+
+            const grid = document.getElementById('cal-grid');
+            grid.innerHTML = '';
+
+            const firstDay = new Date(calYear, calMonth, 1).getDay();
+            const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+            const today = new Date();
+            const todayStr = fmt(today);
+
+            for (let i = 0; i < firstDay; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cal-cell empty';
+                grid.appendChild(cell);
+            }
+
+            let daysComplete = 0, daysLate = 0, daysAbsent = 0;
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dateObj = new Date(calYear, calMonth, d);
+                const dateStr = fmt(dateObj);
+                const dow = dateObj.getDay();
+                const isWeekend = dow === 0 || dow === 6;
+                const isFuture = dateObj > today && dateStr !== todayStr;
+                const isToday = dateStr === todayStr;
+
+                const cell = document.createElement('div');
+                cell.classList.add('cal-cell');
+
+                if (isWeekend) {
+                    cell.classList.add('weekend');
+                } else {
+                    const summary = InternStore.getDaySummary(dateStr);
+                    if (!isFuture) {
+                        if (summary.absent > 0) daysAbsent++;
+                        else if (summary.late > 0) daysLate++;
+                        else if (summary.unmarked === 0 && summary.total > 0) daysComplete++;
+                    }
+                    const cls = dayClass(summary, isFuture);
+                    cell.classList.add(`status-${cls}`);
+                    if (!isFuture && summary.total > 0) {
+                        cell.addEventListener('click', () => openDetailModal(dateStr));
+                    } else if (isFuture) {
+                        cell.classList.add('future');
+                    }
+                    if (!isFuture && cls !== 'pending' && summary.total > 0) {
+                        const dot = document.createElement('div');
+                        dot.className = 'status-dot';
+                        dot.style.background = cls === 'complete' ? '#16a34a' : cls === 'late' ? '#d97706' : '#dc2626';
+                        cell.appendChild(dot);
+                    }
+                }
+                if (isToday) cell.classList.add('today');
+                const span = document.createElement('span');
+                span.textContent = d;
+                cell.appendChild(span);
+                grid.appendChild(cell);
+            }
+
+            document.getElementById('stat-days-complete').textContent = daysComplete;
+            document.getElementById('stat-days-late').textContent = daysLate;
+            document.getElementById('stat-days-absent').textContent = daysAbsent;
+        }
+
+        function openDetailModal(dateStr) {
+            const summary = InternStore.getDaySummary(dateStr);
+            document.getElementById('detail-date-label').textContent = formatDateDisplay(dateStr);
+            const list = document.getElementById('detail-list');
+            list.innerHTML = '';
+
+            if (summary.entries.length === 0) {
+                list.innerHTML = '<p class="text-sm text-on-surface-variant italic">Belum ada intern terdaftar.</p>';
+            } else {
+                summary.entries.forEach(({ intern, record }) => {
+                    const status = record ? record.status : 'pending';
+                    const label = { present: 'Hadir', late: 'Terlambat', absent: 'Tidak Masuk', pending: 'Belum Absen' }[status];
+                    const badgeClass = { present: 'badge-present', late: 'badge-late', absent: 'badge-absent', pending: 'badge-pending' }[status];
+                    const icon = { present: 'check_circle', late: 'schedule', absent: 'cancel', pending: 'help' }[status];
+
+                    const row = document.createElement('div');
+                    row.className = 'border border-outline-variant rounded-xl p-3';
+                    row.innerHTML = `
+                        <div class="flex items-center justify-between gap-2 mb-1.5">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings:'FILL' 1;">account_circle</span>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-semibold text-on-surface">${escHtml(intern.name)}</div>
+                                    <div class="text-xs text-on-surface-variant">${escHtml(intern.division || '')}</div>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${badgeClass}">
+                                <span class="material-symbols-outlined text-[13px]" style="font-variation-settings:'FILL' 1;">${icon}</span>${label}
+                            </span>
+                        </div>
+                        ${record && status !== 'absent' ? `
+                        <div class="grid grid-cols-2 gap-2 mt-2 text-xs">
+                            <div class="bg-surface-container-low rounded-lg p-2 text-center">
+                                <div class="text-on-surface-variant">Jam Masuk</div>
+                                <div class="font-bold text-on-surface">${formatTime12(record.clockIn)}</div>
+                            </div>
+                            <div class="bg-surface-container-low rounded-lg p-2 text-center">
+                                <div class="text-on-surface-variant">Jam Keluar</div>
+                                <div class="font-bold text-on-surface">${formatTime12(record.clockOut)}</div>
+                            </div>
+                        </div>` : ''}
+                        ${record && record.reason ? `<div class="mt-2 bg-amber-50 border border-amber-200 rounded-lg p-2 text-xs text-amber-900"><strong>Keterangan:</strong> ${escHtml(record.reason)}</div>` : ''}
+                        ${!record ? '<p class="text-xs text-on-surface-variant italic mt-1">Intern ini belum mencatat kehadiran pada tanggal ini.</p>' : ''}
+                        <div class="mt-2 text-right">
+                            <a href="attendance.html?intern=${encodeURIComponent(intern.name)}" class="text-xs text-primary hover:underline">Lihat kalender lengkap &rarr;</a>
+                        </div>
+                    `;
+                    list.appendChild(row);
+                });
+            }
+
+            const modal = document.getElementById('detail-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
+            document.getElementById('detail-modal').classList.remove('flex');
+        }
+
+        document.getElementById('detail-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeDetailModal();
+        });
+
+        function escHtml(str) {
+            return String(str || '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+        }
+
+        function renderRoster() {
+            const interns = InternStore.list();
+            document.getElementById('stat-total-interns').textContent = interns.length;
+            const tbody = document.getElementById('intern-roster-body');
+            tbody.innerHTML = '';
+            interns.forEach(i => {
+                const records = InternStore.getAttendance(i.name);
+                const present = records.filter(r => r.status === 'present').length;
+                const late = records.filter(r => r.status === 'late').length;
+                const absent = records.filter(r => r.status === 'absent').length;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-3 py-2 font-semibold">${escHtml(i.name)}</td>
+                    <td class="px-3 py-2 text-on-surface-variant">${escHtml(i.division || '-')}</td>
+                    <td class="px-3 py-2 text-center text-green-700 font-bold">${present}</td>
+                    <td class="px-3 py-2 text-center text-amber-700 font-bold">${late}</td>
+                    <td class="px-3 py-2 text-center text-red-700 font-bold">${absent}</td>
+                    <td class="px-3 py-2 text-center">
+                        <a href="attendance.html?intern=${encodeURIComponent(i.name)}" class="text-primary hover:underline text-xs font-semibold">Lihat Kalender</a>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderAll() {
+            renderCalendar();
+            renderRoster();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.ProjectStore) ProjectStore.setRole('admin');
+            InternStore.seedAllAttendance();
+            initCalendar();
+            renderAll();
+        });
+    </script>
+</body>
+</html>

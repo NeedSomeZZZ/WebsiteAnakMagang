@@ -35,6 +35,8 @@ const ProjectStore = (() => {
   const createTask = (projectId, values) => { const created_at = now(); const task = { id: uid(), project_id: projectId, title: values.title.trim(), description: values.description.trim(), status: values.status || 'todo', priority: values.priority || 'Medium', assignee: (values.assignee || 'Unassigned').trim(), due_date: values.due_date || '', created_at, updated_at: created_at }; const all = projects().map(project => project.id === projectId ? { ...project, updated_at: created_at, tasks: [...project.tasks, task] } : project); save(all); return task; };
   const updateTask = (projectId, taskId, values) => { const all = projects().map(project => project.id === projectId ? { ...project, updated_at: now(), tasks: project.tasks.map(task => task.id === taskId ? { ...task, ...values, title: values.title.trim(), description: values.description.trim(), assignee: values.assignee.trim(), updated_at: now() } : task) } : project); save(all); };
   const deleteTask = (projectId, taskId) => { const all = projects().map(project => project.id === projectId ? { ...project, updated_at: now(), tasks: project.tasks.filter(task => task.id !== taskId) } : project); save(all); };
+  const rateTask = (projectId, taskId, rating) => { const all = projects().map(project => project.id === projectId ? { ...project, tasks: project.tasks.map(task => task.id === taskId ? { ...task, rating, rated_at: now() } : task) } : project); save(all); };
+  const tasksByAssignee = (assignee) => projects().flatMap(project => (project.tasks || []).filter(task => task.assignee === assignee).map(task => ({ ...task, project_id: project.id, project_name: project.name })));
   const addProgress = (projectId, update) => {
     const all = projects().map(project => {
       if (project.id === projectId) {
@@ -56,5 +58,5 @@ const ProjectStore = (() => {
     save(all);
   };
   const moveTask = (projectId, taskId, status) => { const project = get(projectId), task = project?.tasks.find(item => item.id === taskId); if (task) updateTask(projectId, taskId, { ...task, status }); };
-  return { projects, get, createProject, updateProject, deleteProject, createTask, updateTask, deleteTask, moveTask, addProgress, addComment, getRole, setRole, isAdmin };
+  return { projects, get, createProject, updateProject, deleteProject, createTask, updateTask, deleteTask, rateTask, tasksByAssignee, moveTask, addProgress, addComment, getRole, setRole, isAdmin };
 })();

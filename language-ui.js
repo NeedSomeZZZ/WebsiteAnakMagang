@@ -4,7 +4,21 @@
 */
 (function () {
 
-  // ── Mobile Sidebar Drawer ─────────────────────────────────────────────
+  // ── Role Helper (sama dengan isAdmin() di project-store.js) ──────────
+  function isAdminUser() {
+    const role = localStorage.getItem('internspace-current-role') || '';
+    return role === 'admin' || window.location.pathname.toLowerCase().includes('admin');
+  }
+  window.isAdminUser = isAdminUser;
+
+  // ── Sembunyikan link Applications untuk non-Admin ────────────────────
+  function applyApplicationsVisibility() {
+    if (isAdminUser()) return; // admin boleh lihat
+    document.querySelectorAll('a[href="applications.html"]').forEach(link => {
+      link.style.display = 'none';
+    });
+  }
+
   function setupMobileDrawer() {
     const sidebar = document.querySelector('aside');
     const header  = document.querySelector('header');

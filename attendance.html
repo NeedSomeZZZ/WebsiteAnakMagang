@@ -14,6 +14,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="shared-config.js"></script>
+    <script src="intern-store.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         .font-geist { font-family: 'Geist', sans-serif; }
@@ -162,9 +163,9 @@
     <!-- Page Header -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 mt-6 md:mt-8">
         <div>
-            <p class="text-xs font-bold uppercase tracking-widest text-primary mb-1">PKL Tracker</p>
-            <h2 class="font-geist text-3xl md:text-4xl font-bold text-on-surface">Kehadiran Saya</h2>
-            <p class="text-sm text-on-surface-variant mt-1">Pantau presensi, status kedatangan, dan alasan selama masa PKL.</p>
+            <p class="text-xs font-bold uppercase tracking-widest text-primary mb-1" id="page-eyebrow">PKL Tracker</p>
+            <h2 class="font-geist text-3xl md:text-4xl font-bold text-on-surface" id="page-title">Kehadiran Saya</h2>
+            <p class="text-sm text-on-surface-variant mt-1" id="page-subtitle">Pantau presensi, status kedatangan, dan alasan selama masa PKL.</p>
         </div>
         <div class="flex gap-2 w-full md:w-auto">
             <button onclick="exportAttendanceCSV()" class="flex-1 md:flex-none flex items-center justify-center gap-2 border border-outline-variant text-on-surface bg-surface-container-lowest px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-surface-container-low transition-colors">
@@ -176,6 +177,12 @@
                 Catat Kehadiran
             </button>
         </div>
+    </div>
+
+    <!-- Admin preview banner (hanya tampil jika dibuka via ?intern=Nama oleh Admin) -->
+    <div id="admin-preview-banner" class="hidden mb-6 flex items-center gap-3 bg-amber-50 border border-amber-200 text-amber-900 px-4 py-3 rounded-xl text-sm">
+        <span class="material-symbols-outlined text-amber-600">visibility</span>
+        <span>Anda (Admin) sedang melihat kehadiran milik <strong id="admin-preview-name"></strong> dalam mode baca-saja.</span>
     </div>
 
     <!-- Stats Row -->
@@ -471,7 +478,7 @@
                 <p class="text-xs font-bold text-amber-700 uppercase mb-1">Alasan</p>
                 <p id="detail-reason" class="text-sm text-amber-900"></p>
             </div>
-            <div class="flex gap-2 pt-1">
+            <div class="flex gap-2 pt-1 att-add-trigger">
                 <button id="detail-edit-btn" onclick="editFromDetail()" class="flex-1 flex items-center justify-center gap-1.5 border border-outline-variant text-sm font-semibold text-on-surface py-2 rounded-xl hover:bg-surface-container-low transition-colors">
                     <span class="material-symbols-outlined text-[16px]">edit</span> Edit
                 </button>
@@ -493,16 +500,25 @@
 // ============================================================
 // DATA STORE
 // ============================================================
-const STORAGE_KEY = 'internspace-attendance-v1';
 const CUTOFF_HOUR = 9; // 09:00 = batas tepat waktu
 
+// Tentukan intern mana yang sedang dilihat: kalau ada ?intern= (dibuka Admin dari
+// admin-dashboard/admin-attendance), tampilkan punya intern itu dalam mode baca-saja.
+// Selain itu pakai "current user" (demo login) agar konsisten dengan halaman lain.
+const attParams = new URLSearchParams(window.location.search);
+const attInternParam = attParams.get('intern') ? decodeURIComponent(attParams.get('intern')) : null;
+const isAdminPreview = !!attInternParam;
+const activeInternName = attInternParam || (window.InternStore ? InternStore.getCurrentUser() : 'Alex Doe');
+
 function loadData() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+    if (window.InternStore) return InternStore.getAttendance(activeInternName);
+    try { return JSON.parse(localStorage.getItem('internspace-attendance-v1') || '[]'); }
     catch { return []; }
 }
 
 function saveData(data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    if (window.InternStore) { InternStore.saveAttendance(activeInternName, data); return; }
+    localStorage.setItem('internspace-attendance-v1', JSON.stringify(data));
 }
 
 function getRecord(dateStr) {
@@ -510,8 +526,8 @@ function getRecord(dateStr) {
 }
 
 function seedSampleData() {
+    if (window.InternStore) { InternStore.seedAttendanceFor(activeInternName); return; }
     if (loadData().length > 0) return;
-    // Seed beberapa data contoh
     const samples = [
         { date: '2026-09-01', status: 'present',  clockIn: '08:45', clockOut: '17:00', reason: '' },
         { date: '2026-09-02', status: 'present',  clockIn: '08:30', clockOut: '17:05', reason: '' },
@@ -522,6 +538,17 @@ function seedSampleData() {
         { date: '2026-09-09', status: 'late',     clockIn: '09:45', clockOut: '17:00', reason: 'Kendaraan mogok di jalan, menunggu derek' },
     ];
     saveData(samples);
+}
+
+function applyAdminPreviewMode() {
+    if (!isAdminPreview) return;
+    document.getElementById('page-eyebrow').textContent = 'Admin \u2013 Mode Lihat';
+    document.getElementById('page-title').textContent = `Kehadiran ${activeInternName}`;
+    document.getElementById('page-subtitle').textContent = 'Data kehadiran intern ini, dilihat oleh Admin.';
+    document.getElementById('admin-preview-banner').classList.remove('hidden');
+    document.getElementById('admin-preview-name').textContent = activeInternName;
+    document.getElementById('main-input-btn')?.classList.add('hidden');
+    document.querySelectorAll('.att-add-trigger').forEach(el => el.classList.add('hidden'));
 }
 
 // ============================================================
@@ -601,7 +628,8 @@ function renderCalendar() {
         } else {
             cell.style.background = '#f8fafc';
             cell.style.color = '#64748b';
-            cell.addEventListener('click', () => openInputModal(dateStr));
+            if (!isAdminPreview) cell.addEventListener('click', () => openInputModal(dateStr));
+            else cell.classList.add('future');
         }
 
         if (isToday) cell.classList.add('today');
@@ -720,12 +748,13 @@ function renderTable(filter = 'all') {
                 ${rec.reason ? `<span class="truncate block" title="${escHtml(rec.reason)}">${escHtml(rec.reason)}</span>` : '<span class="text-slate-400 italic">–</span>'}
             </td>
             <td class="px-5 py-3.5 text-center">
+                ${isAdminPreview ? '<span class="text-xs text-slate-400 italic">Baca-saja</span>' : `
                 <button onclick="handleEditRow('${rec.date}')" class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors mr-1" title="Edit">
                     <span class="material-symbols-outlined text-[16px]">edit</span>
                 </button>
                 <button onclick="handleDeleteRow('${rec.date}')" class="p-1.5 rounded-lg text-on-surface-variant hover:text-red-600 hover:bg-red-50 transition-colors" title="Hapus">
                     <span class="material-symbols-outlined text-[16px]">delete</span>
-                </button>
+                </button>`}
             </td>`;
         tbody.appendChild(tr);
     });
@@ -1044,6 +1073,7 @@ function refreshAll() {
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
+    applyAdminPreviewMode();
     seedSampleData();
     initCalendar();
     refreshAll();

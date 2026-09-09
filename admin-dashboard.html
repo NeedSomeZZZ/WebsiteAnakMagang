@@ -14,6 +14,7 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="shared-config.js"></script>
     <script src="project-store.js"></script>
+    <script src="intern-store.js"></script>
     <link rel="stylesheet" href="style.css"/>
     <style>
         .glass-card { background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); }
@@ -39,6 +40,10 @@
             <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-users.html">
                 <span class="material-symbols-outlined">people</span>
                 <span>Users</span>
+            </a>
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-attendance.html">
+                <span class="material-symbols-outlined">event_available</span>
+                <span>Kehadiran Intern</span>
             </a>
             <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-projects.html">
                 <span class="material-symbols-outlined">folder_open</span>
@@ -85,16 +90,17 @@
             <div class="glass-card p-4 rounded-xl border border-outline-variant">
                 <h3 class="font-headline-md mb-2">Intern Dashboards</h3>
                 <p class="text-sm text-on-surface-variant mb-3">Pilih intern untuk melihat dashboard mereka.</p>
-                <ul class="space-y-2">
-                    <li><a href="dashboard.html?intern=John%20Doe" class="text-primary hover:underline">John Doe</a></li>
-                    <li><a href="dashboard.html?intern=Jane%20Smith" class="text-primary hover:underline">Jane Smith</a></li>
-                    <!-- Tambahkan intern lainnya secara dinamis bila diperlukan -->
+                <ul class="space-y-2" id="intern-dashboard-list">
+                    <!-- Diisi dinamis dari InternStore -->
                 </ul>
             </div>
             <!-- Penilaian & Hapus Pekerjaan Intern Card -->
             <div class="glass-card p-4 rounded-xl border border-outline-variant">
                 <h3 class="font-headline-md mb-2">Penilaian & Hapus Pekerjaan Intern</h3>
-                <p class="text-sm text-on-surface-variant mb-3" id="intern-task-title">Pilih intern untuk menilai pekerjaan mereka.</p>
+                <p class="text-sm text-on-surface-variant mb-3">Pilih intern untuk menilai atau menghapus pekerjaan mereka.</p>
+                <select id="grade-intern-select" class="w-full mb-3 p-2 border border-outline-variant rounded text-sm">
+                    <option value="" disabled selected>Pilih intern...</option>
+                </select>
                 <table class="min-w-full text-sm" id="intern-tasks-table" style="display:none;">
                     <thead class="bg-surface-container-lowest">
                         <tr>
@@ -103,42 +109,9 @@
                             <th class="px-2 py-1 text-center">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- Contoh data, akan dihapus ketika klik hapus -->
-                        <tr data-task-id="1">
-                            <td class="px-2 py-1">Membuat halaman profil</td>
-                            <td class="px-2 py-1">
-                                <select class="rating-select" data-task-id="1">
-                                    <option value="">-- Pilih --</option>
-                                    <option value="1">1 ⭐</option>
-                                    <option value="2">2 ⭐⭐</option>
-                                    <option value="3">3 ⭐⭐⭐</option>
-                                    <option value="4">4 ⭐⭐⭐⭐</option>
-                                    <option value="5">5 ⭐⭐⭐⭐⭐</option>
-                                </select>
-                            </td>
-                            <td class="px-2 py-1 text-center">
-                                <button class="text-error delete-task" data-task-id="1" title="Hapus"><span class="material-symbols-outlined">delete</span></button>
-                            </td>
-                        </tr>
-                        <tr data-task-id="2">
-                            <td class="px-2 py-1">Implementasi API login</td>
-                            <td class="px-2 py-1">
-                                <select class="rating-select" data-task-id="2">
-                                    <option value="">-- Pilih --</option>
-                                    <option value="1">1 ⭐</option>
-                                    <option value="2">2 ⭐⭐</option>
-                                    <option value="3">3 ⭐⭐⭐</option>
-                                    <option value="4">4 ⭐⭐⭐⭐</option>
-                                    <option value="5">5 ⭐⭐⭐⭐⭐</option>
-                                </select>
-                            </td>
-                            <td class="px-2 py-1 text-center">
-                                <button class="text-error delete-task" data-task-id="2" title="Hapus"><span class="material-symbols-outlined">delete</span></button>
-                            </td>
-                        </tr>
-                    </tbody>
+                    <tbody id="intern-tasks-body"></tbody>
                 </table>
+                <p id="intern-tasks-empty" class="text-xs text-on-surface-variant italic hidden">Intern ini belum memiliki tugas.</p>
             </div>
             <!-- Fitur Intern Card -->
             <div class="glass-card p-4 rounded-xl border border-outline-variant">
@@ -154,38 +127,19 @@
             <!-- User Management Card -->
             <div class="glass-card p-4 rounded-xl border border-outline-variant">
                 <h3 class="font-headline-md mb-2">User Management</h3>
-                <p class="text-sm text-on-surface-variant mb-3">Create, edit, or delete platform users.</p>
+                <p class="text-sm text-on-surface-variant mb-3">Kelola daftar intern yang terdaftar di portal.</p>
                 <table class="min-w-full text-sm">
                     <thead class="bg-surface-container-lowest">
                         <tr>
                             <th class="px-2 py-1 text-left">Name</th>
                             <th class="px-2 py-1 text-left">Email</th>
-                            <th class="px-2 py-1 text-left">Role</th>
+                            <th class="px-2 py-1 text-left">Divisi</th>
                             <th class="px-2 py-1 text-center">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-outline-variant">
-                        <tr>
-                            <td class="px-2 py-1">John Doe</td>
-                            <td class="px-2 py-1">john@example.com</td>
-                            <td class="px-2 py-1">Intern</td>
-                            <td class="px-2 py-1 text-center">
-                                <button class="text-primary mr-2" title="Edit"><span class="material-symbols-outlined">edit</span></button>
-                                <button class="text-error" title="Delete"><span class="material-symbols-outlined">delete</span></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-2 py-1">Jane Smith</td>
-                            <td class="px-2 py-1">jane@example.com</td>
-                            <td class="px-2 py-1">Mentor</td>
-                            <td class="px-2 py-1 text-center">
-                                <button class="text-primary mr-2" title="Edit"><span class="material-symbols-outlined">edit</span></button>
-                                <button class="text-error" title="Delete"><span class="material-symbols-outlined">delete</span></button>
-                            </td>
-                        </tr>
-                    </tbody>
+                    <tbody class="divide-y divide-outline-variant" id="user-mgmt-body"></tbody>
                 </table>
-                <div class="mt-3 text-right"><button class="px-3 py-1 bg-primary text-on-primary rounded-md hover:bg-primary/90">Add New User</button></div>
+                <div class="mt-3 text-right"><button onclick="openAddInternModal()" class="px-3 py-1 bg-primary text-on-primary rounded-md hover:bg-primary/90">Add New User</button></div>
             </div>
             <!-- Project & Task Management Card (Admin Feature) -->
             <div class="glass-card p-5 rounded-xl border border-outline-variant lg:col-span-2 xl:col-span-3">
@@ -254,35 +208,20 @@
             
             <!-- Attendance Overview Card -->
             <div class="glass-card p-4 rounded-xl border border-outline-variant">
-                <h3 class="font-headline-md mb-2">Kehadiran Intern</h3>
-                <p class="text-sm text-on-surface-variant mb-3">Total kehadiran hari ini.</p>
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-headline-md">Kehadiran Intern</h3>
+                    <a href="admin-attendance.html" class="text-xs text-primary hover:underline flex items-center gap-1">
+                        <span>Kalender Lengkap</span><span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                    </a>
+                </div>
+                <p class="text-sm text-on-surface-variant mb-3">Total kehadiran hari ini (semua intern).</p>
                 <div class="flex items-center gap-2">
-                    <span class="font-label-md text-label-md text-primary">Hari Ini</span>
+                    <span class="font-label-md text-label-md text-primary">Hadir/Telat Hari Ini</span>
                     <div class="text-2xl font-bold" id="admin-attendance-today">0</div>
                 </div>
                 <div class="flex items-center gap-2 mt-2">
-                    <span class="font-label-md text-label-md text-primary">Minggu Ini</span>
-                    <div class="text-2xl font-bold" id="admin-attendance-week">0</div>
-                </div>
-            </div>
-            <!-- Completed Tasks Overview Card -->
-            <div class="glass-card p-4 rounded-xl border border-outline-variant">
-                <h3 class="font-headline-md mb-2">Tugas Selesai</h3>
-                <p class="text-sm text-on-surface-variant mb-3">Jumlah tugas yang telah diselesaikan oleh semua intern.</p>
-                <div class="text-2xl font-bold" id="admin-total-completed-tasks">0</div>
-            </div>
-            
-            <!-- Attendance Overview Card -->
-            <div class="glass-card p-4 rounded-xl border border-outline-variant">
-                <h3 class="font-headline-md mb-2">Kehadiran Intern</h3>
-                <p class="text-sm text-on-surface-variant mb-3">Total kehadiran hari ini.</p>
-                <div class="flex items-center gap-2">
-                    <span class="font-label-md text-label-md text-primary">Hari Ini</span>
-                    <div class="text-2xl font-bold" id="admin-attendance-today">0</div>
-                </div>
-                <div class="flex items-center gap-2 mt-2">
-                    <span class="font-label-md text-label-md text-primary">Minggu Ini</span>
-                    <div class="text-2xl font-bold" id="admin-attendance-week">0</div>
+                    <span class="font-label-md text-label-md text-primary">Tidak Masuk Hari Ini</span>
+                    <div class="text-2xl font-bold text-error" id="admin-attendance-absent-today">0</div>
                 </div>
             </div>
             <!-- Completed Tasks Overview Card -->
@@ -294,15 +233,23 @@
             <!-- Attendance per Intern Card -->
             <div class="glass-card p-4 rounded-xl border border-outline-variant">
                 <h3 class="font-headline-md mb-2">Kehadiran per Intern</h3>
-                <p class="text-sm text-on-surface-variant mb-3">Pilih intern untuk melihat total kehadiran.</p>
+                <p class="text-sm text-on-surface-variant mb-3">Pilih intern untuk melihat total kehadiran bulan ini.</p>
                 <select id="admin-attendance-intern-select" class="w-full mb-2 p-2 border border-outline-variant rounded">
                     <option value="" disabled selected>Pilih intern...</option>
-                    <option value="John Doe">John Doe</option>
-                    <option value="Jane Smith">Jane Smith</option>
                 </select>
-                <div class="flex items-center gap-2">
-                    <span class="font-label-md text-label-md text-primary">Kehadiran</span>
-                    <div class="text-2xl font-bold" id="admin-attendance-intern-count">0</div>
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="bg-green-50 rounded-lg p-2">
+                        <div class="text-xs text-green-700 font-bold">Hadir</div>
+                        <div class="text-xl font-bold text-green-800" id="admin-attendance-intern-present">0</div>
+                    </div>
+                    <div class="bg-amber-50 rounded-lg p-2">
+                        <div class="text-xs text-amber-700 font-bold">Telat</div>
+                        <div class="text-xl font-bold text-amber-800" id="admin-attendance-intern-late">0</div>
+                    </div>
+                    <div class="bg-red-50 rounded-lg p-2">
+                        <div class="text-xs text-red-700 font-bold">Absen</div>
+                        <div class="text-xl font-bold text-red-800" id="admin-attendance-intern-absent">0</div>
+                    </div>
                 </div>
             </div>
             <!-- System Settings Card -->
@@ -370,38 +317,6 @@
         });
         document.getElementById('save-settings')?.addEventListener('click', () => {
             alert('System settings saved (demo).');
-        });
-
-        // Admin Intern Tasks: show table when intern parameter exists
-        const internName = document.getElementById('intern-name')?.textContent;
-        if (internName) {
-            const titleElem = document.getElementById('intern-task-title');
-            if (titleElem) titleElem.textContent = `Pekerjaan ${internName}`;
-            const table = document.getElementById('intern-tasks-table');
-            if (table) table.style.display = 'table';
-        }
-        // Handle rating change
-        document.querySelectorAll('.rating-select').forEach(select => {
-            select.addEventListener('change', e => {
-                const taskId = e.target.dataset.taskId;
-                const rating = e.target.value;
-                if (rating) {
-                    // Simpan rating ke localStorage (demo)
-                    localStorage.setItem(`internTaskRating_${taskId}`, rating);
-                    alert(`Penilaian ${rating} bintang disimpan untuk pekerjaan ID ${taskId}.`);
-                }
-            });
-        });
-        // Handle delete task
-        document.querySelectorAll('.delete-task').forEach(btn => {
-            btn.addEventListener('click', e => {
-                const taskId = btn.dataset.taskId;
-                const row = document.querySelector(`tr[data-task-id="${taskId}"]`);
-                if (row) {
-                    row.remove();
-                    alert(`Pekerjaan ID ${taskId} telah dihapus.`);
-                }
-            });
         });
 
         /* ================= ADMIN PROJECT & TASK CONTROLLER ================= */
@@ -530,9 +445,17 @@
                 select.appendChild(opt);
             });
 
+            const assigneeSelect = document.getElementById('admin-task-assignee');
+            assigneeSelect.innerHTML = '';
+            InternStore.list().forEach(i => {
+                const opt = document.createElement('option');
+                opt.value = i.name;
+                opt.textContent = `${i.name} (Intern)`;
+                assigneeSelect.appendChild(opt);
+            });
+
             document.getElementById('admin-task-title').value = '';
             document.getElementById('admin-task-desc').value = '';
-            document.getElementById('admin-task-assignee').value = 'John Doe';
             document.getElementById('admin-task-due').value = '';
             document.getElementById('admin-task-priority').value = 'Medium';
             document.getElementById('admin-task-status').value = 'todo';
@@ -581,14 +504,236 @@
             }
         }
 
+        /* ================= 1. INTERN DASHBOARDS (dynamic) ================= */
+        function renderInternDashboardList() {
+            const list = document.getElementById('intern-dashboard-list');
+            if (!list) return;
+            const interns = InternStore.list();
+            list.innerHTML = interns.length
+                ? interns.map(i => `<li><a href="dashboard.html?intern=${encodeURIComponent(i.name)}" class="text-primary hover:underline flex items-center justify-between">
+                        <span>${escapeHtml(i.name)}</span>
+                        <span class="text-xs text-on-surface-variant">${escapeHtml(i.division || '')}</span>
+                    </a></li>`).join('')
+                : '<li class="text-sm text-on-surface-variant italic">Belum ada intern terdaftar.</li>';
+        }
+
+        /* ================= 1B. PENILAIAN & HAPUS PEKERJAAN INTERN ================= */
+        function populateGradeInternSelect() {
+            const select = document.getElementById('grade-intern-select');
+            if (!select) return;
+            const current = select.value;
+            select.innerHTML = '<option value="" disabled ' + (current ? '' : 'selected') + '>Pilih intern...</option>' +
+                InternStore.list().map(i => `<option value="${escapeHtml(i.name)}" ${i.name === current ? 'selected' : ''}>${escapeHtml(i.name)}</option>`).join('');
+        }
+
+        function renderInternTasksForGrading() {
+            const internName = document.getElementById('grade-intern-select').value;
+            const table = document.getElementById('intern-tasks-table');
+            const body = document.getElementById('intern-tasks-body');
+            const empty = document.getElementById('intern-tasks-empty');
+            if (!internName) { table.style.display = 'none'; empty.classList.add('hidden'); return; }
+
+            const tasks = ProjectStore.tasksByAssignee(internName);
+            body.innerHTML = '';
+
+            if (tasks.length === 0) {
+                table.style.display = 'none';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+            table.style.display = 'table';
+
+            tasks.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.dataset.taskId = t.id;
+                tr.innerHTML = `
+                    <td class="px-2 py-1.5">
+                        <div class="font-semibold">${escapeHtml(t.title)}</div>
+                        <div class="text-xs text-on-surface-variant">${escapeHtml(t.project_name)} &middot; ${escapeHtml(t.status)}</div>
+                    </td>
+                    <td class="px-2 py-1.5">
+                        <select class="rating-select w-full border border-outline-variant rounded px-1 py-1 text-xs" data-project-id="${t.project_id}" data-task-id="${t.id}">
+                            <option value="">-- Pilih --</option>
+                            <option value="1" ${t.rating == 1 ? 'selected' : ''}>1 ⭐</option>
+                            <option value="2" ${t.rating == 2 ? 'selected' : ''}>2 ⭐⭐</option>
+                            <option value="3" ${t.rating == 3 ? 'selected' : ''}>3 ⭐⭐⭐</option>
+                            <option value="4" ${t.rating == 4 ? 'selected' : ''}>4 ⭐⭐⭐⭐</option>
+                            <option value="5" ${t.rating == 5 ? 'selected' : ''}>5 ⭐⭐⭐⭐⭐</option>
+                        </select>
+                    </td>
+                    <td class="px-2 py-1.5 text-center">
+                        <button class="text-error delete-task" data-project-id="${t.project_id}" data-task-id="${t.id}" title="Hapus"><span class="material-symbols-outlined">delete</span></button>
+                    </td>
+                `;
+                body.appendChild(tr);
+            });
+
+            body.querySelectorAll('.rating-select').forEach(select => {
+                select.addEventListener('change', e => {
+                    const { projectId, taskId } = e.target.dataset;
+                    const rating = e.target.value;
+                    if (!rating) return;
+                    ProjectStore.rateTask(projectId, taskId, Number(rating));
+                });
+            });
+            body.querySelectorAll('.delete-task').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    const { projectId, taskId } = btn.dataset;
+                    if (!confirm('Hapus pekerjaan ini secara permanen?')) return;
+                    ProjectStore.deleteTask(projectId, taskId);
+                    renderInternTasksForGrading();
+                    renderAdminProjects();
+                });
+            });
+        }
+
+        /* ================= 1C. USER MANAGEMENT ================= */
+        function renderUserManagement() {
+            const body = document.getElementById('user-mgmt-body');
+            if (!body) return;
+            const interns = InternStore.list();
+            body.innerHTML = interns.map(i => `
+                <tr>
+                    <td class="px-2 py-1">${escapeHtml(i.name)}</td>
+                    <td class="px-2 py-1">${escapeHtml(i.email || '-')}</td>
+                    <td class="px-2 py-1">${escapeHtml(i.division || '-')}</td>
+                    <td class="px-2 py-1 text-center">
+                        <button class="text-error" title="Delete" onclick="deleteInternUser('${i.id}', '${escapeHtml(i.name)}')"><span class="material-symbols-outlined">delete</span></button>
+                    </td>
+                </tr>
+            `).join('') || '<tr><td colspan="4" class="px-2 py-3 text-center text-on-surface-variant italic">Belum ada intern.</td></tr>';
+        }
+
+        function deleteInternUser(id, name) {
+            if (!confirm(`Hapus intern "${name}"? Data kehadirannya juga akan dihapus.`)) return;
+            InternStore.removeIntern(id);
+            renderEverything();
+        }
+
+        function openAddInternModal() {
+            document.getElementById('new-intern-name').value = '';
+            document.getElementById('new-intern-email').value = '';
+            document.getElementById('new-intern-division').value = '';
+            document.getElementById('add-intern-modal').classList.remove('hidden');
+            document.getElementById('add-intern-modal').classList.add('flex');
+            document.getElementById('new-intern-name').focus();
+        }
+
+        function closeAddInternModal() {
+            document.getElementById('add-intern-modal').classList.add('hidden');
+            document.getElementById('add-intern-modal').classList.remove('flex');
+        }
+
+        function saveNewIntern(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-intern-name').value.trim();
+            const email = document.getElementById('new-intern-email').value.trim();
+            const division = document.getElementById('new-intern-division').value.trim();
+            if (!name) return;
+            InternStore.addIntern({ name, email, division });
+            closeAddInternModal();
+            renderEverything();
+        }
+
+        /* ================= 1D. ATTENDANCE OVERVIEW ================= */
+        function todayStr() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        }
+
+        function renderAttendanceOverview() {
+            const summary = InternStore.getDaySummary(todayStr());
+            const presentTodayEl = document.getElementById('admin-attendance-today');
+            const absentTodayEl = document.getElementById('admin-attendance-absent-today');
+            if (presentTodayEl) presentTodayEl.textContent = summary.present + summary.late;
+            if (absentTodayEl) absentTodayEl.textContent = summary.absent;
+
+            let totalCompleted = 0;
+            ProjectStore.projects().forEach(p => (p.tasks || []).forEach(t => { if (t.status === 'done') totalCompleted++; }));
+            const completedEl = document.getElementById('admin-total-completed-tasks');
+            if (completedEl) completedEl.textContent = totalCompleted;
+
+            const select = document.getElementById('admin-attendance-intern-select');
+            if (select) {
+                const current = select.value;
+                select.innerHTML = '<option value="" disabled ' + (current ? '' : 'selected') + '>Pilih intern...</option>' +
+                    InternStore.list().map(i => `<option value="${escapeHtml(i.name)}" ${i.name === current ? 'selected' : ''}>${escapeHtml(i.name)}</option>`).join('');
+                if (current) renderInternAttendanceCounts(current);
+            }
+        }
+
+        function renderInternAttendanceCounts(name) {
+            const records = InternStore.getAttendance(name);
+            document.getElementById('admin-attendance-intern-present').textContent = records.filter(r => r.status === 'present').length;
+            document.getElementById('admin-attendance-intern-late').textContent = records.filter(r => r.status === 'late').length;
+            document.getElementById('admin-attendance-intern-absent').textContent = records.filter(r => r.status === 'absent').length;
+        }
+
+        /* ================= INIT ================= */
+        function renderEverything() {
+            InternStore.seedAllAttendance();
+            renderInternDashboardList();
+            populateGradeInternSelect();
+            renderInternTasksForGrading();
+            renderUserManagement();
+            renderAdminProjects();
+            renderAttendanceOverview();
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             // Set role to admin explicitly on admin dashboard
             if (window.ProjectStore) {
                 ProjectStore.setRole('admin');
             }
-            renderAdminProjects();
+            renderEverything();
+
+            // Jika dibuka lewat link "Pilih Intern" (dashboard.html?intern=Nama), pre-select di kedua dropdown terkait
+            if (internParam) {
+                const decoded = decodeURIComponent(internParam);
+                const gradeSelect = document.getElementById('grade-intern-select');
+                if (gradeSelect) { gradeSelect.value = decoded; renderInternTasksForGrading(); }
+                const attSelect = document.getElementById('admin-attendance-intern-select');
+                if (attSelect) { attSelect.value = decoded; renderInternAttendanceCounts(decoded); }
+            }
+
+            document.getElementById('grade-intern-select')?.addEventListener('change', renderInternTasksForGrading);
+            document.getElementById('admin-attendance-intern-select')?.addEventListener('change', e => renderInternAttendanceCounts(e.target.value));
         });
     </script>
+
+    <!-- Modal Tambah Intern Baru (User Management) -->
+    <div id="add-intern-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs flex">
+        <div class="bg-white rounded-2xl border border-outline-variant w-full max-w-md p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-outline-variant pb-2">
+                <h3 class="font-headline-md font-bold text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">person_add</span>
+                    <span>Tambah Intern Baru</span>
+                </h3>
+                <button type="button" onclick="closeAddInternModal()" class="text-on-surface-variant hover:text-primary">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <form onsubmit="saveNewIntern(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-on-surface uppercase mb-1">Nama Lengkap</label>
+                    <input required id="new-intern-name" type="text" class="w-full bg-surface-bright border border-outline-variant rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none" placeholder="Contoh: Budi Santoso"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-on-surface uppercase mb-1">Email</label>
+                    <input id="new-intern-email" type="email" class="w-full bg-surface-bright border border-outline-variant rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none" placeholder="budi@example.com"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-on-surface uppercase mb-1">Divisi</label>
+                    <input id="new-intern-division" type="text" class="w-full bg-surface-bright border border-outline-variant rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none" placeholder="Contoh: UI/UX Design"/>
+                </div>
+                <div class="flex justify-end gap-2 pt-3 border-t border-outline-variant">
+                    <button type="button" onclick="closeAddInternModal()" class="px-4 py-2 rounded-lg border border-outline-variant text-xs font-semibold text-slate-600 hover:bg-slate-100">Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-lg bg-primary text-white text-xs font-bold hover:bg-primary-container">Simpan Intern</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Modal Tambah Project (Khusus Admin) -->
     <div id="admin-proj-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs flex">
