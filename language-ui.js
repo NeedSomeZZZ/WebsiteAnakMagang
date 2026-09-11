@@ -13,7 +13,16 @@
 
   // ── Sembunyikan link Applications untuk non-Admin ────────────────────
   function applyApplicationsVisibility() {
+    const isApplicationsPage = window.location.pathname.toLowerCase().includes('applications.html');
     if (isAdminUser()) return; // admin boleh lihat
+
+    // Jika user biasa mencoba akses applications.html directly, redirect ke dashboard
+    if (isApplicationsPage) {
+      window.location.href = 'dashboard.html';
+      return;
+    }
+
+    // Sembunyikan semua link Applications di sidebar / menu
     document.querySelectorAll('a[href="applications.html"]').forEach(link => {
       link.style.display = 'none';
     });
@@ -87,6 +96,7 @@
 
   // ── Init ──────────────────────────────────────────────────────────────
   function start() {
+    applyApplicationsVisibility();
     setupMobileDrawer();
     setupKeyboardShortcuts();
   }

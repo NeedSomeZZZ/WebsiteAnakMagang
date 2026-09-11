@@ -53,21 +53,7 @@
                 <span class="material-symbols-outlined">insights</span>
                 <span>Statistics</span>
             </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-settings.html">
-                <span class="material-symbols-outlined">settings</span>
-                <span>System Settings</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-logs.html">
-                <span class="material-symbols-outlined">receipt_long</span>
-                <span>Activity Logs</span>
-            </a>
         </nav>
-        <div class="mt-auto pt-md border-t border-outline-variant space-y-sm">
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="settings.html">
-                <span class="material-symbols-outlined">settings</span>
-                <span>Personal Settings</span>
-            </a>
-        </div>
     </aside>
     <!-- Main Content -->
     <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto p-5 md:p-10">
@@ -77,12 +63,12 @@
                 <button class="p-2 rounded-full hover:bg-surface-container-low" title="Notifications">
                     <span class="material-symbols-outlined">notifications</span>
                 </button>
-                <a href="profile.html" class="flex items-center gap-2">
+                <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
                     </div>
                     <span class="hidden sm:inline-block">Alex Doe</span>
-                </a>
+                </div>
             </div>
         </header>
           <section class="mt-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -252,30 +238,6 @@
                     </div>
                 </div>
             </div>
-            <!-- System Settings Card -->
-            <div class="glass-card p-4 rounded-xl border border-outline-variant lg:col-span-2 xl:col-span-3">
-                <h3 class="font-headline-md mb-2">System Settings</h3>
-                <p class="text-sm text-on-surface-variant mb-3">Toggle global flags for the portal.</p>
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="font-label-md">Maintenance Mode</span>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" class="sr-only peer" id="maintenance-toggle">
-                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer peer-checked:bg-primary"></div>
-                            <span class="ml-2 text-sm font-medium text-gray-900">Off</span>
-                        </label>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="font-label-md">Allow Guest Access</span>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" class="sr-only peer" id="guest-toggle" checked>
-                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer peer-checked:bg-primary"></div>
-                            <span class="ml-2 text-sm font-medium text-gray-900">On</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="mt-4 text-right"><button class="px-4 py-2 bg-primary text-on-primary rounded-md hover:bg-primary/90" id="save-settings">Save Settings</button></div>
-            </div>
             <!-- News & Lessons Card -->
             <div class="glass-card p-4 rounded-xl border border-outline-variant lg:col-span-2 xl:col-span-3">
                 <h3 class="font-headline-md mb-2" id="news-title">Berita & Pelajaran</h3>
@@ -285,16 +247,6 @@
                     <button type="submit" class="px-4 py-2 bg-primary text-on-primary rounded-md hover:bg-primary/90">Tambah Berita</button>
                 </form>
                 <ul id="news-list" class="space-y-2 max-h-60 overflow-y-auto text-sm text-on-surface-variant"></ul>
-            </div>
-            <!-- Activity Logs Card -->
-            <div class="glass-card p-4 rounded-xl border border-outline-variant lg:col-span-2 xl:col-span-3">
-                <h3 class="font-headline-md mb-2">Recent Activity Logs</h3>
-                <ul class="space-y-2 max-h-60 overflow-y-auto text-sm text-on-surface-variant">
-                    <li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary">login</span>Admin Alex logged in at 09:12 AM</li>
-                    <li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary">edit</span>Updated user Jane Smith role to Mentor</li>
-                    <li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary">delete</span>Removed project "Legacy Portal"</li>
-                    <li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary">settings</span>Enabled maintenance mode</li>
-                </ul>
             </div>
         </section>
     </main>

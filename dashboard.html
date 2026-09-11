@@ -44,17 +44,9 @@
             <span class="material-symbols-outlined">view_kanban</span>
             <span>Tasks</span>
         </a>
-        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="profile.html">
-            <span class="material-symbols-outlined">person</span>
-            <span>Profile</span>
-        </a>
         <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="applications.html">
             <span class="material-symbols-outlined">description</span>
             <span>Applications</span>
-        </a>
-        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="verification.html">
-            <span class="material-symbols-outlined">verified_user</span>
-            <span>Verification</span>
         </a>
         
             <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md active:scale-[0.98] transition-transform" href="admin-dashboard.html">
@@ -62,12 +54,6 @@
             <span>Admin Dashboard</span>
         </a>
     </nav>
-    <div class="mt-auto pt-md border-t border-outline-variant space-y-sm">
-        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="settings.html">
-            <span class="material-symbols-outlined">settings</span>
-            <span>Settings</span>
-        </a>
-    </div>
 </aside>
 
 <!-- Main Content Canvas -->
@@ -88,12 +74,12 @@
                     <span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
                 </button>
                 <div class="h-8 w-px bg-outline-variant mx-xs"></div>
-                <a href="profile.html" class="flex items-center gap-sm p-xs pr-md rounded-full border border-outline-variant hover:bg-surface-container-low transition-colors cursor-pointer active:scale-95">
+                <div class="flex items-center gap-sm p-xs pr-md rounded-full border border-outline-variant">
                     <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container overflow-hidden">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
                     </div>
                     <span class="font-label-md text-label-md hidden sm:inline-block">Alex Doe</span>
-                </a>
+                </div>
             </div>
         </div>
     </header>
@@ -149,22 +135,8 @@
                     <p class="font-body-sm text-body-sm text-on-surface-variant mt-1" data-i18n="stat_cross_func">Cross-functional</p>
                 </div>
             </a>
-            
-            <!-- Stat: Tasks Done -->
-            <a class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block" id="stat-tasks-done-card">
-                <div class="flex justify-between items-start">
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" data-i18n="stat_tasks_done">Tasks Done</span>
-                    <div class="p-xs rounded-full bg-surface-container-high text-primary">
-                        <span class="material-symbols-outlined text-[20px]">task_alt</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-tasks-done-val">0</div>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1" data-i18n="stat_this_sprint">This sprint</p>
-                </div>
-            </a>
             <!-- Stat: Pending Tasks -->
-            <a class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block" id="stat-tasks-pending-card">
+            <a href="tasks.html" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block" id="stat-tasks-pending-card">
                 <div class="flex justify-between items-start">
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Pending Tasks</span>
                     <div class="p-xs rounded-full bg-surface-container-high text-primary">
@@ -175,45 +147,8 @@
                     <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-tasks-pending-val">0</div>
                 </div>
             </a>
-            <!-- Stat: Active Projects -->
-            <a href="projects.html" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block">
-                <div class="flex justify-between items-start">
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" data-i18n="stat_active_proj">Active Projects</span>
-                    <div class="p-xs rounded-full bg-surface-container-high text-primary">
-                        <span class="material-symbols-outlined text-[20px]">rocket_launch</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-active-proj-val">0</div>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1" data-i18n="stat_cross_func">Cross-functional</p>
-                </div>
-            </a>
-            <!-- Stat: Projects Involved -->
-            <a class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block" id="stat-projects-involved-card">
-                <div class="flex justify-between items-start">
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Projects Involved</span>
-                    <div class="p-xs rounded-full bg-surface-container-high text-primary">
-                        <span class="material-symbols-outlined text-[20px]">group_work</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-projects-involved-val">0</div>
-                </div>
-            </a>
-            <!-- Stat: Completed Projects -->
-            <a class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block" id="stat-projects-completed-card">
-                <div class="flex justify-between items-start">
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Completed Projects</span>
-                    <div class="p-xs rounded-full bg-surface-container-high text-primary">
-                        <span class="material-symbols-outlined text-[20px]">check_circle</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-projects-completed-val">0</div>
-                </div>
-            </a>
             <!-- Stat: Current Rank -->
-            <a href="profile.html" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 bg-gradient-to-br from-surface-container-lowest to-surface-container-high block">
+            <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 bg-gradient-to-br from-surface-container-lowest to-surface-container-high block">
                 <div class="flex justify-between items-start">
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Current Rank</span>
                     <div class="p-xs rounded-full bg-tertiary-container text-on-tertiary-container">
@@ -227,7 +162,7 @@
                     </div>
                     <p class="font-body-sm text-body-sm text-on-surface-variant mt-1 text-right text-[10px]">1,200 / 1,500 XP</p>
                 </div>
-            </a>
+            </div>
         </div>
         <!-- Main Bento Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-md items-start">
@@ -237,7 +172,6 @@
                 <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md">
                     <div class="flex justify-between items-center mb-md">
                         <h3 class="font-headline-md text-headline-md text-on-surface">Latest Achievements</h3>
-                        <a href="profile.html" class="font-label-md text-label-md text-primary hover:underline">View All</a>
                     </div>
                     <div class="flex gap-md overflow-x-auto pb-sm">
                         <!-- Badge 1 -->

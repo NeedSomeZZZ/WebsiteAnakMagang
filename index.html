@@ -19,6 +19,9 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="shared-config.js"></script>
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
         .custom-shadow-hover:hover {
             box-shadow: 0 10px 15px -3px rgba(30, 58, 138, 0.05), 0 4px 6px -2px rgba(30, 58, 138, 0.02);
         }
@@ -38,13 +41,9 @@
             <nav class="hidden md:flex gap-lg">
                 <a class="font-body-md text-body-md text-on-surface-variant font-medium hover:text-primary transition-colors cursor-pointer"
                     href="#positions" data-i18n="recruit_open_roles">Posisi Magang</a>
-                <a class="font-body-md text-body-md text-on-surface-variant font-medium hover:text-primary transition-colors cursor-pointer"
-                    href="#application-form" data-i18n="recruit_apply">Daftar</a>
-                <a class="font-body-md text-body-md text-on-surface-variant font-medium hover:text-primary transition-colors cursor-pointer"
-                    href="verification.html" data-i18n="nav_verification">Verifikasi</a>
             </nav>
             <div class="flex items-center gap-sm">
-                <a href="index.html"
+                <a href="#application-form"
                     class="bg-primary-container text-on-primary px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors"
                     data-i18n="btn_portal_login">Masuk Portal</a>
             </div>
@@ -290,10 +289,6 @@
                     href="#" data-i18n="footer_privacy">Kebijakan Privasi</a>
                 <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
                     href="#" data-i18n="footer_terms">Syarat Layanan</a>
-                <a class="font-body-sm text-body-sm text-primary font-semibold" href="index.html"
-                    data-i18n="nav_recruitment">Pendaftaran Anak Magang</a>
-                <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-                    href="verification.html" data-i18n="nav_verification">Verifikasi</a>
             </nav>
         </div>
     </footer>
