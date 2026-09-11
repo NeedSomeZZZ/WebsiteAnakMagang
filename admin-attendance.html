@@ -1,74 +1,177 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <title>Kedayweb Admin - Kehadiran Semua Intern</title>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="shared-config.js"></script>
     <script src="intern-store.js"></script>
-    <link rel="stylesheet" href="style.css"/>
+    <link rel="stylesheet" href="style.css" />
     <style>
-        .glass-card { background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); }
-        .cal-cell {
-            aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border-radius: 10px; cursor: pointer; transition: all 0.15s ease; position: relative;
-            font-size: 0.8rem; font-weight: 600; border: 1.5px solid transparent;
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
         }
-        .cal-cell:hover { transform: scale(1.07); border-color: #2563eb; }
-        .cal-cell.today { box-shadow: 0 0 0 2px #2563eb; }
-        .cal-cell.status-complete { background: #dcfce7; color: #166534; }
-        .cal-cell.status-late { background: #fef9c3; color: #854d0e; }
-        .cal-cell.status-absent { background: #fee2e2; color: #991b1b; }
-        .cal-cell.status-pending { background: #f1f5f9; color: #475569; }
-        .cal-cell.weekend { background: #f8fafc; color: #94a3b8; opacity: 0.7; cursor: default; }
-        .cal-cell.weekend:hover { transform: none; border-color: transparent; }
-        .cal-cell.empty { cursor: default; }
-        .cal-cell.empty:hover { transform: none; border-color: transparent; }
-        .cal-cell.future { background: #f8fafc; color: #cbd5e1; cursor: not-allowed; opacity: 0.6; }
-        .cal-cell.future:hover { transform: none; border-color: transparent; }
-        .status-dot { width: 6px; height: 6px; border-radius: 50%; position: absolute; bottom: 5px; }
-        .modal-backdrop { background: rgba(15,23,42,0.5); backdrop-filter: blur(4px); }
-        .badge-present { background:#dcfce7; color:#166534; }
-        .badge-late { background:#fef9c3; color:#854d0e; }
-        .badge-absent { background:#fee2e2; color:#991b1b; }
-        .badge-pending { background:#f1f5f9; color:#475569; }
+
+        .cal-cell {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            position: relative;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1.5px solid transparent;
+        }
+
+        .cal-cell:hover {
+            transform: scale(1.07);
+            border-color: #2563eb;
+        }
+
+        .cal-cell.today {
+            box-shadow: 0 0 0 2px #2563eb;
+        }
+
+        .cal-cell.status-complete {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .cal-cell.status-late {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .cal-cell.status-absent {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .cal-cell.status-pending {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .cal-cell.weekend {
+            background: #f8fafc;
+            color: #94a3b8;
+            opacity: 0.7;
+            cursor: default;
+        }
+
+        .cal-cell.weekend:hover {
+            transform: none;
+            border-color: transparent;
+        }
+
+        .cal-cell.empty {
+            cursor: default;
+        }
+
+        .cal-cell.empty:hover {
+            transform: none;
+            border-color: transparent;
+        }
+
+        .cal-cell.future {
+            background: #f8fafc;
+            color: #cbd5e1;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .cal-cell.future:hover {
+            transform: none;
+            border-color: transparent;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 5px;
+        }
+
+        .modal-backdrop {
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .badge-present {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-late {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .badge-absent {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-pending {
+            background: #f1f5f9;
+            color: #475569;
+        }
     </style>
 </head>
+
 <body class="bg-background text-on-surface font-body-md flex h-screen overflow-hidden">
     <!-- Sidebar -->
-    <aside class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
+    <aside
+        class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
         <div class="flex items-center gap-sm mb-xl px-sm">
             <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
+                <span class="material-symbols-outlined"
+                    style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
             </div>
             <div>
-                <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold">Kedayweb</h2>
+                <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold">
+                    Kedayweb</h2>
                 <p class="font-label-sm text-label-sm text-on-surface-variant">Admin Panel</p>
             </div>
         </div>
         <nav class="flex-1 space-y-sm">
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-dashboard.html">
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md"
+                href="admin-dashboard.html">
                 <span class="material-symbols-outlined">dashboard</span>
                 <span>Dashboard</span>
             </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-users.html">
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md"
+                href="admin-users.html">
                 <span class="material-symbols-outlined">people</span>
                 <span>Users</span>
             </a>
-            <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md" href="admin-attendance.html">
+            <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md"
+                href="admin-attendance.html">
                 <span class="material-symbols-outlined">event_available</span>
                 <span>Kehadiran Intern</span>
             </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-projects.html">
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md"
+                href="admin-projects.html">
                 <span class="material-symbols-outlined">folder_open</span>
                 <span>Projects</span>
             </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-stats.html">
+            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md"
+                href="admin-stats.html">
                 <span class="material-symbols-outlined">insights</span>
                 <span>Statistics</span>
             </a>
@@ -77,7 +180,8 @@
 
     <!-- Main -->
     <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto p-5 md:p-10">
-        <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 flex justify-between items-center px-4 z-10">
+        <header
+            class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 flex justify-between items-center px-4 z-10">
             <div>
                 <h2 class="font-headline-lg">Kehadiran Semua Intern</h2>
             </div>
@@ -110,31 +214,40 @@
             <!-- Legend -->
             <div class="lg:col-span-4 flex flex-col gap-4">
                 <div class="glass-card rounded-2xl border border-outline-variant p-5">
-                    <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Keterangan Warna</h3>
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Keterangan
+                        Warna</h3>
                     <div class="space-y-2.5">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-700 text-xs font-bold">12</div>
+                            <div
+                                class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-700 text-xs font-bold">
+                                12</div>
                             <div>
                                 <div class="text-sm font-semibold text-on-surface">Lengkap</div>
                                 <div class="text-xs text-on-surface-variant">Semua intern hadir tepat waktu</div>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700 text-xs font-bold">12</div>
+                            <div
+                                class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700 text-xs font-bold">
+                                12</div>
                             <div>
                                 <div class="text-sm font-semibold text-on-surface">Ada Keterlambatan</div>
                                 <div class="text-xs text-on-surface-variant">Semua tercatat, namun ada yang telat</div>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-700 text-xs font-bold">12</div>
+                            <div
+                                class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-700 text-xs font-bold">
+                                12</div>
                             <div>
                                 <div class="text-sm font-semibold text-on-surface">Ada Yang Tidak Masuk</div>
                                 <div class="text-xs text-on-surface-variant">Minimal satu intern absen</div>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 text-xs font-bold">12</div>
+                            <div
+                                class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 text-xs font-bold">
+                                12</div>
                             <div>
                                 <div class="text-sm font-semibold text-on-surface">Belum Lengkap Diisi</div>
                                 <div class="text-xs text-on-surface-variant">Masih ada intern yang belum absen</div>
@@ -144,7 +257,9 @@
                 </div>
                 <div class="glass-card rounded-2xl border border-outline-variant p-5">
                     <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Cara Pakai</h3>
-                    <p class="text-sm text-on-surface-variant">Klik salah satu tanggal pada kalender untuk melihat rincian kehadiran setiap intern pada hari itu &mdash; termasuk jam masuk, keterlambatan, dan alasan tidak masuk.</p>
+                    <p class="text-sm text-on-surface-variant">Klik salah satu tanggal pada kalender untuk melihat
+                        rincian kehadiran setiap intern pada hari itu &mdash; termasuk jam masuk, keterlambatan, dan
+                        alasan tidak masuk.</p>
                 </div>
             </div>
 
@@ -153,11 +268,15 @@
                 <div class="flex justify-between items-center mb-5">
                     <h3 id="cal-title" class="font-headline-md font-bold text-on-surface"></h3>
                     <div class="flex items-center gap-1">
-                        <button onclick="changeMonth(-1)" class="p-2 rounded-lg hover:bg-surface-container-low transition-colors text-on-surface-variant hover:text-primary">
+                        <button onclick="changeMonth(-1)"
+                            class="p-2 rounded-lg hover:bg-surface-container-low transition-colors text-on-surface-variant hover:text-primary">
                             <span class="material-symbols-outlined">chevron_left</span>
                         </button>
-                        <button onclick="goToday()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary-container text-on-primary-container hover:opacity-80 transition-opacity">Hari Ini</button>
-                        <button onclick="changeMonth(1)" class="p-2 rounded-lg hover:bg-surface-container-low transition-colors text-on-surface-variant hover:text-primary">
+                        <button onclick="goToday()"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary-container text-on-primary-container hover:opacity-80 transition-opacity">Hari
+                            Ini</button>
+                        <button onclick="changeMonth(1)"
+                            class="p-2 rounded-lg hover:bg-surface-container-low transition-colors text-on-surface-variant hover:text-primary">
                             <span class="material-symbols-outlined">chevron_right</span>
                         </button>
                     </div>
@@ -198,13 +317,16 @@
 
     <!-- Detail modal: rincian kehadiran per-intern pada satu tanggal -->
     <div id="detail-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
-        <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl border border-outline-variant overflow-hidden max-h-[85vh] flex flex-col">
+        <div
+            class="bg-white rounded-2xl w-full max-w-lg shadow-2xl border border-outline-variant overflow-hidden max-h-[85vh] flex flex-col">
             <div class="p-5 border-b border-outline-variant flex justify-between items-start">
                 <div>
-                    <p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-0.5">Rincian Kehadiran</p>
+                    <p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-0.5">Rincian
+                        Kehadiran</p>
                     <h3 id="detail-date-label" class="font-headline-md font-bold text-on-surface text-lg"></h3>
                 </div>
-                <button onclick="closeDetailModal()" class="text-on-surface-variant hover:text-primary transition-colors p-1 rounded-lg hover:bg-surface-container-low">
+                <button onclick="closeDetailModal()"
+                    class="text-on-surface-variant hover:text-primary transition-colors p-1 rounded-lg hover:bg-surface-container-low">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
@@ -215,22 +337,22 @@
     <script>
         let calYear, calMonth;
 
-        function fmt(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+        function fmt(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
 
         function formatDateDisplay(ds) {
-            const [y,m,d] = ds.split('-');
-            const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-            const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-            const dateObj = new Date(+y, +m-1, +d);
-            return `${days[dateObj.getDay()]}, ${+d} ${months[+m-1]} ${y}`;
+            const [y, m, d] = ds.split('-');
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const dateObj = new Date(+y, +m - 1, +d);
+            return `${days[dateObj.getDay()]}, ${+d} ${months[+m - 1]} ${y}`;
         }
 
         function formatTime12(t) {
             if (!t) return '--:--';
-            const [h,min] = t.split(':').map(Number);
+            const [h, min] = t.split(':').map(Number);
             const ampm = h >= 12 ? 'PM' : 'AM';
             const h12 = h % 12 || 12;
-            return `${String(h12).padStart(2,'0')}:${String(min).padStart(2,'0')} ${ampm}`;
+            return `${String(h12).padStart(2, '0')}:${String(min).padStart(2, '0')} ${ampm}`;
         }
 
         function initCalendar() {
@@ -263,7 +385,7 @@
         }
 
         function renderCalendar() {
-            const monthNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+            const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
             document.getElementById('cal-title').textContent = `${monthNames[calMonth]} ${calYear}`;
 
             const grid = document.getElementById('cal-grid');
@@ -391,12 +513,12 @@
             document.getElementById('detail-modal').classList.remove('flex');
         }
 
-        document.getElementById('detail-modal').addEventListener('click', function(e) {
+        document.getElementById('detail-modal').addEventListener('click', function (e) {
             if (e.target === this) closeDetailModal();
         });
 
         function escHtml(str) {
-            return String(str || '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+            return String(str || '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
         }
 
         function renderRoster() {
@@ -437,4 +559,5 @@
         });
     </script>
 </body>
+
 </html>
