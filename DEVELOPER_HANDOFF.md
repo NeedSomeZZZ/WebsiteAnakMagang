@@ -22,17 +22,17 @@ InternSpace is designed as a zero-build client-side web application leveraging:
 | File | Purpose | Core Features / Dependencies |
 | :--- | :--- | :--- |
 | [index.html](file:///e:/laragon/www/WebsiteAnakMagang/index.html) | Dashboard | Daily overview, live clock shift timer, dynamic `ProjectStore` stats counter, activity feed, achievement badges. |
-| [projects.html](file:///e:/laragon/www/WebsiteAnakMagang/projects.html) | Project Management | Project list, create project modal, task count breakdown, integration with `projects-ui.js`. |
-| [tasks.html](file:///e:/laragon/www/WebsiteAnakMagang/tasks.html) | Active Sprint Kanban | 4-column drag-and-drop Kanban board (To Do, In Progress, Under Review, Done), task creation modal. |
+| [projects.html](file:///e:/laragon/www/WebsiteAnakMagang/projects.html) | Project Management | Project list, create project modal, task breakdown, direct integration with `tasks.html?project=<id>` via `projects-ui.js`. |
+| [tasks.html](file:///e:/laragon/www/WebsiteAnakMagang/tasks.html) | Active Sprint Kanban | 4-column dynamic drag-and-drop Kanban board, header project switcher dropdown, full CRUD task modal synced with `ProjectStore`. |
 | [attendance.html](file:///e:/laragon/www/WebsiteAnakMagang/attendance.html) | Attendance & History | Attendance rate overview, weekly calendar breakdown, history table with mentor notes. |
 | [applications.html](file:///e:/laragon/www/WebsiteAnakMagang/applications.html) | Internship Applications | Career center pipeline, application filter tabs (Interviewing, Under review, Offer). |
-| [pendaftaran.html](file:///e:/laragon/www/WebsiteAnakMagang/pendaftaran.html) | Portal Pendaftaran | Form pendaftaran anak magang, modal aplikasi, dan informasi posisi magang. |
+| [recruitment.html](file:///e:/laragon/www/WebsiteAnakMagang/recruitment.html) | Recruitment Portal | Public-facing job openings, application modal form, multi-step progress submission. |
 | [verification.html](file:///e:/laragon/www/WebsiteAnakMagang/verification.html) | Certificate Verification | Certificate lookup by ID, interactive verification status feedback. |
 | [profile.html](file:///e:/laragon/www/WebsiteAnakMagang/profile.html) | Digital Intern Profile | Intern bio, skills badges, mentor review summary, rank progress bar. |
 | [settings.html](file:///e:/laragon/www/WebsiteAnakMagang/settings.html) | System Preferences | Language selection, reduced motion toggle, local data reset button. |
 | [shared-config.js](file:///e:/laragon/www/WebsiteAnakMagang/shared-config.js) | Design Tokens | Single source of truth Tailwind configuration containing colors, typography, and spacing. |
-| [project-store.js](file:///e:/laragon/www/WebsiteAnakMagang/project-store.js) | Data Management | LocalStorage store for projects & tasks with full CRUD operations. |
-| [projects-ui.js](file:///e:/laragon/www/WebsiteAnakMagang/projects-ui.js) | Projects Controller | UI renderer and event handlers for the `projects.html` page. |
+| [project-store.js](file:///e:/laragon/www/WebsiteAnakMagang/project-store.js) | Data Management | LocalStorage store for projects & tasks with full CRUD operations, status normalization, and active project state. |
+| [projects-ui.js](file:///e:/laragon/www/WebsiteAnakMagang/projects-ui.js) | Projects Controller | UI renderer and event handlers for `projects.html` with direct linking to `tasks.html`. |
 | [lang.js](file:///e:/laragon/www/WebsiteAnakMagang/lang.js) | i18n Dictionary | Translation keys for English (`en`) and Indonesian (`id`). |
 | [language-ui.js](file:///e:/laragon/www/WebsiteAnakMagang/language-ui.js) | i18n Observer | Auto-attaches `data-i18n` attributes, listens to language toggles, and re-renders UI text. |
 | [performance.js](file:///e:/laragon/www/WebsiteAnakMagang/performance.js) | Optimization Utility | Image lazy-loading, reduced motion handling, device optimization. |
@@ -58,7 +58,7 @@ InternSpace is designed as a zero-build client-side web application leveraging:
       "project_id": "uuid-string",
       "title": "Build project dashboard",
       "description": "Create the project overview.",
-      "status": "todo | progress | review | done",
+      "status": "todo | inprogress | underreview | done",
       "priority": "Low | Medium | High",
       "assignee": "Alex Doe",
       "due_date": "YYYY-MM-DD",
@@ -70,15 +70,20 @@ InternSpace is designed as a zero-build client-side web application leveraging:
 ```
 
 ### API Methods
-- `ProjectStore.projects()`: Returns array of all projects (seeds default project on first launch).
+- `ProjectStore.projects()`: Returns array of all projects (seeds default projects on first launch).
 - `ProjectStore.get(id)`: Returns project by ID.
+- `ProjectStore.getActiveProjectId()`: Gets currently active project ID (via URL `?project=` or localStorage).
+- `ProjectStore.setActiveProjectId(id)`: Sets currently active project ID in localStorage.
 - `ProjectStore.createProject({ name, description })`: Creates a new project.
 - `ProjectStore.updateProject(id, { name, description })`: Updates an existing project.
 - `ProjectStore.deleteProject(id)`: Deletes project.
-- `ProjectStore.createTask(projectId, { title, description, status, priority, assignee, due_date })`: Creates task.
+- `ProjectStore.createTask(projectId, { title, description, status, priority, assignee, due_date })`: Creates task with normalized status.
 - `ProjectStore.updateTask(projectId, taskId, updates)`: Updates task.
 - `ProjectStore.deleteTask(projectId, taskId)`: Deletes task.
-- `ProjectStore.moveTask(projectId, taskId, newStatus)`: Changes task status.
+- `ProjectStore.moveTask(projectId, taskId, newStatus)`: Changes task status with normalization.
+- `ProjectStore.getAllTasks()`: Returns aggregated tasks across all projects with project name.
+- `ProjectStore.normalizeStatus(status)`: Normalizes legacy `progress`/`review` to `inprogress`/`underreview`.
+- `ProjectStore.statusMatches(taskStatus, columnStatus)`: Checks status equivalence across legacy & modern tokens.
 
 ---
 

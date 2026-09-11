@@ -1,36 +1,41 @@
-/* language-ui.js — Mobile Drawer + Keyboard Shortcuts
-   Fitur i18n / penggantian bahasa dihapus.
-   Bahasa default: Indonesia (semua teks langsung ditulis di HTML).
-*/
+/* InternSpace UI Enhancement Engine (i18n, Mobile Drawer, Keyboard Shortcuts) */
 (function () {
-
-  // ── Role Helper (sama dengan isAdmin() di project-store.js) ──────────
-  function isAdminUser() {
-    const role = localStorage.getItem('internspace-current-role') || '';
-    return role === 'admin' || window.location.pathname.toLowerCase().includes('admin');
-  }
-  window.isAdminUser = isAdminUser;
-
-  // ── Sembunyikan link Applications untuk non-Admin ────────────────────
-  function applyApplicationsVisibility() {
-    const isApplicationsPage = window.location.pathname.toLowerCase().includes('applications.html');
-    if (isAdminUser()) return; // admin boleh lihat
-
-    // Jika user biasa mencoba akses applications.html directly, redirect ke dashboard
-    if (isApplicationsPage) {
-      window.location.href = 'dashboard.html';
-      return;
+  function indexDictionary() {
+    const index = new Map();
+    if (window.I18n && window.I18n.dict) {
+      Object.entries(window.I18n.dict).forEach(([key, value]) => { index.set(value.en, key); index.set(value.id, key); });
     }
+    return index;
+  }
 
-    // Sembunyikan semua link Applications di sidebar / menu
-    document.querySelectorAll('a[href="applications.html"]').forEach(link => {
-      link.style.display = 'none';
+  function bind(root = document.body) {
+    const lookup = indexDictionary(); if (!lookup.size || !root) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(node => {
+      const text = node.textContent.trim(), parent = node.parentElement, key = lookup.get(text);
+      if (key && parent && !parent.closest('script,style,[data-no-i18n]') && !parent.hasAttribute('data-no-i18n') && !parent.dataset.i18n) parent.dataset.i18n = key;
     });
+    root.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(input => {
+      const key = lookup.get(input.placeholder);
+      if (key) input.dataset.i18n = key;
+    });
+  }
+
+  function addSwitcher() {
+    if (document.querySelector('[data-language-switcher]')) return;
+    const button = document.createElement('button');
+    button.type = 'button'; button.dataset.languageSwitcher = 'true';
+    button.className = 'fixed bottom-4 left-4 z-[100] rounded-full bg-primary px-4 py-2 text-xs font-bold text-white shadow-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-transform active:scale-95 flex items-center gap-1.5';
+    button.innerHTML = '<span class="material-symbols-outlined text-[16px]">language</span><span data-i18n-toggle>EN / ID</span>';
+    button.setAttribute('aria-label', 'Switch language');
+    button.onclick = () => window.I18n && window.I18n.toggleLang();
+    document.body.append(button);
   }
 
   function setupMobileDrawer() {
     const sidebar = document.querySelector('aside');
-    const header  = document.querySelector('header');
+    const header = document.querySelector('header');
     if (!sidebar || !header) return;
 
     if (!header.querySelector('[data-mobile-menu-btn]')) {
@@ -68,19 +73,13 @@
     }
   }
 
-  // ── Keyboard Shortcuts ────────────────────────────────────────────────
   function setupKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
-      // '/' or Ctrl+K → focus search
-      if ((e.key === '/' || (e.ctrlKey && e.key === 'k')) &&
-          !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+      if ((e.key === '/' || (e.ctrlKey && e.key === 'k')) && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
         e.preventDefault();
-        const searchInput = document.querySelector(
-          'input[type="search"], input[placeholder*="Search"], input[placeholder*="Cari"]'
-        );
+        const searchInput = document.querySelector('input[type="search"], input[placeholder*="Search"], input[placeholder*="Cari"]');
         if (searchInput) searchInput.focus();
       }
-      // Escape → close modal or mobile drawer
       if (e.key === 'Escape') {
         const modal = document.getElementById('modal');
         if (modal && !modal.classList.contains('hidden')) {
@@ -94,20 +93,19 @@
     });
   }
 
-  // ── Init ──────────────────────────────────────────────────────────────
+  function refresh() { bind(); if (window.I18n) window.I18n.applyLang(); }
+
   function start() {
-    applyApplicationsVisibility();
+    refresh();
+    addSwitcher();
     setupMobileDrawer();
     setupKeyboardShortcuts();
+    new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(node => {
+      if (node.nodeType === Node.ELEMENT_NODE) bind(node);
+    }))).observe(document.body, { childList: true, subtree: true });
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start);
-  } else {
-    start();
-  }
-
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  window.refreshLanguage = refresh;
   window.toggleMobileSidebar = toggleMobileSidebar;
-  // stub agar tidak error jika ada kode yang masih memanggil refreshLanguage
-  window.refreshLanguage = function () {};
 })();
