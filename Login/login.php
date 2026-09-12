@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['role'] = $user_data['role'];
             
             // Arahkan ke halaman utama/dashboard kamu
-            header('Location: ../dashboard.html');
+            header('Location: ../dashboard.php');
             exit;
         } else {
             $error = 'Kata sandi yang Anda masukkan salah!';

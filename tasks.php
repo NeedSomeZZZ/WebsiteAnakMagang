@@ -57,48 +57,7 @@
 <body class="bg-surface text-on-surface font-body-md text-body-md h-screen overflow-hidden flex">
 
     <!-- SideNavBar -->
-    <aside
-        class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
-        <div class="flex items-center gap-sm mb-xl px-sm">
-            <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
-            </div>
-            <div>
-                <h1 class="font-headline-md text-headline-md text-primary font-bold">InternSpace</h1>
-                <p class="font-label-sm text-label-sm text-on-surface-variant" data-i18n="brand_subtitle">Management
-                    Portal</p>
-            </div>
-        </div>
-        <nav class="flex-1 space-y-sm">
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200"
-                href="index.html">
-                <span class="material-symbols-outlined">dashboard</span>
-                <span data-i18n="nav_dashboard">Dashboard</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200"
-                href="projects.html">
-                <span class="material-symbols-outlined">folder_open</span>
-                <span data-i18n="nav_projects">Projects</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200"
-                href="attendance.html">
-                <span class="material-symbols-outlined">event_available</span>
-                <span data-i18n="nav_attendance">Attendance</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md active:scale-[0.98] transition-transform font-bold"
-                href="tasks.html">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">view_kanban</span>
-                <span data-i18n="nav_tasks">Tasks</span>
-            </a>
-
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200"
-                href="applications.html">
-                <span class="material-symbols-outlined">description</span>
-                <span data-i18n="nav_applications">Applications</span>
-            </a>
-
-        </nav>
-    </aside>
+<?php $active = 'tasks'; include 'partials/sidebar-intern.php'; ?>
 
     <!-- Main Content Area -->
     <main class="flex-1 md:ml-[16.5rem] flex flex-col h-full bg-surface overflow-x-auto">
@@ -129,7 +88,7 @@
                         class="bg-transparent font-label-md text-label-md text-primary font-bold pr-6 py-0.5 border-none focus:ring-0 focus:outline-none cursor-pointer">
                         <!-- Populated dynamically -->
                     </select>
-                    <a href="projects.html" title="Kelola Semua Project (projects.html)"
+                    <a href="projects.php" title="Kelola Semua Project (projects.php)"
                         class="p-1 rounded-lg text-on-surface-variant hover:text-primary hover:bg-white transition-colors flex items-center ml-1">
                         <span class="material-symbols-outlined text-[18px]">manage_accounts</span>
                     </a>

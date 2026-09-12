@@ -194,51 +194,9 @@
 <body class="bg-surface text-on-surface font-body-md min-h-screen flex">
 
     <!-- SideNavBar -->
-    <aside
-        class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
-        <div class="flex items-center gap-sm mb-xl px-sm">
-            <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
-            </div>
-            <div>
-                <h1 class="font-headline-md text-headline-md text-primary font-bold font-geist">Kedayweb</h1>
-                <p class="font-label-sm text-label-sm text-on-surface-variant">Portal PKL</p>
-            </div>
-        </div>
-        <nav class="flex-1 space-y-sm">
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200"
-                href="dashboard.html">
-                <span class="material-symbols-outlined">dashboard</span>
-                <span>Dashboard</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200"
-                href="projects.html">
-                <span class="material-symbols-outlined">folder_open</span>
-                <span>Projects</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md active:scale-[0.98] transition-transform"
-                href="attendance.html">
-                <span class="material-symbols-outlined">event_available</span>
-                <span>Attendance</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200"
-                href="tasks.html">
-                <span class="material-symbols-outlined">view_kanban</span>
-                <span>Tasks</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200"
-                href="applications.html">
-                <span class="material-symbols-outlined">description</span>
-                <span>Applications</span>
-            </a>
-        </nav>
-    </aside>
+<?php $active = 'attendance'; include 'partials/sidebar-intern.php'; ?>
 
-    <!-- TopNavBar (Mobile) -->
-    <header
-        class="md:hidden flex justify-between items-center px-md w-full h-16 bg-surface-container-lowest border-b border-outline-variant shadow-sm fixed top-0 z-50">
-        <h1 class="font-headline-md text-headline-md font-bold text-primary font-geist">Kedayweb</h1>
-    </header>
+    <?php include 'partials/topnav-mobile.php'; ?>
 
     <!-- Main Content -->
     <main class="flex-1 md:ml-[16.5rem] pt-20 md:pt-0 pb-10 px-4 md:px-8 max-w-[1400px] mx-auto w-full">

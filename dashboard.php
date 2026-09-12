@@ -17,44 +17,7 @@
 </head>
 <body class="bg-background text-on-surface font-body-md flex h-screen overflow-hidden">
 <!-- SideNavBar (Desktop) -->
-<aside class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
-    <div class="flex items-center gap-sm mb-xl px-sm">
-        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
-            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
-        </div>
-        <div>
-            <h1 class="font-headline-md text-headline-md text-primary font-bold">Kedayweb</h1>
-            <p class="font-label-sm text-label-sm text-on-surface-variant">Kedayweb</p>
-        </div>
-    </div>
-    <nav class="flex-1 space-y-sm">
-        <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md active:scale-[0.98] transition-transform" href="dashboard.html">
-    <span class="material-symbols-outlined">dashboard</span>
-    <span>Dashboard</span>
-</a>
-        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="projects.html">
-            <span class="material-symbols-outlined">folder_open</span>
-            <span>Projects</span>
-        </a>
-        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="attendance.html">
-            <span class="material-symbols-outlined">event_available</span>
-            <span>Attendance</span>
-        </a>
-        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="tasks.html">
-            <span class="material-symbols-outlined">view_kanban</span>
-            <span>Tasks</span>
-        </a>
-        <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md text-label-md transition-all duration-200" href="applications.html">
-            <span class="material-symbols-outlined">description</span>
-            <span>Applications</span>
-        </a>
-        
-            <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md active:scale-[0.98] transition-transform" href="admin-dashboard.html">
-            <span class="material-symbols-outlined">admin_panel_settings</span>
-            <span>Admin Dashboard</span>
-        </a>
-    </nav>
-</aside>
+<?php $active = 'dashboard'; $show_admin_link = true; include 'partials/sidebar-intern.php'; ?>
 
 <!-- Main Content Canvas -->
 <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto relative">
@@ -94,7 +57,7 @@
         <!-- Top Stats Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
             <!-- Stat: Attendance -->
-            <a href="attendance.html" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 relative overflow-hidden group block">
+            <a href="attendance.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 relative overflow-hidden group block">
                 <div class="flex justify-between items-start">
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Attendance</span>
                     <div class="p-xs rounded-full bg-surface-container-high text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
@@ -110,7 +73,7 @@
                 </div>
             </a>
             <!-- Stat: Tasks Done -->
-            <a href="tasks.html" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block">
+            <a href="tasks.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block">
                 <div class="flex justify-between items-start">
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" data-i18n="stat_tasks_done">Tasks Done</span>
                     <div class="p-xs rounded-full bg-surface-container-high text-primary">
@@ -123,7 +86,7 @@
                 </div>
             </a>
             <!-- Stat: Active Projects -->
-            <a href="projects.html" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block">
+            <a href="projects.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block">
                 <div class="flex justify-between items-start">
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" data-i18n="stat_active_proj">Active Projects</span>
                     <div class="p-xs rounded-full bg-surface-container-high text-primary">
@@ -136,7 +99,7 @@
                 </div>
             </a>
             <!-- Stat: Pending Tasks -->
-            <a href="tasks.html" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block" id="stat-tasks-pending-card">
+            <a href="tasks.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block" id="stat-tasks-pending-card">
                 <div class="flex justify-between items-start">
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Pending Tasks</span>
                     <div class="p-xs rounded-full bg-surface-container-high text-primary">

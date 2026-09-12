@@ -29,23 +29,7 @@
 </head>
 
 <body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col antialiased">
-    <!-- TopNavBar -->
-    <header class="bg-surface-container-lowest border-b border-outline-variant shadow-sm sticky top-0 z-50">
-        <div class="flex justify-between items-center px-gutter w-full max-w-container-max mx-auto h-16">
-            <div class="flex items-center gap-sm">
-                <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
-                </div>
-                <a href="index.html" class="font-headline-md text-headline-md font-bold text-primary">Kedayweb</a>
-            </div>
-
-            <div class="flex items-center gap-sm">
-                <a href="login/login.php"
-                    class="bg-primary-container text-on-primary px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors"
-                    data-i18n="btn_portal_login">Masuk Portal</a>
-            </div>
-        </div>
-    </header>
+    <?php include 'partials/topnav-public.php'; ?>
 
     <main class="flex-grow">
         <!-- Hero Section -->
@@ -333,7 +317,7 @@
             setTimeout(() => {
                 alert(`${successMsg}\n\nNama: ${firstName} ${lastName}\nEmail: ${email}\nPosisi: ${role}\n\n${touchMsg}`);
                 // Redirect to dashboard after successful registration
-                window.location.href = 'dashboard.html';
+                window.location.href = 'dashboard.php';
             }, 1200);
         }
     </script>

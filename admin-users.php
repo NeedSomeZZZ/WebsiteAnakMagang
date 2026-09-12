@@ -18,39 +18,7 @@
 </head>
 <body class="bg-background text-on-surface font-body-md flex h-screen overflow-hidden">
     <!-- Sidebar -->
-    <aside class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
-        <div class="flex items-center gap-sm mb-xl px-sm">
-            <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
-            </div>
-            <div>
-                <h2 class="font-headline-lg text-on-surface font-bold">Kedayweb</h2>
-                <p class="font-label-sm text-label-sm text-on-surface-variant">Admin Panel</p>
-            </div>
-        </div>
-        <nav class="flex-1 space-y-sm">
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-dashboard.html">
-                <span class="material-symbols-outlined">dashboard</span>
-                <span>Dashboard</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md" href="admin-users.html">
-                <span class="material-symbols-outlined">people</span>
-                <span>Users</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-attendance.html">
-                <span class="material-symbols-outlined">event_available</span>
-                <span>Kehadiran Intern</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-projects.html">
-                <span class="material-symbols-outlined">folder_open</span>
-                <span>Projects</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-stats.html">
-                <span class="material-symbols-outlined">insights</span>
-                <span>Statistics</span>
-            </a>
-        </nav>
-    </aside>
+<?php $active = 'users'; include 'partials/sidebar-admin.php'; ?>
 
     <!-- Main -->
     <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto">
@@ -167,7 +135,7 @@
                         </span>
                     </td>
                     <td class="py-2">
-                        <a href="admin-dashboard.html?intern=${encodeURIComponent(intern.name||'')}"
+                        <a href="admin-dashboard.php?intern=${encodeURIComponent(intern.name||'')}"
                            class="text-xs text-primary font-semibold hover:underline">Lihat Dashboard</a>
                     </td>
                 </tr>

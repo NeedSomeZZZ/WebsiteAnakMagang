@@ -28,20 +28,12 @@
     </style>
 </head>
 <body class="bg-background min-h-screen flex flex-col font-body-md text-body-md text-on-surface">
-<!-- TopNavBar -->
-<header class="bg-surface-container-lowest shadow-sm border-b border-outline-variant w-full h-16 sticky top-0 z-50">
-    <div class="flex justify-between items-center px-gutter w-full max-w-container-max mx-auto h-full">
-        <div class="flex items-center gap-sm cursor-pointer">
-            <span class="material-symbols-outlined text-primary text-3xl filled-icon">school</span>
-            <a href="index.html" class="font-headline-md text-headline-md font-bold text-primary">Kedayweb</a>
-        </div>
-        <nav class="hidden md:flex items-center gap-md h-full">
-        </nav>
-        <div class="flex items-center gap-sm">
-            <a href="index.html" class="bg-primary-container text-on-primary px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors">Portal Login</a>
-        </div>
-    </div>
-</header>
+<?php
+$nav_icon = 'school';
+$nav_cta_label = 'Portal Login';
+$nav_cta_href = 'index.php';
+include 'partials/topnav-public.php';
+?>
 
 <!-- Main Content -->
 <main id="main-content" class="flex-1 w-full max-w-container-max mx-auto px-md md:px-gutter py-xl md:py-3xl">
@@ -214,7 +206,7 @@
             <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
             <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
             
-            <a class="text-primary font-semibold" href="verification.html">Verification</a>
+            <a class="text-primary font-semibold" href="verification.php">Verification</a>
         </nav>
         <div class="font-body-sm text-body-sm text-on-surface-variant">
             © 2024 Kedayweb Platform. Hak cipta dilindungi.

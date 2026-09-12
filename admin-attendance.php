@@ -136,47 +136,7 @@
 
 <body class="bg-background text-on-surface font-body-md flex h-screen overflow-hidden">
     <!-- Sidebar -->
-    <aside
-        class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
-        <div class="flex items-center gap-sm mb-xl px-sm">
-            <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
-                <span class="material-symbols-outlined"
-                    style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
-            </div>
-            <div>
-                <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold">
-                    Kedayweb</h2>
-                <p class="font-label-sm text-label-sm text-on-surface-variant">Admin Panel</p>
-            </div>
-        </div>
-        <nav class="flex-1 space-y-sm">
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md"
-                href="admin-dashboard.html">
-                <span class="material-symbols-outlined">dashboard</span>
-                <span>Dashboard</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md"
-                href="admin-users.html">
-                <span class="material-symbols-outlined">people</span>
-                <span>Users</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md"
-                href="admin-attendance.html">
-                <span class="material-symbols-outlined">event_available</span>
-                <span>Kehadiran Intern</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md"
-                href="admin-projects.html">
-                <span class="material-symbols-outlined">folder_open</span>
-                <span>Projects</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md"
-                href="admin-stats.html">
-                <span class="material-symbols-outlined">insights</span>
-                <span>Statistics</span>
-            </a>
-        </nav>
-    </aside>
+<?php $active = 'attendance'; include 'partials/sidebar-admin.php'; ?>
 
     <!-- Main -->
     <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto p-5 md:p-10">
@@ -185,7 +145,7 @@
             <div>
                 <h2 class="font-headline-lg">Kehadiran Semua Intern</h2>
             </div>
-            <a href="admin-dashboard.html" class="text-sm text-primary hover:underline flex items-center gap-1">
+            <a href="admin-dashboard.php" class="text-sm text-primary hover:underline flex items-center gap-1">
                 <span class="material-symbols-outlined text-[18px]">arrow_back</span> Kembali ke Dashboard
             </a>
         </header>
@@ -496,7 +456,7 @@
                         ${record && record.reason ? `<div class="mt-2 bg-amber-50 border border-amber-200 rounded-lg p-2 text-xs text-amber-900"><strong>Keterangan:</strong> ${escHtml(record.reason)}</div>` : ''}
                         ${!record ? '<p class="text-xs text-on-surface-variant italic mt-1">Intern ini belum mencatat kehadiran pada tanggal ini.</p>' : ''}
                         <div class="mt-2 text-right">
-                            <a href="attendance.html?intern=${encodeURIComponent(intern.name)}" class="text-xs text-primary hover:underline">Lihat kalender lengkap &rarr;</a>
+                            <a href="attendance.php?intern=${encodeURIComponent(intern.name)}" class="text-xs text-primary hover:underline">Lihat kalender lengkap &rarr;</a>
                         </div>
                     `;
                     list.appendChild(row);
@@ -539,7 +499,7 @@
                     <td class="px-3 py-2 text-center text-amber-700 font-bold">${late}</td>
                     <td class="px-3 py-2 text-center text-red-700 font-bold">${absent}</td>
                     <td class="px-3 py-2 text-center">
-                        <a href="attendance.html?intern=${encodeURIComponent(i.name)}" class="text-primary hover:underline text-xs font-semibold">Lihat Kalender</a>
+                        <a href="attendance.php?intern=${encodeURIComponent(i.name)}" class="text-primary hover:underline text-xs font-semibold">Lihat Kalender</a>
                     </td>
                 `;
                 tbody.appendChild(tr);

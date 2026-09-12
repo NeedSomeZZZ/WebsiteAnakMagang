@@ -22,39 +22,12 @@
 </head>
 <body class="bg-background text-on-surface font-body-md flex h-screen overflow-hidden">
     <!-- Sidebar (desktop) -->
-    <aside class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
-        <div class="flex items-center gap-sm mb-xl px-sm">
-            <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
-            </div>
-            <div>
-                <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold">Welcome back, <span id="intern-name">Alex</span></h2>
-                <p class="font-label-sm text-label-sm text-on-surface-variant">Kedayweb</p>
-            </div>
-        </div>
-        <nav class="flex-1 space-y-sm">
-            <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md" href="admin-dashboard.html">
-                <span class="material-symbols-outlined">dashboard</span>
-                <span>Dashboard</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-users.html">
-                <span class="material-symbols-outlined">people</span>
-                <span>Users</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-attendance.html">
-                <span class="material-symbols-outlined">event_available</span>
-                <span>Kehadiran Intern</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-projects.html">
-                <span class="material-symbols-outlined">folder_open</span>
-                <span>Projects</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg font-label-md" href="admin-stats.html">
-                <span class="material-symbols-outlined">insights</span>
-                <span>Statistics</span>
-            </a>
-        </nav>
-    </aside>
+<?php
+$active = 'dashboard';
+$sidebar_title_html = 'Welcome back, <span id="intern-name">Alex</span>';
+$sidebar_subtitle = 'Kedayweb';
+include 'partials/sidebar-admin.php';
+?>
     <!-- Main Content -->
     <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto p-5 md:p-10">
         <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 flex justify-between items-center px-4">
@@ -146,7 +119,7 @@
                             <span class="material-symbols-outlined text-[16px]">add_task</span>
                             <span>Tambah Tugas</span>
                         </button>
-                        <a href="tasks.html" class="px-3 py-2 bg-surface-container-low text-on-surface rounded-lg text-xs font-semibold hover:bg-surface-container-high transition-colors flex items-center gap-1 border border-outline-variant">
+                        <a href="tasks.php" class="px-3 py-2 bg-surface-container-low text-on-surface rounded-lg text-xs font-semibold hover:bg-surface-container-high transition-colors flex items-center gap-1 border border-outline-variant">
                             <span class="material-symbols-outlined text-[16px]">view_kanban</span>
                             <span>Buka Kanban Board</span>
                         </a>
@@ -196,7 +169,7 @@
             <div class="glass-card p-4 rounded-xl border border-outline-variant">
                 <div class="flex items-center justify-between mb-2">
                     <h3 class="font-headline-md">Kehadiran Intern</h3>
-                    <a href="admin-attendance.html" class="text-xs text-primary hover:underline flex items-center gap-1">
+                    <a href="admin-attendance.php" class="text-xs text-primary hover:underline flex items-center gap-1">
                         <span>Kalender Lengkap</span><span class="material-symbols-outlined text-[14px]">arrow_forward</span>
                     </a>
                 </div>
@@ -323,7 +296,7 @@
                                     <span class="material-symbols-outlined text-[14px]">add</span>
                                     <span>Tugas</span>
                                 </button>
-                                <a href="tasks.html?project=${p.id}" class="px-2.5 py-1 text-xs font-semibold border border-outline-variant rounded hover:bg-slate-100 transition-colors flex items-center gap-1" title="Lihat di Kanban">
+                                <a href="tasks.php?project=${p.id}" class="px-2.5 py-1 text-xs font-semibold border border-outline-variant rounded hover:bg-slate-100 transition-colors flex items-center gap-1" title="Lihat di Kanban">
                                     <span class="material-symbols-outlined text-[14px]">open_in_new</span>
                                     <span>Kanban</span>
                                 </a>
@@ -462,7 +435,7 @@
             if (!list) return;
             const interns = InternStore.list();
             list.innerHTML = interns.length
-                ? interns.map(i => `<li><a href="dashboard.html?intern=${encodeURIComponent(i.name)}" class="text-primary hover:underline flex items-center justify-between">
+                ? interns.map(i => `<li><a href="dashboard.php?intern=${encodeURIComponent(i.name)}" class="text-primary hover:underline flex items-center justify-between">
                         <span>${escapeHtml(i.name)}</span>
                         <span class="text-xs text-on-surface-variant">${escapeHtml(i.division || '')}</span>
                     </a></li>`).join('')
@@ -640,7 +613,7 @@
             }
             renderEverything();
 
-            // Jika dibuka lewat link "Pilih Intern" (dashboard.html?intern=Nama), pre-select di kedua dropdown terkait
+            // Jika dibuka lewat link "Pilih Intern" (dashboard.php?intern=Nama), pre-select di kedua dropdown terkait
             if (internParam) {
                 const decoded = decodeURIComponent(internParam);
                 const gradeSelect = document.getElementById('grade-intern-select');
