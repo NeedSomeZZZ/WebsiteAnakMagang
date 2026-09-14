@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/session.php'; require_login(); ?>
 <!doctype html>
 <html lang="id">
 <head>
@@ -31,8 +32,11 @@
         </button>
         <span class="flex items-center gap-2 rounded-full border border-line py-1 pl-1 pr-3 text-sm font-semibold text-slate-700">
           <span class="material-symbols-outlined rounded-full bg-blue-100 p-1 text-primary">account_circle</span>
-          Alex Doe
+          <?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?>
         </span>
+        <a href="logout.php" class="text-red-600 hover:text-red-700" title="Keluar" aria-label="Keluar">
+          <span class="material-symbols-outlined">logout</span>
+        </a>
       </div>
     </header>
     <div class="mx-auto max-w-7xl p-5 md:p-8">

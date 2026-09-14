@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/session.php'; require_login(); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,12 +25,12 @@
     <!-- Sidebar (desktop) -->
 <?php
 $active = 'dashboard';
-$sidebar_title_html = 'Welcome back, <span id="intern-name">Alex</span>';
+
 $sidebar_subtitle = 'Kedayweb';
 include 'partials/sidebar-admin.php';
 ?>
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto p-5 md:p-10">
+    <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto p-5 ">
         <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 flex justify-between items-center px-4">
             <h2 class="font-headline-lg">Admin Dashboard</h2>
             <div class="flex items-center gap-2">
@@ -40,7 +41,10 @@ include 'partials/sidebar-admin.php';
                     <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
                     </div>
-                    <span class="hidden sm:inline-block">Alex Doe</span>
+                    <span class="hidden sm:inline-block"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
+                    <a href="logout.php" class="text-error hover:text-red-700" title="Keluar" aria-label="Keluar">
+                        <span class="material-symbols-outlined">logout</span>
+                    </a>
                 </div>
             </div>
         </header>
@@ -212,15 +216,6 @@ include 'partials/sidebar-admin.php';
                 </div>
             </div>
             <!-- News & Lessons Card -->
-            <div class="glass-card p-4 rounded-xl border border-outline-variant lg:col-span-2 xl:col-span-3">
-                <h3 class="font-headline-md mb-2" id="news-title">Berita & Pelajaran</h3>
-                <form id="news-form" class="space-y-2 mb-4">
-                    <input type="text" id="news-input-title" class="w-full p-2 border border-outline-variant rounded" placeholder="Judul berita" required />
-                    <textarea id="news-input-content" class="w-full p-2 border border-outline-variant rounded" rows="3" placeholder="Isi berita" required></textarea>
-                    <button type="submit" class="px-4 py-2 bg-primary text-on-primary rounded-md hover:bg-primary/90">Tambah Berita</button>
-                </form>
-                <ul id="news-list" class="space-y-2 max-h-60 overflow-y-auto text-sm text-on-surface-variant"></ul>
-            </div>
         </section>
     </main>
     <script>

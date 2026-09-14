@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/session.php'; require_login(); ?>
 <!doctype html>
 <html lang="id">
 <head>
@@ -22,7 +23,8 @@
   <main class="md:ml-[16.5rem]">
     <header class="flex h-16 items-center justify-between border-b border-line bg-white px-5 md:px-8">
       <h1 class="font-geist text-lg font-bold text-primary" data-i18n="nav_projects">Projects</h1>
-      <span class="rounded-full border border-line px-3 py-1 text-sm font-semibold text-slate-700">Alex Doe</span>
+      <span class="rounded-full border border-line px-3 py-1 text-sm font-semibold text-slate-700"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
+      <a href="logout.php" class="text-red-600 hover:text-red-700" title="Keluar" aria-label="Keluar"><span class="material-symbols-outlined">logout</span></a>
     </header>
     <div id="app" class="mx-auto max-w-7xl p-5 md:p-8"></div>
   </main>

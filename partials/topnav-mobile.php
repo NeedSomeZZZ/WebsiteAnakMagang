@@ -12,4 +12,10 @@ if (!isset($mobile_title)) {
 ?>
 <header class="md:hidden flex justify-between items-center px-md w-full h-16 bg-surface-container-lowest border-b border-outline-variant shadow-sm fixed top-0 z-50">
     <h1 class="font-headline-md text-headline-md font-bold text-primary font-geist"><?php echo htmlspecialchars($mobile_title); ?></h1>
+    <div class="flex items-center gap-sm">
+        <span class="font-label-sm text-on-surface truncate max-w-[8rem]"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
+        <a href="logout.php" class="text-error" aria-label="Keluar" title="Keluar">
+            <span class="material-symbols-outlined">logout</span>
+        </a>
+    </div>
 </header>
