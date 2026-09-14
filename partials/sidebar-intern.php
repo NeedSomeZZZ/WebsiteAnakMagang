@@ -48,4 +48,14 @@ $intern_nav_items = [
             </a>
         <?php endif; ?>
     </nav>
+    <div class="mt-auto border-t border-outline-variant pt-md">
+        <div class="flex items-center gap-sm px-sm mb-sm">
+            <span class="material-symbols-outlined text-primary">account_circle</span>
+            <span class="font-label-sm text-on-surface truncate"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
+        </div>
+        <a class="flex items-center gap-md px-md py-sm rounded-lg font-label-md text-label-md text-error hover:bg-error-container" href="logout.php">
+            <span class="material-symbols-outlined">logout</span>
+            <span>Keluar</span>
+        </a>
+    </div>
 </aside>

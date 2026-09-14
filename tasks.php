@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/session.php'; require_login(); ?>
 <!DOCTYPE html>
 <html lang="en">
 

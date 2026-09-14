@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/session.php'; require_login(); ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -36,7 +37,8 @@
                     <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
                     </div>
-                    <span class="hidden sm:inline-block font-label-md">Alex Doe</span>
+                    <span class="hidden sm:inline-block font-label-md"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
+                    <a href="logout.php" class="text-error hover:text-red-700" title="Keluar" aria-label="Keluar"><span class="material-symbols-outlined">logout</span></a>
                 </div>
             </div>
         </header>

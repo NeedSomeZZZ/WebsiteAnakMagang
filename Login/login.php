@@ -1,6 +1,6 @@
 <?php
-session_start();
-require 'koneksi.php'; // Memanggil koneksi database
+require_once __DIR__ . '/../session.php';
+require_once __DIR__ . '/koneksi.php'; // Memanggil koneksi database
 
 $error = '';
 
@@ -19,12 +19,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Cek kecocokan password
         if ($password === $user_data['password']) {
             // Jika berhasil, set Session
+          session_regenerate_id(true);
             $_SESSION['user_logged_in'] = true;
             $_SESSION['user_id'] = $user_data['username'];
+            $_SESSION['username'] = $user_data['username'];
             $_SESSION['role'] = $user_data['role'];
             
             // Arahkan ke halaman utama/dashboard kamu
-            header('Location: ../dashboard.php');
+            header('Location: ' . ($user_data['role'] === 'admin' ? '../admin-dashboard.php' : '../dashboard.php'));
             exit;
         } else {
             $error = 'Kata sandi yang Anda masukkan salah!';
@@ -153,10 +155,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div>
-              <div class="flex justify-between items-center mb-1">
-                <label class="block text-xs font-semibold text-slate-700">Kata Sandi</label>
-                <a href="#" class="text-[11px] text-blue-600 hover:underline">Lupa kata sandi?</a>
-              </div>
               <div class="relative">
                 <i class="fa-solid fa-lock absolute left-3 top-3 text-slate-400 text-sm"></i>
                 <input type="password" name="password" id="password" placeholder="••••••••" required
@@ -172,19 +170,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               Masuk ke Dasbor <i class="fa-solid fa-arrow-right"></i>
             </button>
           </form>
-
-          <p class="text-[10px] text-center text-slate-400 mt-4 flex items-center justify-center gap-1">
-            <i class="fa-solid fa-lock text-[9px]"></i> Koneksi terenkripsi SSL 256-bit & verifikasi dua langkah (2FA) aktif.
-          </p>
-        </div>
-
-        <div class="pt-6 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500">
-          <span>Belum terdaftar dalam batch magang berjalan?</span>
-          <div class="space-x-2">
-            <a href="#" class="text-slate-700 font-medium hover:underline">Lamar Posisi Baru</a>
-            <span>•</span>
-            <a href="#" class="text-slate-700 font-medium hover:underline">Hubungi PIC Perusahaan</a>
-          </div>
         </div>
       </div>
 
