@@ -49,61 +49,9 @@ include '../partials/sidebar-admin.php';
             </div>
         </header>
           <section class="mt-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            <!-- Intern Dashboards Card -->
-            <div class="glass-card p-4 rounded-xl border border-outline-variant">
-                <h3 class="font-headline-md mb-2">Intern Dashboards</h3>
-                <p class="text-sm text-on-surface-variant mb-3">Pilih intern untuk melihat dashboard mereka.</p>
-                <ul class="space-y-2" id="intern-dashboard-list">
-                    <!-- Diisi dinamis dari InternStore -->
-                </ul>
+
             </div>
-            <!-- Penilaian & Hapus Pekerjaan Intern Card -->
-            <div class="glass-card p-4 rounded-xl border border-outline-variant">
-                <h3 class="font-headline-md mb-2">Penilaian & Hapus Pekerjaan Intern</h3>
-                <p class="text-sm text-on-surface-variant mb-3">Pilih intern untuk menilai atau menghapus pekerjaan mereka.</p>
-                <select id="grade-intern-select" class="w-full mb-3 p-2 border border-outline-variant rounded text-sm">
-                    <option value="" disabled selected>Pilih intern...</option>
-                </select>
-                <table class="min-w-full text-sm" id="intern-tasks-table" style="display:none;">
-                    <thead class="bg-surface-container-lowest">
-                        <tr>
-                            <th class="px-2 py-1 text-left">Pekerjaan</th>
-                            <th class="px-2 py-1 text-left">Penilaian</th>
-                            <th class="px-2 py-1 text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="intern-tasks-body"></tbody>
-                </table>
-                <p id="intern-tasks-empty" class="text-xs text-on-surface-variant italic hidden">Intern ini belum memiliki tugas.</p>
-            </div>
-            <!-- Fitur Intern Card -->
-            <div class="glass-card p-4 rounded-xl border border-outline-variant">
-                <h3 class="font-headline-md mb-2">Fitur Intern</h3>
-                <p class="text-sm text-on-surface-variant mb-3">Berikut adalah fitur yang dapat diakses oleh intern:</p>
-                <ul class="list-disc list-inside">
-                    <li>Dashboard pribadi (lihat progres tugas)</li>
-                    <li>Profil (ubah informasi pribadi)</li>
-                    <li>Daftar tugas (lihat dan selesaikan tugas)</li>
-                    <li>Pengaturan (atur preferensi akun)</li>
-                </ul>
-            </div>
-            <!-- User Management Card -->
-            <div class="glass-card p-4 rounded-xl border border-outline-variant">
-                <h3 class="font-headline-md mb-2">User Management</h3>
-                <p class="text-sm text-on-surface-variant mb-3">Kelola daftar intern yang terdaftar di portal.</p>
-                <table class="min-w-full text-sm">
-                    <thead class="bg-surface-container-lowest">
-                        <tr>
-                            <th class="px-2 py-1 text-left">Name</th>
-                            <th class="px-2 py-1 text-left">Email</th>
-                            <th class="px-2 py-1 text-left">Divisi</th>
-                            <th class="px-2 py-1 text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-outline-variant" id="user-mgmt-body"></tbody>
-                </table>
-                <div class="mt-3 text-right"><button onclick="openAddInternModal()" class="px-3 py-1 bg-primary text-on-primary rounded-md hover:bg-primary/90">Add New User</button></div>
-            </div>
+
             <!-- Project & Task Management Card (Admin Feature) -->
             <div class="glass-card p-5 rounded-xl border border-outline-variant lg:col-span-2 xl:col-span-3">
                 <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-4 pb-3 border-b border-outline-variant">
@@ -424,27 +372,7 @@ include '../partials/sidebar-admin.php';
             }
         }
 
-        /* ================= 1. INTERN DASHBOARDS (dynamic) ================= */
-        function renderInternDashboardList() {
-            const list = document.getElementById('intern-dashboard-list');
-            if (!list) return;
-            const interns = InternStore.list();
-            list.innerHTML = interns.length
-                ? interns.map(i => `<li><a href="../dashboard.php?intern=${encodeURIComponent(i.name)}" class="text-primary hover:underline flex items-center justify-between">
-                        <span>${escapeHtml(i.name)}</span>
-                        <span class="text-xs text-on-surface-variant">${escapeHtml(i.division || '')}</span>
-                    </a></li>`).join('')
-                : '<li class="text-sm text-on-surface-variant italic">Belum ada intern terdaftar.</li>';
-        }
 
-        /* ================= 1B. PENILAIAN & HAPUS PEKERJAAN INTERN ================= */
-        function populateGradeInternSelect() {
-            const select = document.getElementById('grade-intern-select');
-            if (!select) return;
-            const current = select.value;
-            select.innerHTML = '<option value="" disabled ' + (current ? '' : 'selected') + '>Pilih intern...</option>' +
-                InternStore.list().map(i => `<option value="${escapeHtml(i.name)}" ${i.name === current ? 'selected' : ''}>${escapeHtml(i.name)}</option>`).join('');
-        }
 
         function renderInternTasksForGrading() {
             const internName = document.getElementById('grade-intern-select').value;
@@ -508,22 +436,7 @@ include '../partials/sidebar-admin.php';
             });
         }
 
-        /* ================= 1C. USER MANAGEMENT ================= */
-        function renderUserManagement() {
-            const body = document.getElementById('user-mgmt-body');
-            if (!body) return;
-            const interns = InternStore.list();
-            body.innerHTML = interns.map(i => `
-                <tr>
-                    <td class="px-2 py-1">${escapeHtml(i.name)}</td>
-                    <td class="px-2 py-1">${escapeHtml(i.email || '-')}</td>
-                    <td class="px-2 py-1">${escapeHtml(i.division || '-')}</td>
-                    <td class="px-2 py-1 text-center">
-                        <button class="text-error" title="Delete" onclick="deleteInternUser('${i.id}', '${escapeHtml(i.name)}')"><span class="material-symbols-outlined">delete</span></button>
-                    </td>
-                </tr>
-            `).join('') || '<tr><td colspan="4" class="px-2 py-3 text-center text-on-surface-variant italic">Belum ada intern.</td></tr>';
-        }
+ 
 
         function deleteInternUser(id, name) {
             if (!confirm(`Hapus intern "${name}"? Data kehadirannya juga akan dihapus.`)) return;
@@ -622,38 +535,7 @@ include '../partials/sidebar-admin.php';
         });
     </script>
 
-    <!-- Modal Tambah Intern Baru (User Management) -->
-    <div id="add-intern-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs flex">
-        <div class="bg-white rounded-2xl border border-outline-variant w-full max-w-md p-6 shadow-2xl">
-            <div class="flex justify-between items-center mb-4 border-b border-outline-variant pb-2">
-                <h3 class="font-headline-md font-bold text-on-surface flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary">person_add</span>
-                    <span>Tambah Intern Baru</span>
-                </h3>
-                <button type="button" onclick="closeAddInternModal()" class="text-on-surface-variant hover:text-primary">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
-            <form onsubmit="saveNewIntern(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-on-surface uppercase mb-1">Nama Lengkap</label>
-                    <input required id="new-intern-name" type="text" class="w-full bg-surface-bright border border-outline-variant rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none" placeholder="Contoh: Budi Santoso"/>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-on-surface uppercase mb-1">Email</label>
-                    <input id="new-intern-email" type="email" class="w-full bg-surface-bright border border-outline-variant rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none" placeholder="budi@example.com"/>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-on-surface uppercase mb-1">Divisi</label>
-                    <input id="new-intern-division" type="text" class="w-full bg-surface-bright border border-outline-variant rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none" placeholder="Contoh: UI/UX Design"/>
-                </div>
-                <div class="flex justify-end gap-2 pt-3 border-t border-outline-variant">
-                    <button type="button" onclick="closeAddInternModal()" class="px-4 py-2 rounded-lg border border-outline-variant text-xs font-semibold text-slate-600 hover:bg-slate-100">Batal</button>
-                    <button type="submit" class="px-5 py-2 rounded-lg bg-primary text-white text-xs font-bold hover:bg-primary-container">Simpan Intern</button>
-                </div>
-            </form>
-        </div>
-    </div>
+
 
     <!-- Modal Tambah Project (Khusus Admin) -->
     <div id="admin-proj-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs flex">

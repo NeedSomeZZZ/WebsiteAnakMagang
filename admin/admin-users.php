@@ -139,7 +139,5 @@ $total_admins = count(array_filter($users, static function (array $user): bool {
             document.getElementById('no-users-msg').classList.toggle('hidden', visibleRows > 0);
         });
     </script>
-    <script src="../lang.js"></script>
-    <script src="../language-ui.js"></script>
 </body>
 </html>
