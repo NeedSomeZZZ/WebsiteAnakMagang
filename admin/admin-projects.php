@@ -1,4 +1,4 @@
-<?php require_once __DIR__ . '/session.php'; require_login(); ?>
+<?php require_once __DIR__ . '/../session.php'; require_login(); ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -10,16 +10,16 @@
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script src="shared-config.js"></script>
-    <script src="project-store.js"></script>
-    <link rel="stylesheet" href="style.css"/>
+    <script src="../shared-config.js"></script>
+    <script src="../project-store.js"></script>
+    <link rel="stylesheet" href="../style.css"/>
     <style>
         .glass-card { background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); }
     </style>
 </head>
 <body class="bg-background text-on-surface font-body-md flex h-screen overflow-hidden">
     <!-- Sidebar -->
-<?php $active = 'projects'; include 'partials/sidebar-admin.php'; ?>
+<?php $active = 'projects'; include '../partials/sidebar-admin.php'; ?>
 
     <!-- Main -->
     <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto">
@@ -34,7 +34,7 @@
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
                     </div>
                     <span class="hidden sm:inline-block font-label-md"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
-                    <a href="logout.php" class="text-error hover:text-red-700" title="Keluar" aria-label="Keluar"><span class="material-symbols-outlined">logout</span></a>
+                    <a href="../Login/logout.php" class="text-error hover:text-red-700" title="Keluar" aria-label="Keluar"><span class="material-symbols-outlined">logout</span></a>
                 </div>
             </div>
         </header>
@@ -152,7 +152,7 @@
         document.getElementById('search-project').addEventListener('input', e => renderProjects(e.target.value));
         document.addEventListener('DOMContentLoaded', () => renderProjects());
     </script>
-    <script src="lang.js"></script>
-    <script src="language-ui.js"></script>
+    <script src="../lang.js"></script>
+    <script src="../language-ui.js"></script>
 </body>
 </html>

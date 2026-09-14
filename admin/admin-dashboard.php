@@ -1,4 +1,4 @@
-<?php require_once __DIR__ . '/session.php'; require_login(); ?>
+<?php require_once __DIR__ . '/../session.php'; require_login(); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,10 +13,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script src="shared-config.js"></script>
-    <script src="project-store.js"></script>
-    <script src="intern-store.js"></script>
-    <link rel="stylesheet" href="style.css"/>
+    <script src="../shared-config.js"></script>
+    <script src="../project-store.js"></script>
+    <script src="../intern-store.js"></script>
+    <link rel="stylesheet" href="../style.css"/>
     <style>
         .glass-card { background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); }
     </style>
@@ -27,7 +27,7 @@
 $active = 'dashboard';
 
 $sidebar_subtitle = 'Kedayweb';
-include 'partials/sidebar-admin.php';
+include '../partials/sidebar-admin.php';
 ?>
     <!-- Main Content -->
     <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto p-5 ">
@@ -42,7 +42,7 @@ include 'partials/sidebar-admin.php';
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
                     </div>
                     <span class="hidden sm:inline-block"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
-                    <a href="logout.php" class="text-error hover:text-red-700" title="Keluar" aria-label="Keluar">
+                    <a href="../Login/logout.php" class="text-error hover:text-red-700" title="Keluar" aria-label="Keluar">
                         <span class="material-symbols-outlined">logout</span>
                     </a>
                 </div>
@@ -123,7 +123,7 @@ include 'partials/sidebar-admin.php';
                             <span class="material-symbols-outlined text-[16px]">add_task</span>
                             <span>Tambah Tugas</span>
                         </button>
-                        <a href="tasks.php" class="px-3 py-2 bg-surface-container-low text-on-surface rounded-lg text-xs font-semibold hover:bg-surface-container-high transition-colors flex items-center gap-1 border border-outline-variant">
+                        <a href="../tasks.php" class="px-3 py-2 bg-surface-container-low text-on-surface rounded-lg text-xs font-semibold hover:bg-surface-container-high transition-colors flex items-center gap-1 border border-outline-variant">
                             <span class="material-symbols-outlined text-[16px]">view_kanban</span>
                             <span>Buka Kanban Board</span>
                         </a>
@@ -291,7 +291,7 @@ include 'partials/sidebar-admin.php';
                                     <span class="material-symbols-outlined text-[14px]">add</span>
                                     <span>Tugas</span>
                                 </button>
-                                <a href="tasks.php?project=${p.id}" class="px-2.5 py-1 text-xs font-semibold border border-outline-variant rounded hover:bg-slate-100 transition-colors flex items-center gap-1" title="Lihat di Kanban">
+                                <a href="../tasks.php?project=${p.id}" class="px-2.5 py-1 text-xs font-semibold border border-outline-variant rounded hover:bg-slate-100 transition-colors flex items-center gap-1" title="Lihat di Kanban">
                                     <span class="material-symbols-outlined text-[14px]">open_in_new</span>
                                     <span>Kanban</span>
                                 </a>
@@ -430,7 +430,7 @@ include 'partials/sidebar-admin.php';
             if (!list) return;
             const interns = InternStore.list();
             list.innerHTML = interns.length
-                ? interns.map(i => `<li><a href="dashboard.php?intern=${encodeURIComponent(i.name)}" class="text-primary hover:underline flex items-center justify-between">
+                ? interns.map(i => `<li><a href="../dashboard.php?intern=${encodeURIComponent(i.name)}" class="text-primary hover:underline flex items-center justify-between">
                         <span>${escapeHtml(i.name)}</span>
                         <span class="text-xs text-on-surface-variant">${escapeHtml(i.division || '')}</span>
                     </a></li>`).join('')

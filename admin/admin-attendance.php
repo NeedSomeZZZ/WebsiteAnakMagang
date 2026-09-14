@@ -1,4 +1,4 @@
-<?php require_once __DIR__ . '/session.php'; require_login(); ?>
+<?php require_once __DIR__ . '/../session.php'; require_login(); ?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -14,9 +14,9 @@
         href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script src="shared-config.js"></script>
-    <script src="intern-store.js"></script>
-    <link rel="stylesheet" href="style.css" />
+    <script src="../shared-config.js"></script>
+    <script src="../intern-store.js"></script>
+    <link rel="stylesheet" href="../style.css" />
     <style>
         .glass-card {
             background: rgba(255, 255, 255, 0.8);
@@ -137,7 +137,7 @@
 
 <body class="bg-background text-on-surface font-body-md flex h-screen overflow-hidden">
     <!-- Sidebar -->
-<?php $active = 'attendance'; include 'partials/sidebar-admin.php'; ?>
+<?php $active = 'attendance'; include '../partials/sidebar-admin.php'; ?>
 
     <!-- Main -->
     <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto p-5 md:p-10">
@@ -146,9 +146,18 @@
             <div>
                 <h2 class="font-headline-lg">Kehadiran Semua Intern</h2>
             </div>
-            <a href="admin-dashboard.php" class="text-sm text-primary hover:underline flex items-center gap-1">
-                <span class="material-symbols-outlined text-[18px]">arrow_back</span> Kembali ke Dashboard
-            </a>
+            <div class="flex items-center gap-4">
+                <a href="admin-dashboard.php" class="text-sm text-primary hover:underline flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span> Kembali ke Dashboard
+                </a>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+                    </div>
+                    <span class="hidden sm:inline-block font-label-md"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
+                    <a href="../Login/logout.php" class="text-error hover:text-red-700" title="Keluar" aria-label="Keluar"><span class="material-symbols-outlined">logout</span></a>
+                </div>
+            </div>
         </header>
 
         <!-- Stats -->
@@ -457,7 +466,7 @@
                         ${record && record.reason ? `<div class="mt-2 bg-amber-50 border border-amber-200 rounded-lg p-2 text-xs text-amber-900"><strong>Keterangan:</strong> ${escHtml(record.reason)}</div>` : ''}
                         ${!record ? '<p class="text-xs text-on-surface-variant italic mt-1">Intern ini belum mencatat kehadiran pada tanggal ini.</p>' : ''}
                         <div class="mt-2 text-right">
-                            <a href="attendance.php?intern=${encodeURIComponent(intern.name)}" class="text-xs text-primary hover:underline">Lihat kalender lengkap &rarr;</a>
+                            <a href="../attendance.php?intern=${encodeURIComponent(intern.name)}" class="text-xs text-primary hover:underline">Lihat kalender lengkap &rarr;</a>
                         </div>
                     `;
                     list.appendChild(row);
@@ -500,7 +509,7 @@
                     <td class="px-3 py-2 text-center text-amber-700 font-bold">${late}</td>
                     <td class="px-3 py-2 text-center text-red-700 font-bold">${absent}</td>
                     <td class="px-3 py-2 text-center">
-                        <a href="attendance.php?intern=${encodeURIComponent(i.name)}" class="text-primary hover:underline text-xs font-semibold">Lihat Kalender</a>
+                        <a href="../attendance.php?intern=${encodeURIComponent(i.name)}" class="text-primary hover:underline text-xs font-semibold">Lihat Kalender</a>
                     </td>
                 `;
                 tbody.appendChild(tr);

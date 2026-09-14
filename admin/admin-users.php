@@ -1,4 +1,24 @@
-<?php require_once __DIR__ . '/session.php'; require_login(); ?>
+<?php
+require_once __DIR__ . '/../session.php';
+require_login();
+require_once __DIR__ . '/../Login/koneksi.php';
+
+$users = [];
+$users_query = mysqli_query($conn, 'SELECT id, username, role FROM users ORDER BY id ASC');
+if ($users_query) {
+    while ($user = mysqli_fetch_assoc($users_query)) {
+        $users[] = $user;
+    }
+}
+
+$total_users = count($users);
+$total_interns = count(array_filter($users, static function (array $user): bool {
+    return $user['role'] === 'intern';
+}));
+$total_admins = count(array_filter($users, static function (array $user): bool {
+    return $user['role'] === 'admin';
+}));
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -10,16 +30,15 @@
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script src="shared-config.js"></script>
-    <script src="intern-store.js"></script>
-    <link rel="stylesheet" href="style.css"/>
+    <script src="../shared-config.js"></script>
+    <link rel="stylesheet" href="../style.css"/>
     <style>
         .glass-card { background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); }
     </style>
 </head>
 <body class="bg-background text-on-surface font-body-md flex h-screen overflow-hidden">
     <!-- Sidebar -->
-<?php $active = 'users'; include 'partials/sidebar-admin.php'; ?>
+<?php $active = 'users'; include '../partials/sidebar-admin.php'; ?>
 
     <!-- Main -->
     <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto">
@@ -34,7 +53,7 @@
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
                     </div>
                     <span class="hidden sm:inline-block font-label-md"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
-                    <a href="logout.php" class="text-error hover:text-red-700" title="Keluar" aria-label="Keluar"><span class="material-symbols-outlined">logout</span></a>
+                    <a href="../Login/logout.php" class="text-error hover:text-red-700" title="Keluar" aria-label="Keluar"><span class="material-symbols-outlined">logout</span></a>
                 </div>
             </div>
         </header>
@@ -48,7 +67,7 @@
                     </div>
                     <div>
                         <p class="text-sm text-on-surface-variant">Total Intern</p>
-                        <p class="text-2xl font-bold text-on-surface" id="total-interns">0</p>
+                        <p class="text-2xl font-bold text-on-surface"><?php echo $total_interns; ?></p>
                     </div>
                 </div>
                 <div class="glass-card rounded-xl border border-outline-variant p-4 flex items-center gap-4">
@@ -56,8 +75,8 @@
                         <span class="material-symbols-outlined">check_circle</span>
                     </div>
                     <div>
-                        <p class="text-sm text-on-surface-variant">Aktif Hari Ini</p>
-                        <p class="text-2xl font-bold text-on-surface" id="active-today">0</p>
+                        <p class="text-sm text-on-surface-variant">Total User</p>
+                        <p class="text-2xl font-bold text-on-surface"><?php echo $total_users; ?></p>
                     </div>
                 </div>
                 <div class="glass-card rounded-xl border border-outline-variant p-4 flex items-center gap-4">
@@ -65,8 +84,8 @@
                         <span class="material-symbols-outlined">admin_panel_settings</span>
                     </div>
                     <div>
-                        <p class="text-sm text-on-surface-variant">Admin</p>
-                        <p class="text-2xl font-bold text-on-surface">1</p>
+                        <p class="text-sm text-on-surface-variant">Total Admin</p>
+                        <p class="text-2xl font-bold text-on-surface"><?php echo $total_admins; ?></p>
                     </div>
                 </div>
             </div>
@@ -84,15 +103,19 @@
                     <table class="w-full text-sm">
                         <thead>
                             <tr class="border-b border-outline-variant text-on-surface-variant text-left">
-                                <th class="pb-2 pr-4 font-semibold">Nama</th>
+                                <th class="pb-2 pr-4 font-semibold">ID</th>
+                                <th class="pb-2 pr-4 font-semibold">Username</th>
                                 <th class="pb-2 pr-4 font-semibold">Role</th>
-                                <th class="pb-2 pr-4 font-semibold">Departemen</th>
-                                <th class="pb-2 pr-4 font-semibold">Status</th>
-                                <th class="pb-2 font-semibold">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="users-table-body" class="divide-y divide-outline-variant">
-                            <!-- Diisi dinamis -->
+                            <?php foreach ($users as $user): ?>
+                                <tr class="user-row hover:bg-surface-container-low transition-colors">
+                                    <td class="py-2 pr-4 font-medium"><?php echo (int) $user['id']; ?></td>
+                                    <td class="py-2 pr-4"><?php echo htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td class="py-2 pr-4 text-on-surface-variant"><?php echo htmlspecialchars($user['role'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                     <p id="no-users-msg" class="hidden text-center py-8 text-on-surface-variant">Tidak ada intern yang ditemukan.</p>
@@ -102,52 +125,21 @@
     </main>
 
     <script>
-        function renderUsers(filter = '') {
-            const tbody = document.getElementById('users-table-body');
-            const noMsg = document.getElementById('no-users-msg');
-            const interns = (window.InternStore ? InternStore.all() : []);
-            document.getElementById('total-interns').textContent = interns.length;
-            document.getElementById('active-today').textContent = interns.filter(i => i.status === 'present' || i.status === 'active').length;
+        document.getElementById('search-user').addEventListener('input', event => {
+            const filter = event.target.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('.user-row');
+            let visibleRows = 0;
 
-            const filtered = filter
-                ? interns.filter(i => (i.name||'').toLowerCase().includes(filter.toLowerCase()))
-                : interns;
+            rows.forEach(row => {
+                const visible = row.textContent.toLowerCase().includes(filter);
+                row.classList.toggle('hidden', !visible);
+                if (visible) visibleRows++;
+            });
 
-            if (filtered.length === 0) {
-                tbody.innerHTML = '';
-                noMsg.classList.remove('hidden');
-                return;
-            }
-            noMsg.classList.add('hidden');
-            tbody.innerHTML = filtered.map(intern => `
-                <tr class="hover:bg-surface-container-low transition-colors">
-                    <td class="py-2 pr-4">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-full bg-primary-container text-primary flex items-center justify-center font-bold text-xs">
-                                ${(intern.name||'?')[0].toUpperCase()}
-                            </div>
-                            <span class="font-medium">${intern.name || '-'}</span>
-                        </div>
-                    </td>
-                    <td class="py-2 pr-4 text-on-surface-variant">${intern.role || 'Intern'}</td>
-                    <td class="py-2 pr-4 text-on-surface-variant">${intern.department || '-'}</td>
-                    <td class="py-2 pr-4">
-                        <span class="px-2 py-0.5 rounded-full text-xs font-semibold ${intern.status === 'present' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}">
-                            ${intern.status === 'present' ? 'Aktif' : 'Tidak Aktif'}
-                        </span>
-                    </td>
-                    <td class="py-2">
-                        <a href="admin-dashboard.php?intern=${encodeURIComponent(intern.name||'')}"
-                           class="text-xs text-primary font-semibold hover:underline">Lihat Dashboard</a>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        document.getElementById('search-user').addEventListener('input', e => renderUsers(e.target.value));
-        document.addEventListener('DOMContentLoaded', () => renderUsers());
+            document.getElementById('no-users-msg').classList.toggle('hidden', visibleRows > 0);
+        });
     </script>
-    <script src="lang.js"></script>
-    <script src="language-ui.js"></script>
+    <script src="../lang.js"></script>
+    <script src="../language-ui.js"></script>
 </body>
 </html>
