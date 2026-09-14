@@ -99,7 +99,7 @@ function renderProjects() {
         <p class="mt-2 text-slate-600">Kelola project dan pekerjaan tim dalam satu tempat yang terhubung langsung dengan Active Sprint Kanban.</p>
       </div>
       <div class="flex items-center gap-3">
-        <a href="tasks.html" class="inline-flex items-center justify-center gap-2 rounded-lg border border-outline-variant bg-white px-4 py-3 font-bold text-primary hover:bg-surface-container-high transition-colors shadow-sm">
+        <a href="tasks.php" class="inline-flex items-center justify-center gap-2 rounded-lg border border-outline-variant bg-white px-4 py-3 font-bold text-primary hover:bg-surface-container-high transition-colors shadow-sm">
           <span class="material-symbols-outlined">view_kanban</span>
           Lihat Semua Tasks
         </a>
@@ -127,11 +127,11 @@ function renderProjects() {
               <p class="mt-3 text-xs text-slate-500">Dibuat oleh ${escape(p.created_by)} · ${new Date(p.created_at).toLocaleDateString('id-ID')}</p>
             </div>
             <div class="mt-5 flex items-center gap-2 border-t border-line pt-4">
-              <a href="tasks.html?project=${p.id}" class="flex-1 rounded-lg bg-primary px-3 py-2 text-center text-sm font-bold text-white hover:bg-primary-container transition-colors flex items-center justify-center gap-1.5 shadow-sm" title="Buka di Kanban Board">
+              <a href="tasks.php?project=${encodeURIComponent(p.id)}" class="flex-1 rounded-lg bg-primary px-3 py-2 text-center text-sm font-bold text-white hover:bg-primary-container transition-colors flex items-center justify-center gap-1.5 shadow-sm" title="Buka di Kanban Board">
                 <span class="material-symbols-outlined text-[18px]">view_kanban</span>
                 Buka Kanban
               </a>
-              <a href="projects.html?project=${p.id}" class="rounded-lg border border-line px-3 py-2 text-primary hover:bg-slate-50 flex items-center justify-center transition-colors" title="Kelola Project">
+              <a href="projects.php?project=${encodeURIComponent(p.id)}" class="rounded-lg border border-line px-3 py-2 text-primary hover:bg-slate-50 flex items-center justify-center transition-colors" title="Kelola Project">
                 <span class="material-symbols-outlined text-[18px]">folder_open</span>
               </a>
               <button onclick="editProject('${p.id}')" aria-label="Edit" class="rounded-lg border border-line px-3 py-2 text-primary hover:bg-slate-50 transition-colors">
@@ -157,7 +157,7 @@ function renderProjects() {
 function renderBoard() {
   const project = ProjectStore.get(projectId);
   if (!project) {
-    location.href = 'projects.html';
+    location.href = 'projects.php';
     return;
   }
   const columns = [
@@ -174,13 +174,13 @@ function renderBoard() {
 
   app.innerHTML = `
     <div class="flex items-center justify-between">
-      <a href="projects.html" class="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+      <a href="projects.php" class="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
         <span class="material-symbols-outlined text-lg">arrow_back</span>
         Semua Project
       </a>
-      <a href="tasks.html?project=${project.id}" class="inline-flex items-center gap-1.5 rounded-lg bg-surface-container-high px-3 py-1.5 text-xs font-bold text-primary hover:bg-primary hover:text-white transition-colors shadow-sm">
+      <a href="tasks.php?project=${encodeURIComponent(project.id)}" class="inline-flex items-center gap-1.5 rounded-lg bg-surface-container-high px-3 py-1.5 text-xs font-bold text-primary hover:bg-primary hover:text-white transition-colors shadow-sm">
         <span class="material-symbols-outlined text-[16px]">open_in_new</span>
-        Buka di Active Sprint Kanban (tasks.html)
+        Buka di Active Sprint Kanban
       </a>
     </div>
     <div class="mt-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
@@ -189,7 +189,7 @@ function renderBoard() {
         <p class="mt-2 text-slate-600">${escape(project.description || 'Kanban board project.')}</p>
       </div>
       <div class="flex items-center gap-2">
-        <a href="tasks.html?project=${project.id}" class="inline-flex items-center gap-1.5 rounded-lg border border-outline-variant bg-white px-4 py-2.5 font-bold text-primary hover:bg-surface-container-high transition-colors shadow-sm">
+        <a href="tasks.php?project=${encodeURIComponent(project.id)}" class="inline-flex items-center gap-1.5 rounded-lg border border-outline-variant bg-white px-4 py-2.5 font-bold text-primary hover:bg-surface-container-high transition-colors shadow-sm">
           <span class="material-symbols-outlined text-[18px]">view_kanban</span>
           Sprint Kanban
         </a>
@@ -297,7 +297,7 @@ function showTask(taskId) {
         <button type="button" onclick="removeTask('${taskId}')" class="text-sm font-semibold text-red-600 hover:text-red-700 flex items-center gap-1">
           <span class="material-symbols-outlined text-[16px]">delete</span> Hapus task
         </button>
-        <a href="tasks.html?project=${projectId}" class="text-xs text-primary font-semibold hover:underline flex items-center gap-1">
+        <a href="tasks.php?project=${encodeURIComponent(projectId)}" class="text-xs text-primary font-semibold hover:underline flex items-center gap-1">
           Buka di Sprint Kanban <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
         </a>
       </div>
@@ -329,3 +329,75 @@ function dropTask(event, status) {
 }
 
 render();
+
+function renderProjects() {
+  const projects = ProjectStore.projects();
+  
+  // Ambil ID project yang sedang aktif untuk tombol utama "Lihat Semua Tasks"
+  const activeProjectId = ProjectStore.getActiveProjectId();
+  const kanbanLink = activeProjectId ? `tasks.php?project=${encodeURIComponent(activeProjectId)}` : 'tasks.php';
+
+  app.innerHTML = `
+    <div class="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+      <div>
+        <p class="mb-2 text-sm font-semibold uppercase tracking-wider text-primary">Workspace</p>
+        <h2 class="font-geist text-3xl font-bold text-on-surface">Daftar Project</h2>
+        <p class="mt-2 text-slate-600">Kelola project dan pekerjaan tim dalam satu tempat yang terhubung langsung dengan Active Sprint Kanban.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- LINK DIPERBARUI: Sekarang akan otomatis membuka Kanban dari project terakhir/aktif -->
+        <a href="${kanbanLink}" class="inline-flex items-center justify-center gap-2 rounded-lg border border-outline-variant bg-white px-4 py-3 font-bold text-primary hover:bg-surface-container-high transition-colors shadow-sm">
+          <span class="material-symbols-outlined">view_kanban</span>
+          Lihat Papan Kanban
+        </a>
+        <button onclick="newProject()" class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 font-bold text-white hover:bg-primary-container transition-colors shadow-sm">
+          <span class="material-symbols-outlined">add</span>
+          Tambah Project
+        </button>
+      </div>
+    </div>
+    <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      ${projects.length ? projects.map(p => {
+        const completedTasks = (p.tasks || []).filter(t => ProjectStore.statusMatches ? ProjectStore.statusMatches(t.status, 'done') : t.status === 'done').length;
+        return `
+          <article class="card rounded-2xl border border-line bg-white p-5 hover-card-shadow flex flex-col justify-between">
+            <div>
+              <div class="flex items-start justify-between">
+                <span class="material-symbols-outlined rounded-xl bg-blue-100 p-3 text-primary">folder</span>
+                <div class="flex items-center gap-2">
+                  <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">${p.tasks ? p.tasks.length : 0} tasks</span>
+                  <span class="rounded-full bg-green-100 px-2.5 py-1 text-xs font-bold text-green-700">${completedTasks} done</span>
+                </div>
+              </div>
+              <h3 class="mt-4 font-geist text-xl font-bold text-on-surface">${escape(p.name)}</h3>
+              <p class="mt-2 min-h-12 text-sm text-slate-600">${escape(p.description || 'Belum ada deskripsi project.')}</p>
+              <p class="mt-3 text-xs text-slate-500">Dibuat oleh ${escape(p.created_by)} · ${new Date(p.created_at).toLocaleDateString('id-ID')}</p>
+            </div>
+            <div class="mt-5 flex items-center gap-2 border-t border-line pt-4">
+              <!-- LINK DIPERBARUI: Pastikan encodeURIComponent merender URL dengan benar -->
+              <a href="tasks.php?project=${encodeURIComponent(p.id)}" onclick="ProjectStore.setActiveProjectId('${p.id}')" class="flex-1 rounded-lg bg-primary px-3 py-2 text-center text-sm font-bold text-white hover:bg-primary-container transition-colors flex items-center justify-center gap-1.5 shadow-sm" title="Buka di Kanban Board">
+                <span class="material-symbols-outlined text-[18px]">view_kanban</span>
+                Buka Kanban
+              </a>
+              <a href="projects.php?project=${encodeURIComponent(p.id)}" class="rounded-lg border border-line px-3 py-2 text-primary hover:bg-slate-50 flex items-center justify-center transition-colors" title="Kelola Project">
+                <span class="material-symbols-outlined text-[18px]">folder_open</span>
+              </a>
+              <button onclick="editProject('${p.id}')" aria-label="Edit" class="rounded-lg border border-line px-3 py-2 text-primary hover:bg-slate-50 transition-colors">
+                <span class="material-symbols-outlined text-[18px]">edit</span>
+              </button>
+              <button onclick="removeProject('${p.id}')" aria-label="Hapus" class="rounded-lg border border-line px-3 py-2 text-red-600 hover:bg-red-50 transition-colors">
+                <span class="material-symbols-outlined text-[18px]">delete</span>
+              </button>
+            </div>
+          </article>
+        `;
+      }).join('') : `
+        <div class="col-span-full rounded-2xl border border-dashed border-line bg-white p-14 text-center">
+          <span class="material-symbols-outlined text-4xl text-primary">folder_off</span>
+          <h3 class="mt-3 font-geist text-xl font-bold">Belum ada project</h3>
+          <p class="mt-2 text-slate-600">Buat project pertama Anda untuk memulai Kanban.</p>
+        </div>
+      `}
+    </div>
+  `;
+}
