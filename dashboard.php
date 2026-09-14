@@ -114,115 +114,17 @@
                     <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-tasks-pending-val">0</div>
                 </div>
             </a>
-            <!-- Stat: Current Rank -->
-            <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 bg-gradient-to-br from-surface-container-lowest to-surface-container-high block">
-                <div class="flex justify-between items-start">
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Current Rank</span>
-                    <div class="p-xs rounded-full bg-tertiary-container text-on-tertiary-container">
-                        <span class="material-symbols-outlined text-[20px]">military_tech</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="font-headline-md text-headline-md text-on-surface font-bold text-primary">Senior Intern</div>
-                    <div class="mt-2 w-full h-2 bg-outline-variant rounded-full overflow-hidden flex">
-                        <div class="h-full bg-gradient-to-r from-primary to-inverse-primary w-3/4 rounded-full"></div>
-                    </div>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1 text-right text-[10px]">1,200 / 1,500 XP</p>
-                </div>
-            </div>
+           
         </div>
         <!-- Main Bento Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-md items-start">
             <!-- Center/Left Column -->
             <div class="lg:col-span-8 flex flex-col gap-md">
                 <!-- Latest Badges -->
-                <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md">
-                    <div class="flex justify-between items-center mb-md">
-                        <h3 class="font-headline-md text-headline-md text-on-surface">Latest Achievements</h3>
-                    </div>
-                    <div class="flex gap-md overflow-x-auto pb-sm">
-                        <!-- Badge 1 -->
-                        <div class="flex items-center gap-sm p-sm rounded-xl border border-outline-variant bg-surface-bright min-w-[200px]">
-                            <div class="w-12 h-12 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center shadow-sm">
-                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bolt</span>
-                            </div>
-                            <div>
-                                <p class="font-label-md text-label-md text-on-surface">Speed Runner</p>
-                                <p class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">Finished 5 tasks early</p>
-                            </div>
-                        </div>
-                        <!-- Badge 2 -->
-                        <div class="flex items-center gap-sm p-sm rounded-xl border border-outline-variant bg-surface-bright min-w-[200px]">
-                            <div class="w-12 h-12 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shadow-sm">
-                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-                            </div>
-                            <div>
-                                <p class="font-label-md text-label-md text-on-surface">Task Master</p>
-                                <p class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">100% completion rate</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Recent Activity Log -->
-                <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex-1">
-                    <div class="flex justify-between items-center mb-md">
-                        <h3 class="font-headline-md text-headline-md text-on-surface">Recent Activity</h3>
-                        <span class="material-symbols-outlined text-outline">more_horiz</span>
-                    </div>
-                    <div class="space-y-0 relative before:absolute before:inset-0 before:ml-[1.15rem] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-outline-variant before:to-transparent">
-                        <!-- Activity Item 1 -->
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active py-sm">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-surface-container-lowest bg-primary-container text-on-primary-container shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10">
-                                <span class="material-symbols-outlined text-[16px]">check_circle</span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-sm rounded-xl border border-outline-variant bg-surface-bright ml-sm md:ml-0 shadow-sm">
-                                <div class="flex items-center justify-between mb-1">
-                                    <h4 class="font-label-md text-label-md text-on-surface">Task Completed</h4>
-                                    <time class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">10:42 AM</time>
-                                </div>
-                                <p class="font-body-sm text-body-sm text-on-surface-variant">Submitted Q3 Marketing Assets for review.</p>
-                            </div>
-                        </div>
-                        <!-- Activity Item 2 -->
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active py-sm">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-surface-container-lowest bg-surface-container-high text-primary shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10">
-                                <span class="material-symbols-outlined text-[16px]">login</span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-sm rounded-xl border border-outline-variant bg-surface-container-lowest ml-sm md:ml-0">
-                                <div class="flex items-center justify-between mb-1">
-                                    <h4 class="font-label-md text-label-md text-on-surface">Clocked In</h4>
-                                    <time class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">08:55 AM</time>
-                                </div>
-                                <p class="font-body-sm text-body-sm text-on-surface-variant">Location: Office HQ</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+               
+              
             </div>
-            <!-- Right Column -->
-            <div class="lg:col-span-4 flex flex-col">
-                <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg flex flex-col items-center text-center relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed opacity-30 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-                    <div class="mb-sm">
-                        <span class="inline-flex items-center gap-xs px-2 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">
-                            <span class="w-2 h-2 rounded-full bg-primary animate-pulse" id="clock-status-dot"></span>
-                            <span id="clock-status-text">Currently Active</span>
-                        </span>
-                    </div>
-                    <h3 class="font-headline-md text-headline-md text-on-surface mb-xs">Current Shift</h3>
-                    <div class="my-md">
-                        <span class="font-headline-xl text-[48px] leading-tight font-black text-primary tabular-nums tracking-tight" id="live-timer">02:47:15</span>
-                    </div>
-                    <div class="flex items-center gap-sm text-on-surface-variant mb-xl bg-surface-bright px-md py-sm rounded-lg border border-outline-variant">
-                        <span class="material-symbols-outlined text-[18px]">location_on</span>
-                        <span class="font-body-sm text-body-sm">Location: <strong>Office HQ</strong></span>
-                    </div>
-                    <button id="clock-btn" onclick="toggleClock()" class="w-full bg-primary text-on-primary hover:bg-on-primary-fixed hover:shadow-md transition-all rounded-lg py-sm px-md font-label-md text-label-md flex items-center justify-center gap-sm active:scale-[0.98]">
-                        <span class="material-symbols-outlined" id="clock-btn-icon">logout</span>
-                        <span id="clock-btn-text">Clock Out</span>
-                    </button>
-                </div>
-            </div>
+          
         </div>
         <div class="h-md"></div>
     </div>
