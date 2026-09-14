@@ -114,17 +114,89 @@
                     <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-tasks-pending-val">0</div>
                 </div>
             </a>
-           
+            <!-- Stat: Total Projects -->
+            <a href="projects.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block">
+                <div class="flex justify-between items-start">
+                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Total Proyek</span>
+                    <div class="p-xs rounded-full bg-surface-container-high text-primary">
+                        <span class="material-symbols-outlined text-[20px]">folder_open</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-total-proj-val">0</div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Proyek yang diikuti</p>
+                </div>
+            </a>
+            <!-- Stat: Completed Projects -->
+            <a href="projects.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block">
+                <div class="flex justify-between items-start">
+                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Proyek Selesai</span>
+                    <div class="p-xs rounded-full bg-surface-container-high text-primary">
+                        <span class="material-symbols-outlined text-[20px]">task_alt</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-completed-proj-val">0</div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Semua task rampung</p>
+                </div>
+            </a>
         </div>
-        <!-- Main Bento Grid -->
+        <!-- Attendance (Timemark style) -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-md items-start">
-            <!-- Center/Left Column -->
-            <div class="lg:col-span-8 flex flex-col gap-md">
-                <!-- Latest Badges -->
-               
-              
+            <div class="lg:col-span-5">
+                <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg flex flex-col items-center text-center relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed opacity-30 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                    <h3 class="font-headline-md text-headline-md text-on-surface mb-xs">Absensi Hari Ini</h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mb-sm" id="tm-date">-</p>
+                    <div class="my-md">
+                        <span class="font-headline-xl text-[40px] leading-tight font-black text-primary tabular-nums tracking-tight" id="tm-clock">00:00:00</span>
+                    </div>
+                    <span class="inline-flex items-center gap-xs px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm mb-md" id="tm-status-badge">
+                        Belum Absen
+                    </span>
+                    <div class="w-full grid grid-cols-2 gap-sm mb-md text-left">
+                        <div class="p-sm rounded-lg border border-outline-variant bg-surface-bright overflow-hidden">
+                            <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Jam Masuk</p>
+                            <p class="font-headline-sm text-headline-sm text-on-surface font-bold" id="tm-in-time">--:--</p>
+                            <img id="tm-in-photo" class="hidden w-full h-16 object-cover rounded-md mt-xs" alt="Foto clock in">
+                        </div>
+                        <div class="p-sm rounded-lg border border-outline-variant bg-surface-bright overflow-hidden">
+                            <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Jam Keluar</p>
+                            <p class="font-headline-sm text-headline-sm text-on-surface font-bold" id="tm-out-time">--:--</p>
+                            <img id="tm-out-photo" class="hidden w-full h-16 object-cover rounded-md mt-xs" alt="Foto clock out">
+                        </div>
+                    </div>
+                    <div class="w-full grid grid-cols-2 gap-sm">
+                        <button id="tm-clockin-btn" onclick="timemarkStartCapture('in')" class="w-full bg-primary text-on-primary hover:shadow-md transition-all rounded-lg py-sm px-md font-label-md text-label-md flex items-center justify-center gap-sm active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed">
+                            <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+                            Clock In
+                        </button>
+                        <button id="tm-clockout-btn" onclick="timemarkStartCapture('out')" class="w-full bg-surface-container-high text-on-surface hover:shadow-md transition-all rounded-lg py-sm px-md font-label-md text-label-md flex items-center justify-center gap-sm active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+                            <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+                            Clock Out
+                        </button>
+                    </div>
+                </div>
             </div>
-          
+        </div>
+
+        <!-- Hidden camera inputs -->
+        <input type="file" accept="image/*" capture="user" id="tm-camera-in" class="hidden">
+        <input type="file" accept="image/*" capture="user" id="tm-camera-out" class="hidden">
+
+        <!-- Capture Preview Modal -->
+        <div id="tm-modal" class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-md">
+            <div class="bg-surface-container-lowest rounded-2xl p-md max-w-sm w-full">
+                <h4 class="font-headline-sm text-headline-sm text-on-surface mb-sm text-center" id="tm-modal-title">Konfirmasi Absen</h4>
+                <div class="rounded-xl overflow-hidden border border-outline-variant mb-sm bg-black">
+                    <canvas id="tm-canvas" class="w-full block"></canvas>
+                </div>
+                <p class="font-body-sm text-body-sm text-on-surface-variant text-center mb-md" id="tm-modal-status">Menyiapkan kamera...</p>
+                <div class="grid grid-cols-2 gap-sm">
+                    <button onclick="timemarkRetake()" class="w-full bg-surface-container-high text-on-surface rounded-lg py-sm font-label-md text-label-md">Ambil Ulang</button>
+                    <button id="tm-confirm-btn" onclick="timemarkConfirm()" class="w-full bg-primary text-on-primary rounded-lg py-sm font-label-md text-label-md disabled:opacity-40 disabled:cursor-not-allowed" disabled>Simpan</button>
+                </div>
+            </div>
         </div>
         <div class="h-md"></div>
     </div>
@@ -215,10 +287,277 @@ function toggleClock() {
             const tElem = document.getElementById('stat-tasks-done-val');
             if (pElem) pElem.textContent = projects.length;
             if (tElem) tElem.textContent = completedCount;
+
+            // Total proyek yang diikuti & jumlah proyek yang sudah selesai
+            const totalProjElem = document.getElementById('stat-total-proj-val');
+            const completedProjElem = document.getElementById('stat-completed-proj-val');
+            const finishedProjects = projects.filter(p =>
+                p.tasks && p.tasks.length > 0 &&
+                p.tasks.every(t => ProjectStore.normalizeStatus(t.status) === 'done')
+            ).length;
+            if (totalProjElem) totalProjElem.textContent = projects.length;
+            if (completedProjElem) completedProjElem.textContent = finishedProjects;
         }
+
+        // Timemark-style attendance
+        timemarkUpdateClock();
+        setInterval(timemarkUpdateClock, 1000);
+        timemarkRefreshUI();
     });
+
+    // ============================================================
+    // TIMEMARK ATTENDANCE (Clock In / Clock Out)
+    // ============================================================
+    function timemarkPad(n) { return String(n).padStart(2, '0'); }
+
+    function timemarkToday() {
+        const d = new Date();
+        return `${d.getFullYear()}-${timemarkPad(d.getMonth() + 1)}-${timemarkPad(d.getDate())}`;
+    }
+
+    function timemarkUpdateClock() {
+        const now = new Date();
+        const clockEl = document.getElementById('tm-clock');
+        if (clockEl) {
+            clockEl.textContent = `${timemarkPad(now.getHours())}:${timemarkPad(now.getMinutes())}:${timemarkPad(now.getSeconds())}`;
+        }
+        const dateEl = document.getElementById('tm-date');
+        if (dateEl) {
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            dateEl.textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+        }
+    }
+
+    function timemarkSetBadge(text, variant) {
+        const badge = document.getElementById('tm-status-badge');
+        if (!badge) return;
+        badge.textContent = text;
+        const base = 'inline-flex items-center gap-xs px-3 py-1 rounded-full font-label-sm text-label-sm mb-md ';
+        badge.className = base + (variant === 'active'
+            ? 'bg-secondary-container text-on-secondary-container'
+            : variant === 'done'
+                ? 'bg-primary-container text-on-primary-container'
+                : 'bg-surface-container-high text-on-surface-variant');
+    }
+
+    function timemarkRefreshUI() {
+        if (!window.InternStore) return;
+        const name = InternStore.getCurrentUser();
+        const today = timemarkToday();
+        const rec = InternStore.getAttendance(name).find(r => r.date === today);
+        const inTimeEl = document.getElementById('tm-in-time');
+        const outTimeEl = document.getElementById('tm-out-time');
+        const inPhotoEl = document.getElementById('tm-in-photo');
+        const outPhotoEl = document.getElementById('tm-out-photo');
+        const btnIn = document.getElementById('tm-clockin-btn');
+        const btnOut = document.getElementById('tm-clockout-btn');
+
+        const showPhoto = (el, dataUrl) => {
+            if (!el) return;
+            if (dataUrl) { el.src = dataUrl; el.classList.remove('hidden'); }
+            else { el.classList.add('hidden'); el.removeAttribute('src'); }
+        };
+
+        if (rec && rec.clockIn) {
+            if (inTimeEl) inTimeEl.textContent = rec.clockIn;
+            showPhoto(inPhotoEl, rec.photoIn);
+            if (btnIn) btnIn.disabled = true;
+            if (rec.clockOut) {
+                if (outTimeEl) outTimeEl.textContent = rec.clockOut;
+                showPhoto(outPhotoEl, rec.photoOut);
+                if (btnOut) btnOut.disabled = true;
+                timemarkSetBadge('Sudah Clock Out', 'done');
+            } else {
+                if (outTimeEl) outTimeEl.textContent = '--:--';
+                showPhoto(outPhotoEl, null);
+                if (btnOut) btnOut.disabled = false;
+                timemarkSetBadge('Sedang Bekerja', 'active');
+            }
+        } else {
+            if (inTimeEl) inTimeEl.textContent = '--:--';
+            if (outTimeEl) outTimeEl.textContent = '--:--';
+            showPhoto(inPhotoEl, null);
+            showPhoto(outPhotoEl, null);
+            if (btnIn) btnIn.disabled = false;
+            if (btnOut) btnOut.disabled = true;
+            timemarkSetBadge('Belum Absen', 'idle');
+        }
+    }
+
+    // ---------------- Kamera + Geotag (wajib foto saat Clock In/Out) ----------------
+    let tmPendingType = null;   // 'in' | 'out'
+    let tmPendingDataUrl = null;
+
+    function timemarkStartCapture(type) {
+        if (!navigator.mediaDevices && !window.FileReader) {
+            alert('Perangkat/browser ini tidak mendukung akses kamera.');
+            return;
+        }
+        tmPendingType = type;
+        const input = document.getElementById(type === 'in' ? 'tm-camera-in' : 'tm-camera-out');
+        if (input) input.click();
+    }
+
+    function timemarkHandleFile(e, type) {
+        const file = e.target.files && e.target.files[0];
+        e.target.value = ''; // reset supaya file yg sama bisa dipilih lagi nanti
+        if (!file) return;
+        tmPendingType = type;
+        const reader = new FileReader();
+        reader.onload = evt => {
+            const img = new Image();
+            img.onload = () => timemarkComposeAndShow(img);
+            img.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    const tmCamIn = document.getElementById('tm-camera-in');
+    const tmCamOut = document.getElementById('tm-camera-out');
+    if (tmCamIn) tmCamIn.addEventListener('change', e => timemarkHandleFile(e, 'in'));
+    if (tmCamOut) tmCamOut.addEventListener('change', e => timemarkHandleFile(e, 'out'));
+
+    function timemarkWrapAddress(addr, maxLen) {
+        maxLen = maxLen || 42;
+        const words = addr.split(' ');
+        const lines = [];
+        let line = '';
+        words.forEach(w => {
+            if ((line + ' ' + w).trim().length > maxLen) {
+                lines.push(line.trim());
+                line = w;
+            } else {
+                line += ' ' + w;
+            }
+        });
+        if (line.trim()) lines.push(line.trim());
+        return lines.slice(0, 3); // maksimal 3 baris alamat
+    }
+
+    function timemarkComposeAndShow(img) {
+        const modal = document.getElementById('tm-modal');
+        const canvas = document.getElementById('tm-canvas');
+        const statusEl = document.getElementById('tm-modal-status');
+        const confirmBtn = document.getElementById('tm-confirm-btn');
+        const titleEl = document.getElementById('tm-modal-title');
+        if (!modal || !canvas) return;
+
+        titleEl.textContent = tmPendingType === 'in' ? 'Konfirmasi Clock In' : 'Konfirmasi Clock Out';
+        modal.classList.remove('hidden');
+        if (confirmBtn) confirmBtn.disabled = true;
+        if (statusEl) statusEl.textContent = 'Mengambil lokasi...';
+
+        const maxW = 900;
+        const scale = Math.min(1, maxW / img.width);
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext('2d');
+
+        const now = new Date();
+        const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        const timeStr = `${timemarkPad(now.getHours())}:${timemarkPad(now.getMinutes())}`;
+        const dateStr = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+        const dayStr = days[now.getDay()];
+
+        function draw(addressLines) {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            const padX = canvas.width * 0.04;
+            const lineH = canvas.height * 0.034;
+            const boxH = canvas.height * (0.20 + addressLines.length * 0.034);
+            const grad = ctx.createLinearGradient(0, canvas.height - boxH, 0, canvas.height);
+            grad.addColorStop(0, 'rgba(0,0,0,0)');
+            grad.addColorStop(1, 'rgba(0,0,0,0.68)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, canvas.height - boxH, canvas.width, boxH);
+
+            ctx.fillStyle = '#fff';
+            ctx.textBaseline = 'alphabetic';
+
+            const timeFontSize = canvas.width * 0.085;
+            ctx.font = `900 ${timeFontSize}px sans-serif`;
+            let y = canvas.height - boxH + timeFontSize + (canvas.height * 0.02);
+            ctx.fillText(timeStr, padX, y);
+            const timeWidth = ctx.measureText(timeStr).width;
+
+            ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padX + timeWidth + 14, y - timeFontSize * 0.8);
+            ctx.lineTo(padX + timeWidth + 14, y + 2);
+            ctx.stroke();
+
+            ctx.font = `600 ${timeFontSize * 0.3}px sans-serif`;
+            ctx.fillText(dateStr, padX + timeWidth + 26, y - timeFontSize * 0.4);
+            ctx.fillText(dayStr, padX + timeWidth + 26, y);
+
+            ctx.font = `500 ${canvas.width * 0.028}px sans-serif`;
+            let ay = y + canvas.height * 0.05;
+            addressLines.forEach(line => {
+                ctx.fillText(line, padX, ay);
+                ay += lineH;
+            });
+
+            tmPendingDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            if (confirmBtn) confirmBtn.disabled = false;
+            if (statusEl) statusEl.textContent = 'Foto siap — cek dulu sebelum disimpan.';
+        }
+
+        if (!navigator.geolocation) {
+            if (statusEl) statusEl.textContent = 'Lokasi tidak tersedia di perangkat ini.';
+            draw(['Lokasi tidak tersedia']);
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                const { latitude, longitude } = pos.coords;
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        const addr = data && data.display_name ? data.display_name : `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+                        draw(timemarkWrapAddress(addr));
+                    })
+                    .catch(() => draw([`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`]));
+            },
+            () => {
+                if (statusEl) statusEl.textContent = 'Izin lokasi ditolak — foto disimpan tanpa lokasi.';
+                draw(['Lokasi tidak diizinkan']);
+            },
+            { timeout: 8000 }
+        );
+    }
+
+    function timemarkRetake() {
+        document.getElementById('tm-modal')?.classList.add('hidden');
+        tmPendingDataUrl = null;
+        timemarkStartCapture(tmPendingType);
+    }
+
+    function timemarkConfirm() {
+        if (!tmPendingDataUrl || !window.InternStore) return;
+        const name = InternStore.getCurrentUser();
+        const today = timemarkToday();
+        const now = new Date();
+        const timeStr = `${timemarkPad(now.getHours())}:${timemarkPad(now.getMinutes())}`;
+
+        if (tmPendingType === 'in') {
+            const status = now.getHours() >= InternStore.CUTOFF_HOUR ? 'late' : 'present';
+            InternStore.upsertAttendance(name, { date: today, status, clockIn: timeStr, clockOut: '', reason: '', photoIn: tmPendingDataUrl });
+        } else {
+            const existing = InternStore.getAttendance(name).find(r => r.date === today) || { date: today, status: 'present', clockIn: '', reason: '' };
+            InternStore.upsertAttendance(name, { ...existing, date: today, clockOut: timeStr, photoOut: tmPendingDataUrl });
+        }
+
+        document.getElementById('tm-modal')?.classList.add('hidden');
+        tmPendingDataUrl = null;
+        timemarkRefreshUI();
+    }
 </script>
 <script src="project-store.js"></script>
+<script src="intern-store.js"></script>
 <script src="lang.js"></script>
 <script src="language-ui.js"></script>
 <script src="performance.js"></script>
