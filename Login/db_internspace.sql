@@ -34,6 +34,34 @@ INSERT INTO `users` (`id`, `role`, `username`, `password`) VALUES
 	(1, 'intern', 'INT-2024-001', '12345678'),
 	(2, 'admin', 'admin@internspace.com', 'admin123');
 
+-- Dumping structure for table db_internspace.projects
+CREATE TABLE IF NOT EXISTS `projects` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `title` varchar(150) NOT NULL,
+  `description` text,
+  `status` varchar(30) NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `fk_projects_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping structure for table db_internspace.tasks
+CREATE TABLE IF NOT EXISTS `tasks` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `project_id` int NOT NULL,
+  `title` varchar(150) NOT NULL,
+  `description` text,
+  `priority` varchar(20) NOT NULL DEFAULT 'Medium',
+  `status` varchar(30) NOT NULL DEFAULT 'todo',
+  `assignee` varchar(100) DEFAULT NULL,
+  `due_date` date DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `project_id` (`project_id`),
+  CONSTRAINT `fk_tasks_project` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;

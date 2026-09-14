@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Tambahkan fungsi ini agar partials/sidebar-intern.php tidak Fatal Error
+// Helper nama user agar partial sidebar tidak error
 if (!function_exists('current_user_name')) {
     function current_user_name() {
         return $_SESSION['user_name'] ?? $_SESSION['username'] ?? 'INT-2024-001';
@@ -27,93 +27,205 @@ if (!$conn) {
 }
 
 // --------------------------------------------------------------------------
-// 2. BACKEND API HANDLER (?action=api)
+// 2. BACKEND API HANDLER (?action=api / ?action=tasks)
 // --------------------------------------------------------------------------
-if (isset($_GET['action']) && $_GET['action'] === 'api') {
+if (isset($_GET['action'])) {
     header('Content-Type: application/json; charset=utf-8');
-    
     $method = $_SERVER['REQUEST_METHOD'];
     $userId = $_SESSION['user_id'] ?? 1;
 
-    // READ (GET)
-    if ($method === 'GET') {
-        $sql = "SELECT * FROM projects ORDER BY created_at DESC";
-        $result = mysqli_query($conn, $sql);
-        
-        $projects = [];
-        if ($result) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                $projects[] = $row;
+    // =========================================================================
+    // API FOR PROJECTS (?action=api)
+    // =========================================================================
+    if ($_GET['action'] === 'api') {
+        // READ (GET): Ambil semua data project
+        if ($method === 'GET') {
+            $sql = "SELECT * FROM projects ORDER BY created_at DESC";
+            $result = mysqli_query($conn, $sql);
+            
+            $projects = [];
+            if ($result) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $projects[] = $row;
+                }
             }
-        }
-        echo json_encode($projects);
-        exit;
-    }
-
-    // CREATE (POST)
-    if ($method === 'POST') {
-        $input = json_decode(file_get_contents('php://input'), true);
-        $title = trim($input['title'] ?? '');
-        $description = trim($input['description'] ?? '');
-        $status = $input['status'] ?? 'pending';
-
-        if (empty($title)) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Judul project wajib diisi']);
+            echo json_encode($projects);
             exit;
         }
 
-        $sql = "INSERT INTO projects (user_id, title, description, status) VALUES (?, ?, ?, ?)";
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "isss", $userId, $title, $description, $status);
-        mysqli_stmt_execute($stmt);
+        // CREATE (POST): Tambah project baru
+        if ($method === 'POST') {
+            $input = json_decode(file_get_contents('php://input'), true);
+            $title = trim($input['title'] ?? '');
+            $description = trim($input['description'] ?? '');
+            $status = $input['status'] ?? 'pending';
 
-        echo json_encode([
-            'id' => mysqli_insert_id($conn), 
-            'message' => 'Project berhasil ditambahkan'
-        ]);
-        exit;
-    }
+            if (empty($title)) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Judul project wajib diisi']);
+                exit;
+            }
 
-    // UPDATE (PUT)
-    if ($method === 'PUT') {
-        $input = json_decode(file_get_contents('php://input'), true);
-        $id = $input['id'] ?? null;
-        $title = trim($input['title'] ?? '');
-        $description = trim($input['description'] ?? '');
-        $status = $input['status'] ?? 'pending';
+            $sql = "INSERT INTO projects (user_id, title, description, status) VALUES (?, ?, ?, ?)";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "isss", $userId, $title, $description, $status);
+            mysqli_stmt_execute($stmt);
 
-        if (!$id || empty($title)) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Data tidak lengkap']);
+            echo json_encode([
+                'id' => mysqli_insert_id($conn), 
+                'message' => 'Project berhasil ditambahkan'
+            ]);
             exit;
         }
 
-        $sql = "UPDATE projects SET title = ?, description = ?, status = ? WHERE id = ?";
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "sssi", $title, $description, $status, $id);
-        mysqli_stmt_execute($stmt);
+        // UPDATE (PUT): Update project
+        if ($method === 'PUT') {
+            $input = json_decode(file_get_contents('php://input'), true);
+            $id = $input['id'] ?? null;
+            $title = trim($input['title'] ?? '');
+            $description = trim($input['description'] ?? '');
+            $status = $input['status'] ?? 'pending';
 
-        echo json_encode(['message' => 'Project berhasil diperbarui']);
-        exit;
-    }
+            if (!$id || empty($title)) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Data tidak lengkap']);
+                exit;
+            }
 
-    // DELETE (DELETE)
-    if ($method === 'DELETE') {
-        $id = $_GET['id'] ?? null;
-        if (!$id) {
-            http_response_code(400);
-            echo json_encode(['error' => 'ID project tidak ditemukan']);
+            $sql = "UPDATE projects SET title = ?, description = ?, status = ? WHERE id = ?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "sssi", $title, $description, $status, $id);
+            mysqli_stmt_execute($stmt);
+
+            echo json_encode(['message' => 'Project berhasil diperbarui']);
             exit;
         }
 
-        $sql = "DELETE FROM projects WHERE id = ?";
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "i", $id);
-        mysqli_stmt_execute($stmt);
+        // DELETE (DELETE): Hapus project
+        if ($method === 'DELETE') {
+            $id = $_GET['id'] ?? null;
+            if (!$id) {
+                http_response_code(400);
+                echo json_encode(['error' => 'ID project tidak ditemukan']);
+                exit;
+            }
 
-        echo json_encode(['message' => 'Project berhasil dihapus']);
-        exit;
+            $sql = "DELETE FROM projects WHERE id = ?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "i", $id);
+            mysqli_stmt_execute($stmt);
+
+            echo json_encode(['message' => 'Project berhasil dihapus']);
+            exit;
+        }
+    }
+
+    // =========================================================================
+    // API FOR TASKS (?action=tasks)
+    // =========================================================================
+    if ($_GET['action'] === 'tasks') {
+        // GET: Ambil task berdasarkan project_id
+        if ($method === 'GET') {
+            $projectId = $_GET['project_id'] ?? null;
+            $sql = $projectId 
+                ? "SELECT * FROM tasks WHERE project_id = ? ORDER BY id DESC"
+                : "SELECT * FROM tasks ORDER BY id DESC";
+            
+            $stmt = mysqli_prepare($conn, $sql);
+            if ($projectId) mysqli_stmt_bind_param($stmt, "i", $projectId);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            
+            $tasks = [];
+            while ($row = mysqli_fetch_assoc($result)) {
+                $tasks[] = $row;
+            }
+            echo json_encode($tasks);
+            exit;
+        }
+
+        // POST: Tambah Task
+        if ($method === 'POST') {
+            $input = json_decode(file_get_contents('php://input'), true);
+            $projectId = $input['project_id'] ?? null;
+            $title = trim($input['title'] ?? '');
+            $desc = trim($input['description'] ?? '');
+            $priority = $input['priority'] ?? 'Medium';
+            $status = $input['status'] ?? 'todo';
+            $assignee = trim($input['assignee'] ?? 'Alex Doe');
+            $dueDate = !empty($input['due_date']) ? $input['due_date'] : null;
+
+            if (!$projectId || empty($title)) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Project ID dan Judul Task wajib diisi']);
+                exit;
+            }
+
+            $sql = "INSERT INTO tasks (project_id, title, description, priority, status, assignee, due_date) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "issssss", $projectId, $title, $desc, $priority, $status, $assignee, $dueDate);
+            mysqli_stmt_execute($stmt);
+
+            echo json_encode(['id' => mysqli_insert_id($conn), 'message' => 'Task berhasil dibuat']);
+            exit;
+        }
+
+        // PUT: Update Task / Pindah Status
+        if ($method === 'PUT') {
+            $input = json_decode(file_get_contents('php://input'), true);
+            $id = $input['id'] ?? null;
+
+            if (!$id) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Task ID wajib ada']);
+                exit;
+            }
+
+            // Jika hanya update status (Drag and Drop / Quick Move)
+            if (isset($input['status']) && count($input) <= 3) {
+                $status = $input['status'];
+                $sql = "UPDATE tasks SET status = ? WHERE id = ?";
+                $stmt = mysqli_prepare($conn, $sql);
+                mysqli_stmt_bind_param($stmt, "si", $status, $id);
+                mysqli_stmt_execute($stmt);
+                echo json_encode(['message' => 'Status task diperbarui']);
+                exit;
+            }
+
+            // Update Full Task
+            $title = trim($input['title'] ?? '');
+            $desc = trim($input['description'] ?? '');
+            $priority = $input['priority'] ?? 'Medium';
+            $status = $input['status'] ?? 'todo';
+            $assignee = trim($input['assignee'] ?? 'Alex Doe');
+            $dueDate = !empty($input['due_date']) ? $input['due_date'] : null;
+
+            $sql = "UPDATE tasks SET title = ?, description = ?, priority = ?, status = ?, assignee = ?, due_date = ? WHERE id = ?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "ssssssi", $title, $desc, $priority, $status, $assignee, $dueDate, $id);
+            mysqli_stmt_execute($stmt);
+
+            echo json_encode(['message' => 'Task berhasil diperbarui']);
+            exit;
+        }
+
+        // DELETE: Hapus Task
+        if ($method === 'DELETE') {
+            $id = $_GET['id'] ?? null;
+            if (!$id) {
+                http_response_code(400);
+                echo json_encode(['error' => 'ID task tidak ditemukan']);
+                exit;
+            }
+
+            $sql = "DELETE FROM tasks WHERE id = ?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "i", $id);
+            mysqli_stmt_execute($stmt);
+
+            echo json_encode(['message' => 'Task dihapus']);
+            exit;
+        }
     }
 }
 ?>

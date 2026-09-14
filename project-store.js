@@ -2,98 +2,155 @@ const ProjectStore = {
   _cache: [],
   _activeProjectId: localStorage.getItem('active_project_id') || null,
 
-  // Fetch data awal dari MySQL API & mapping properti agar cocok dengan UI
   async init() {
     try {
-      const res = await fetch('projects.php?action=api');
-      if (!res.ok) throw new Error('Gagal mengambil data');
-      const data = await res.json();
-      
-      // Map properti DB 'title' ke properti UI 'name'
-      this._cache = data.map(item => ({
-        ...item,
-        name: item.title || item.name || 'Untitled Project',
-        tasks: item.tasks || []
+      // 1. Fetch Projects dari MySQL API
+      const resProj = await fetch('projects.php?action=api');
+      if (!resProj.ok) throw new Error('Gagal memuat projects');
+      const projects = await resProj.json();
+
+      // 2. Fetch Tasks secara terpisah agar project tetap tampil jika task gagal dimuat
+      let tasks = [];
+      try {
+        const resTasks = await fetch('projects.php?action=tasks');
+        if (resTasks.ok) {
+          tasks = await resTasks.json();
+        }
+      } catch (e) {
+        console.warn('Tabel tasks belum siap atau kosong:', e);
+      }
+
+      // 3. Gabungkan data project dan task
+      this._cache = projects.map(p => ({
+        ...p,
+        id: String(p.id),
+        name: p.title || p.name || 'Untitled Project',
+        tasks: Array.isArray(tasks)
+          ? tasks
+              .filter(t => String(t.project_id) === String(p.id))
+              .map(t => ({ ...t, id: String(t.id), project_id: String(t.project_id) }))
+          : []
       }));
     } catch (err) {
-      console.error(err);
+      console.error('ProjectStore Init Error:', err);
       this._cache = [];
     }
   },
 
-  projects() {
-    return this._cache;
+  projects() { 
+    return this._cache; 
   },
 
-  get(id) {
-    return this._cache.find(p => String(p.id) === String(id));
+  get(id) { 
+    if (!id) return null;
+    return this._cache.find(p => String(p.id) === String(id)) || null; 
   },
 
-  getActiveProjectId() {
-    return this._activeProjectId;
+  getActiveProjectId() { 
+    return this._activeProjectId; 
   },
 
   setActiveProjectId(id) {
-    this._activeProjectId = id;
-    localStorage.setItem('active_project_id', id);
+    if (!id) return;
+    this._activeProjectId = String(id);
+    localStorage.setItem('active_project_id', String(id));
   },
 
+  // CREATE Task
+  async createTask(projectId, taskData) {
+    try {
+      await fetch('projects.php?action=tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ project_id: projectId, ...taskData })
+      });
+      await this.init();
+    } catch (err) { console.error(err); }
+  },
+
+  // UPDATE Task
+  async updateTask(projectId, taskId, taskData) {
+    try {
+      await fetch('projects.php?action=tasks', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: taskId, ...taskData })
+      });
+      await this.init();
+    } catch (err) { console.error(err); }
+  },
+
+  // MOVE Task (Quick Status Update)
+  async moveTask(projectId, taskId, status) {
+    try {
+      await fetch('projects.php?action=tasks', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: taskId, status: status })
+      });
+      await this.init();
+    } catch (err) { console.error(err); }
+  },
+
+  // DELETE Task
+  async deleteTask(projectId, taskId) {
+    try {
+      await fetch(`projects.php?action=tasks&id=${taskId}`, { method: 'DELETE' });
+      await this.init();
+    } catch (err) { console.error(err); }
+  },
+
+  // CREATE Project
   async createProject(data) {
     try {
-      const res = await fetch('projects.php?action=api', {
+      await fetch('projects.php?action=api', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: data.name || data.title,
-          description: data.description || ''
+          title: data.name || data.title || '',
+          description: data.description || '',
+          status: data.status || 'pending'
         })
       });
-      const result = await res.json();
-      await this.init(); // Refresh data setelah simpan
-      return result;
-    } catch (err) {
-      console.error(err);
-      throw err;
-    }
+      await this.init();
+    } catch (err) { console.error(err); }
   },
 
+  // UPDATE Project
   async updateProject(id, data) {
     try {
-      const res = await fetch('projects.php?action=api', {
+      await fetch('projects.php?action=api', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          id: id,
-          title: data.name || data.title,
-          description: data.description || ''
+          id,
+          title: data.name || data.title || '',
+          description: data.description || '',
+          status: data.status || 'pending'
         })
       });
-      const result = await res.json();
-      await this.init(); // Refresh data setelah update
-      return result;
-    } catch (err) {
-      console.error(err);
-      throw err;
-    }
+      await this.init();
+    } catch (err) { console.error(err); }
   },
 
+  // DELETE Project
   async deleteProject(id) {
     try {
-      const res = await fetch(`projects.php?action=api&id=${id}`, {
-        method: 'DELETE'
-      });
-      const result = await res.json();
-      await this.init(); // Refresh data setelah hapus
-      return result;
-    } catch (err) {
-      console.error(err);
-      throw err;
-    }
+      await fetch(`projects.php?action=api&id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+      await this.init();
+    } catch (err) { console.error(err); }
   },
 
-  // Stub method untuk integrasi Kanban Task
-  async createTask(projectId, taskData) {},
-  async updateTask(projectId, taskId, taskData) {},
-  async deleteTask(projectId, taskId) {},
-  async moveTask(projectId, taskId, status) {}
+  normalizeStatus(s) {
+    if (!s) return 'todo';
+    const lower = String(s).toLowerCase().replace(/\s+/g, '');
+    if (lower.includes('progress')) return 'inprogress';
+    if (lower.includes('review')) return 'underreview';
+    if (lower.includes('done')) return 'done';
+    return 'todo';
+  }
 };
+
+// Pastikan ProjectStore bisa diakses lewat window.ProjectStore
+// (const/let di top-level tidak otomatis jadi properti window)
+window.ProjectStore = ProjectStore;
