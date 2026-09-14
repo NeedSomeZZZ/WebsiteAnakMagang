@@ -1,7 +1,7 @@
 <?php
 $host     = "localhost";
-$user     = "root";      // Username default XAMPP
-$password = "";          // Kosongkan jika default XAMPP
+$user     = "root";      // Username default XAMPP / Laragon
+$password = "";          // Kosongkan jika default
 $database = "db_internspace";
 
 $conn = mysqli_connect($host, $user, $password, $database);
