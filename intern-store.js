@@ -73,7 +73,7 @@ const InternStore = (() => {
     for (let d = 1; d <= today.getDate(); d++) {
       const dateObj = new Date(today.getFullYear(), today.getMonth(), d);
       const dow = dateObj.getDay();
-      if (dow === 0 || dow === 6) continue; // skip weekend
+      if (dow === 0 ) continue; // skip weekend
       const roll = (seedNum + d) % 10;
       let rec;
       if (roll <= 6) {

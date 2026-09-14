@@ -368,7 +368,7 @@
                 const dateObj = new Date(calYear, calMonth, d);
                 const dateStr = fmt(dateObj);
                 const dow = dateObj.getDay();
-                const isWeekend = dow === 0 || dow === 6;
+                const isWeekend = dow === 0 ;
                 const isFuture = dateObj > today && dateStr !== todayStr;
                 const isToday = dateStr === todayStr;
 

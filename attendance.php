@@ -389,7 +389,7 @@
                     <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Rab</div>
                     <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Kam</div>
                     <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Jum</div>
-                    <div class="text-xs font-bold uppercase tracking-wider text-red-400">Sab</div>
+                     <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Sab</div>
                 </div>
                 <!-- Calendar Grid -->
                 <div id="cal-grid" class="grid grid-cols-7 gap-1.5"></div>
@@ -707,7 +707,7 @@
                 const dateObj = new Date(calYear, calMonth, d);
                 const dateStr = formatDate(dateObj);
                 const dayOfWeek = dateObj.getDay(); // 0=Sun, 6=Sat
-                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                const isWeekend = dayOfWeek === 0 
                 const isFuture = dateObj > today && dateStr !== todayStr;
                 const isToday = dateStr === todayStr;
                 const rec = dataMap[dateStr];
@@ -782,7 +782,7 @@
                 const ds = formatDate(checkDate);
                 const dow = checkDate.getDay();
                 // Skip weekends
-                if (dow === 0 || dow === 6) {
+                if (dow === 0 ) {
                     checkDate.setDate(checkDate.getDate() - 1);
                     continue;
                 }
