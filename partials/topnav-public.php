@@ -30,6 +30,12 @@ if (!isset($nav_cta_href)) {
             </div>
             <a href="<?php echo htmlspecialchars($nav_home_href); ?>" class="font-headline-md text-headline-md font-bold text-primary" data-i18n="brand_name">Kedayweb</a>
         </div>
+        <nav class="flex flex-wrap justify-center gap-md">
+            <a href="article.php" class="px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors">Artikel</a>
+            <a href="index.php#features" class="px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors" data-i18n="nav_features">Fitur</a>
+            <a href="index.php#faq" class="px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors" data-i18n="nav_faq">FAQ</a>
+            <a href="index.php#contact" class="px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors" data-i18n="nav_contact">Kontak</a>
+        </nav>
         <div class="flex items-center gap-sm">
             <a href="<?php echo htmlspecialchars($nav_cta_href); ?>" class="bg-primary-container text-on-primary px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors" data-i18n="btn_portal_login"><?php echo htmlspecialchars($nav_cta_label); ?></a>
         </div>

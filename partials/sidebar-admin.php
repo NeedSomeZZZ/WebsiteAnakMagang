@@ -25,6 +25,8 @@ $admin_nav_items = [
     'users'      => ['label' => 'Users',            'icon' => 'people',           'href' => 'admin-users.php'],
     'attendance' => ['label' => 'Kehadiran Intern', 'icon' => 'event_available',  'href' => 'admin-attendance.php'],
     'projects'   => ['label' => 'Projects',         'icon' => 'folder_open',      'href' => 'admin-projects.php'],
+    'article'    => ['label' => 'Kelola Artikel',   'icon' => 'newspaper',        'href' => 'admin-articles.php'],
+    'superadmin' => ['label' => 'Superadmin Panel', 'icon' => 'verified_user',    'href' => 'superadmin.php'],
     'stats'      => ['label' => 'Statistics',       'icon' => 'insights',         'href' => 'admin-stats.php'],
 ];
 ?>

@@ -1,3 +1,31 @@
+<?php
+require_once __DIR__ . '/session.php';
+$positions_file = __DIR__ . '/uploads/positions.json';
+$positions = [];
+if (file_exists($positions_file)) {
+    $positions = json_decode(file_get_contents($positions_file), true);
+}
+if (!is_array($positions) || empty($positions)) {
+    $positions = [
+        [
+            'id' => 1,
+            'title' => 'Magang Web Developer',
+            'category' => 'Teknik',
+            'icon' => 'code',
+            'description' => 'Bergabunglah dengan tim frontend kami untuk membangun antarmuka web modern, cepat, dan interaktif. Bekerja sama langsung dengan engineer senior.',
+            'location' => 'Remote / Hybrid'
+        ],
+        [
+            'id' => 2,
+            'title' => 'Magang UI/UX Designer',
+            'category' => 'Desain',
+            'icon' => 'design_services',
+            'description' => 'Bantu rancang pengalaman produk terbaik. Buat riset pengguna, wireframe, dan prototipe desain aplikasi berstandar industri.',
+            'location' => 'Banyuwangi / Remote'
+        ]
+    ];
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -63,67 +91,30 @@
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
-                <!-- Role Card 1 -->
-                <div
-                    class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg custom-shadow-hover transition-all duration-300 flex flex-col h-full group">
-                    <div class="flex justify-between items-start mb-md">
-                        <div
-                            class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
-                            <span class="material-symbols-outlined">code</span>
+                <?php foreach ($positions as $pos): ?>
+                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg custom-shadow-hover transition-all duration-300 flex flex-col h-full group">
+                        <div class="flex justify-between items-start mb-md">
+                            <div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+                                <span class="material-symbols-outlined"><?php echo htmlspecialchars($pos['icon'] ?? 'work', ENT_QUOTES, 'UTF-8'); ?></span>
+                            </div>
+                            <span class="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm"><?php echo htmlspecialchars($pos['category'] ?? 'Umum', ENT_QUOTES, 'UTF-8'); ?></span>
                         </div>
-                        <span
-                            class="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm"
-                            data-i18n="recruit_engineering">Teknik</span>
-                    </div>
-                    <h3 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold"
-                        data-i18n="recruit_web_dev">Magang Web Developer</h3>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant flex-grow mb-xl"
-                        data-i18n="recruit_web_d">
-                        Bergabunglah dengan tim frontend kami untuk membangun antarmuka web modern, cepat, dan
-                        interaktif. Bekerja sama langsung dengan engineer senior.
-                    </p>
-                    <div class="flex items-center gap-md border-t border-outline-variant pt-md mt-auto">
-                        <a href="#application-form"
-                            class="bg-primary-container text-on-primary rounded-lg px-md py-sm font-label-md text-label-md hover:bg-primary transition-colors flex items-center gap-2">
-                            <span data-i18n="btn_apply_now">Daftar Sekarang</span>
-                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-                        </a>
-                        <div class="flex items-center text-on-surface-variant font-body-sm text-body-sm gap-1">
-                            <span class="material-symbols-outlined text-[16px]">location_on</span> <span
-                                data-i18n="recruit_remote">Remote / Hybrid</span>
+                        <h3 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold"><?php echo htmlspecialchars($pos['title'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant flex-grow mb-xl">
+                            <?php echo htmlspecialchars($pos['description'], ENT_QUOTES, 'UTF-8'); ?>
+                        </p>
+                        <div class="flex items-center gap-md border-t border-outline-variant pt-md mt-auto">
+                            <a href="#application-form" class="bg-primary-container text-on-primary rounded-lg px-md py-sm font-label-md text-label-md hover:bg-primary transition-colors flex items-center gap-2">
+                                <span data-i18n="btn_apply_now">Daftar Sekarang</span>
+                                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                            </a>
+                            <div class="flex items-center text-on-surface-variant font-body-sm text-body-sm gap-1">
+                                <span class="material-symbols-outlined text-[16px]">location_on</span>
+                                <span><?php echo htmlspecialchars($pos['location'] ?? 'Remote / Hybrid', ENT_QUOTES, 'UTF-8'); ?></span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- Role Card 2 -->
-                <div
-                    class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg custom-shadow-hover transition-all duration-300 flex flex-col h-full group">
-                    <div class="flex justify-between items-start mb-md">
-                        <div
-                            class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
-                            <span class="material-symbols-outlined">design_services</span>
-                        </div>
-                        <span
-                            class="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm"
-                            data-i18n="recruit_design">Desain</span>
-                    </div>
-                    <h3 class="font-headline-md text-headline-md text-on-surface mb-xs font-bold"
-                        data-i18n="recruit_uiux">Magang UI/UX Designer</h3>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant flex-grow mb-xl"
-                        data-i18n="recruit_uiux_d">
-                        Bantu rancang pengalaman produk terbaik. Buat riset pengguna, wireframe, dan prototipe desain
-                        aplikasi berstandar industri.
-                    </p>
-                    <div class="flex items-center gap-md border-t border-outline-variant pt-md mt-auto">
-                        <a href="#application-form"
-                            class="bg-primary-container text-on-primary rounded-lg px-md py-sm font-label-md text-label-md hover:bg-primary transition-colors flex items-center gap-2">
-                            <span data-i18n="btn_apply_now">Daftar Sekarang</span>
-                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-                        </a>
-                        <div class="flex items-center text-on-surface-variant font-body-sm text-body-sm gap-1">
-                            <span class="material-symbols-outlined text-[16px]">location_on</span> Banyuwangi / Remote
-                        </div>
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
         </section>
 
@@ -210,8 +201,9 @@
                             <select id="role"
                                 class="w-full bg-surface border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-container/20 transition-all appearance-none cursor-pointer">
                                 <option value="" data-i18n="recruit_select">Pilih posisi magang...</option>
-                                <option value="Web Developer Intern">Web Developer Intern</option>
-                                <option value="UI/UX Designer Intern">UI/UX Designer Intern</option>
+                                <?php foreach ($positions as $pos): ?>
+                                    <option value="<?php echo htmlspecialchars($pos['title'], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($pos['title'], ENT_QUOTES, 'UTF-8'); ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <!-- Upload area -->
