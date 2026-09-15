@@ -25,6 +25,8 @@ $intern_nav_items = [
     'attendance'   => ['label' => 'Attendance',          'icon' => 'event_available', 'href' => $root_prefix . 'attendance.php',   'i18n' => 'nav_attendance'],
     'tasks'        => ['label' => 'Tasks',               'icon' => 'view_kanban',     'href' => $root_prefix . 'tasks.php',        'i18n' => 'nav_tasks'],
     'internspace'  => ['label' => 'Riwayat Tugas',       'icon' => 'history_edu',     'href' => $root_prefix . 'internspace.php',  'i18n' => 'nav_internspace'],
+    'galeri'       => ['label' => 'Galeri Foto',         'icon' => 'photo_library',   'href' => $root_prefix . 'galeryanakmagang.php', 'i18n' => 'nav_galeri'],
+    'events'       => ['label' => 'Histori Event',       'icon' => 'event',           'href' => $root_prefix . 'event_history.php', 'i18n' => 'nav_events'],
     'article'      => ['label' => 'Aktivitas & Artikel', 'icon' => 'newspaper',       'href' => $root_prefix . 'article.php',      'i18n' => 'nav_article'],
     'sop'          => ['label' => 'SOP',                 'icon' => 'description',     'href' => $root_prefix . 'sop.php',          'i18n' => 'nav_sop'],
 ];
@@ -43,7 +45,7 @@ if (current_user_role() === 'admin' || current_user_role() === 'superadmin') {
             <p class="font-label-sm text-label-sm text-on-surface-variant" data-i18n="brand_subtitle">Portal PKL</p>
         </div>
     </a>
-    <nav class="flex-1 space-y-sm">
+    <nav class="flex-1 space-y-sm overflow-y-auto pr-1">
         <?php foreach ($intern_nav_items as $key => $item): ?>
             <?php $is_active = ($active === $key); ?>
             <a class="flex items-center gap-md px-md py-sm rounded-lg font-label-md text-label-md transition-all duration-200 <?php echo $is_active ? 'bg-primary-container text-on-primary-container active:scale-[0.98] transition-transform' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-high'; ?>" href="<?php echo $item['href']; ?>">

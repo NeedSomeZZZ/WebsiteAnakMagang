@@ -240,6 +240,7 @@ include '../partials/sidebar-admin.php';
             </div>
             <!-- News & Lessons Card -->
         </section>
+        <?php include '../partials/footer.php'; ?>
     </main>
     <script>
         // Determine intern name from URL parameter (admin view)

@@ -369,7 +369,7 @@ if (!$featured_article && count($articles) > 0) {
     <?php endif; ?>
 
     <!-- Main Canvas -->
-    <main class="<?php echo $is_logged_in ? 'md:ml-[16.5rem]' : ''; ?> flex-1">
+    <main class="<?php echo $is_logged_in ? 'md:ml-[16.5rem] h-screen overflow-y-auto' : ''; ?> flex-1">
 
         <!-- Main Body Content -->
         <div class="w-full max-w-container-max mx-auto p-md md:p-gutter flex flex-col gap-xl">

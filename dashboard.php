@@ -185,6 +185,7 @@ $userName = current_user_name();
 
         <div class="h-md"></div>
     </div>
+    <?php include 'partials/footer.php'; ?>
 </main>
 
 <script>

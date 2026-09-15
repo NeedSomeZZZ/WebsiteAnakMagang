@@ -200,6 +200,7 @@ if (is_admin()) {
 
             </div>
         </div>
+        <?php include 'partials/footer.php'; ?>
     </main>
 
     <!-- Task Creation & Edit Modal -->

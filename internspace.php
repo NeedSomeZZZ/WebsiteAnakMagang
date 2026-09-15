@@ -259,6 +259,9 @@ if (is_admin()) {
             </div>
 
         </div>
+        <div class="no-print">
+            <?php include 'partials/footer.php'; ?>
+        </div>
     </main>
 
     <script>

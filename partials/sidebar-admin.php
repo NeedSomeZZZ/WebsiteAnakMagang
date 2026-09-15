@@ -27,6 +27,8 @@ $admin_nav_items = [
     'users'        => ['label' => 'Users',                'icon' => 'people',           'href' => $admin_prefix . 'admin-users.php'],
     'attendance'   => ['label' => 'Kehadiran Intern',     'icon' => 'event_available',  'href' => $admin_prefix . 'admin-attendance.php'],
     'projects'     => ['label' => 'Projects',             'icon' => 'folder_open',      'href' => $root_prefix . 'projects.php'],
+    'galeri'       => ['label' => 'Galeri Foto',         'icon' => 'photo_library',   'href' => $root_prefix . 'galeryanakmagang.php'],
+    'events'       => ['label' => 'Histori Event',       'icon' => 'event',           'href' => $root_prefix . 'event_history.php'],
     'article'      => ['label' => 'Kelola Artikel',       'icon' => 'newspaper',        'href' => $admin_prefix . 'admin-articles.php'],
     'stats'        => ['label' => 'Statistics',           'icon' => 'insights',         'href' => $admin_prefix . 'admin-stats.php'],
 ];
@@ -50,7 +52,7 @@ if (is_superadmin()) {
             <p class="font-label-sm text-label-sm text-on-surface-variant"><?php echo htmlspecialchars($sidebar_subtitle); ?></p>
         </div>
     </a>
-    <nav class="flex-1 space-y-sm">
+    <nav class="flex-1 space-y-sm overflow-y-auto pr-1">
         <?php foreach ($admin_nav_items as $key => $item): ?>
             <?php $is_active = ($active === $key); ?>
             <a class="flex items-center gap-md px-md py-sm rounded-lg font-label-md <?php echo $is_active ? 'bg-primary-container text-on-primary-container' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-high'; ?>" href="<?php echo $item['href']; ?>">
