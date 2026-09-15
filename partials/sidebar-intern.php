@@ -24,6 +24,7 @@ $intern_nav_items = [
     'projects'     => ['label' => 'Projects',            'icon' => 'folder_open',     'href' => $root_prefix . 'projects.php',     'i18n' => 'nav_projects'],
     'attendance'   => ['label' => 'Attendance',          'icon' => 'event_available', 'href' => $root_prefix . 'attendance.php',   'i18n' => 'nav_attendance'],
     'tasks'        => ['label' => 'Tasks',               'icon' => 'view_kanban',     'href' => $root_prefix . 'tasks.php',        'i18n' => 'nav_tasks'],
+    'internspace'  => ['label' => 'Riwayat Tugas',       'icon' => 'history_edu',     'href' => $root_prefix . 'internspace.php',  'i18n' => 'nav_internspace'],
     'article'      => ['label' => 'Aktivitas & Artikel', 'icon' => 'newspaper',       'href' => $root_prefix . 'article.php',      'i18n' => 'nav_article'],
     'sop'          => ['label' => 'SOP',                 'icon' => 'description',     'href' => $root_prefix . 'sop.php',          'i18n' => 'nav_sop'],
 ];
