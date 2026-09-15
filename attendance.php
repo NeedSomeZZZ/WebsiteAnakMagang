@@ -213,6 +213,11 @@
                     dan riwayat selama masa PKL.</p>
             </div>
             <div class="flex gap-2 w-full md:w-auto">
+                <button id="main-input-btn" onclick="attStartCapture()"
+                    class="flex-1 md:flex-none flex items-center justify-center gap-2 bg-primary text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm active:scale-95">
+                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings:'FILL' 1;">photo_camera</span>
+                    Clock In
+                </button>
                 <button onclick="exportAttendanceCSV()"
                     class="flex-1 md:flex-none flex items-center justify-center gap-2 border border-outline-variant text-on-surface bg-surface-container-lowest px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-surface-container-low transition-colors">
                     <span class="material-symbols-outlined text-[18px]">download</span>
@@ -583,6 +588,34 @@
                     <p class="text-xs font-bold text-amber-700 uppercase mb-1">Alasan</p>
                     <p id="detail-reason" class="text-sm text-amber-900"></p>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+     CLOCK IN CONFIRMATION MODAL (Live Camera Stream)
+     ============================================================ -->
+    <div id="att-modal" class="hidden fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4">
+        <div class="bg-surface-container-lowest rounded-2xl p-5 max-w-sm w-full shadow-2xl">
+            <h4 class="font-geist font-bold text-on-surface text-lg mb-4 text-center" id="att-modal-title">Clock In - Ambil Foto</h4>
+            
+            <div id="att-video-wrap" class="relative rounded-xl overflow-hidden border border-outline-variant mb-4 bg-black aspect-[3/4] flex items-center justify-center">
+                <video id="att-video" autoplay playsinline class="w-full h-full object-cover"></video>
+                <canvas id="att-canvas" class="hidden w-full h-full object-cover"></canvas>
+            </div>
+
+            <p class="font-body-sm text-body-sm text-on-surface-variant text-center mb-4" id="att-modal-status">Membuka kamera...</p>
+            
+            <div id="att-cam-actions" class="grid grid-cols-2 gap-3">
+                <button onclick="attCloseModal()" class="w-full bg-surface-container-high text-on-surface rounded-xl py-2.5 font-label-md text-label-md hover:bg-surface-container-highest">Batal</button>
+                <button id="att-capture-btn" onclick="attCapture()" class="w-full bg-primary text-on-primary rounded-xl py-2.5 font-label-md text-label-md flex items-center justify-center gap-2 hover:opacity-90">
+                    <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+                    Jepret
+                </button>
+            </div>
+            <div id="att-confirm-actions" class="grid grid-cols-2 gap-3 hidden">
+                <button onclick="attRetake()" class="w-full bg-surface-container-high text-on-surface rounded-xl py-2.5 font-label-md text-label-md hover:bg-surface-container-highest">Ulangi</button>
+                <button id="att-confirm-btn" onclick="attConfirm()" class="w-full bg-primary text-on-primary rounded-xl py-2.5 font-label-md text-label-md disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90" disabled>Simpan</button>
             </div>
         </div>
     </div>
@@ -1146,6 +1179,259 @@
         document.getElementById('detail-modal').addEventListener('click', function (e) {
             if (e.target === this) closeDetailModal();
         });
+        document.getElementById('att-modal').addEventListener('click', function (e) {
+            if (e.target === this) { document.getElementById('att-modal').classList.add('hidden'); attPendingDataUrl = null; }
+        });
+
+        // ---------------- Kamera + Geotag (Live Camera Feed) ----------------
+        let attStream = null;
+        let attPendingDataUrl = null;
+        let attPendingAddress = '';
+        let attPendingLat = null;
+        let attPendingLng = null;
+
+        function attPad(n) { return String(n).padStart(2, '0'); }
+
+        async function attStartCapture() {
+            if (isAdminPreview) {
+                showToast('Admin tidak bisa Clock In.', 'warning');
+                return;
+            }
+
+            const modal = document.getElementById('att-modal');
+            const video = document.getElementById('att-video');
+            const canvas = document.getElementById('att-canvas');
+            const statusEl = document.getElementById('att-modal-status');
+            const titleEl = document.getElementById('att-modal-title');
+            const camActions = document.getElementById('att-cam-actions');
+            const confirmActions = document.getElementById('att-confirm-actions');
+
+            if (!modal || !video) return;
+
+            titleEl.textContent = 'Clock In - Ambil Foto';
+            statusEl.textContent = 'Membuka kamera...';
+            video.classList.remove('hidden');
+            canvas.classList.add('hidden');
+            camActions.classList.remove('hidden');
+            confirmActions.classList.add('hidden');
+            modal.classList.remove('hidden');
+
+            try {
+                attStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+                    audio: false
+                });
+                video.srcObject = attStream;
+                statusEl.textContent = 'Posisikan wajah Anda lalu tekan Jepret.';
+            } catch (err) {
+                console.error('Camera access error:', err);
+                statusEl.textContent = 'Gagal mengakses kamera. Pastikan izin kamera telah diberikan.';
+            }
+        }
+
+        function attStopCamera() {
+            if (attStream) {
+                attStream.getTracks().forEach(track => track.stop());
+                attStream = null;
+            }
+        }
+
+        function attCloseModal() {
+            attStopCamera();
+            document.getElementById('att-modal')?.classList.add('hidden');
+        }
+
+        function attCapture() {
+            const video = document.getElementById('att-video');
+            const canvas = document.getElementById('att-canvas');
+            if (!video || !canvas || !video.videoWidth) return;
+
+            const vW = video.videoWidth;
+            const vH = video.videoHeight;
+            
+            // Draw video frame to temp canvas
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = vW;
+            tempCanvas.height = vH;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(video, 0, 0, vW, vH);
+
+            // Stop stream & switch to canvas view
+            attStopCamera();
+            video.classList.add('hidden');
+            canvas.classList.remove('hidden');
+
+            const camActions = document.getElementById('att-cam-actions');
+            const confirmActions = document.getElementById('att-confirm-actions');
+            camActions.classList.add('hidden');
+            confirmActions.classList.remove('hidden');
+
+            // Create HTML Image element from captured video frame
+            const img = new Image();
+            img.onload = () => attComposeAndShow(img);
+            img.src = tempCanvas.toDataURL('image/jpeg');
+        }
+
+        function attWrapAddress(addr, maxLen) {
+            maxLen = maxLen || 42;
+            const words = addr.split(' ');
+            const lines = [];
+            let line = '';
+            words.forEach(w => {
+                if ((line + ' ' + w).trim().length > maxLen) {
+                    lines.push(line.trim());
+                    line = w;
+                } else {
+                    line += ' ' + w;
+                }
+            });
+            if (line.trim()) lines.push(line.trim());
+            return lines.slice(0, 3);
+        }
+
+        function attComposeAndShow(img) {
+            const modal = document.getElementById('att-modal');
+            const canvas = document.getElementById('att-canvas');
+            const statusEl = document.getElementById('att-modal-status');
+            const confirmBtn = document.getElementById('att-confirm-btn');
+            if (!modal || !canvas) return;
+
+            modal.classList.remove('hidden');
+            if (confirmBtn) confirmBtn.disabled = true;
+            if (statusEl) statusEl.textContent = 'Mengambil lokasi...';
+
+            const maxW = 900;
+            const scale = Math.min(1, maxW / img.width);
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            const ctx = canvas.getContext('2d');
+
+            const now = new Date();
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            const timeStr = `${attPad(now.getHours())}:${attPad(now.getMinutes())}`;
+            const dateStr = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+            const dayStr = days[now.getDay()];
+
+            function draw(addressLines) {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const padX = canvas.width * 0.04;
+                const lineH = canvas.height * 0.034;
+                const boxH = canvas.height * (0.20 + addressLines.length * 0.034);
+                const grad = ctx.createLinearGradient(0, canvas.height - boxH, 0, canvas.height);
+                grad.addColorStop(0, 'rgba(0,0,0,0)');
+                grad.addColorStop(1, 'rgba(0,0,0,0.68)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, canvas.height - boxH, canvas.width, boxH);
+                ctx.fillStyle = '#fff';
+                ctx.textBaseline = 'alphabetic';
+                const timeFontSize = canvas.width * 0.085;
+                ctx.font = `900 ${timeFontSize}px sans-serif`;
+                let y = canvas.height - boxH + timeFontSize + (canvas.height * 0.02);
+                ctx.fillText(timeStr, padX, y);
+                const timeWidth = ctx.measureText(timeStr).width;
+                ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(padX + timeWidth + 14, y - timeFontSize * 0.8);
+                ctx.lineTo(padX + timeWidth + 14, y + 2);
+                ctx.stroke();
+                ctx.font = `600 ${timeFontSize * 0.3}px sans-serif`;
+                ctx.fillText(dateStr, padX + timeWidth + 26, y - timeFontSize * 0.4);
+                ctx.fillText(dayStr, padX + timeWidth + 26, y);
+                ctx.font = `500 ${canvas.width * 0.028}px sans-serif`;
+                let ay = y + canvas.height * 0.05;
+                addressLines.forEach(line => {
+                    ctx.fillText(line, padX, ay);
+                    ay += lineH;
+                });
+                attPendingDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                if (confirmBtn) confirmBtn.disabled = false;
+                if (statusEl) statusEl.textContent = 'Foto siap — cek dulu sebelum disimpan.';
+            }
+
+            attPendingAddress = '';
+            attPendingLat = null;
+            attPendingLng = null;
+
+            if (!navigator.geolocation) {
+                if (statusEl) statusEl.textContent = 'Lokasi tidak tersedia di perangkat ini.';
+                draw(['Lokasi tidak tersedia']);
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                pos => {
+                    const { latitude, longitude } = pos.coords;
+                    attPendingLat = latitude;
+                    attPendingLng = longitude;
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+                        .then(r => r.json())
+                        .then(data => {
+                            const addr = data && data.display_name ? data.display_name : `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+                            attPendingAddress = addr;
+                            draw(attWrapAddress(addr));
+                        })
+                        .catch(() => {
+                            attPendingAddress = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+                            draw([attPendingAddress]);
+                        });
+                },
+                () => {
+                    if (statusEl) statusEl.textContent = 'Izin lokasi ditolak — foto disimpan tanpa lokasi.';
+                    attPendingAddress = 'Lokasi tidak diizinkan';
+                    draw(['Lokasi tidak diizinkan']);
+                },
+                { timeout: 8000 }
+            );
+        }
+
+        function attRetake() {
+            document.getElementById('att-modal')?.classList.add('hidden');
+            attPendingDataUrl = null;
+            attStartCapture();
+        }
+
+        function attConfirm() {
+            if (!attPendingDataUrl) return;
+            const confirmBtn = document.getElementById('att-confirm-btn');
+            const statusEl = document.getElementById('att-modal-status');
+            const now = new Date();
+            const timeStr = `${attPad(now.getHours())}:${attPad(now.getMinutes())}`;
+            const status = now.getHours() >= CUTOFF_HOUR ? 'late' : 'present';
+
+            if (confirmBtn) confirmBtn.disabled = true;
+            if (statusEl) statusEl.textContent = 'Menyimpan ke database...';
+
+            fetch('attendance-api.php?action=save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    time: timeStr,
+                    status: status,
+                    photo: attPendingDataUrl,
+                    location: attPendingAddress,
+                    lat: attPendingLat,
+                    lng: attPendingLng
+                })
+            })
+            .then(async r => {
+                const data = await r.json().catch(() => ({}));
+                if (!r.ok) throw new Error(data.error || 'Gagal menyimpan absensi');
+                return data;
+            })
+            .then(() => {
+                document.getElementById('att-modal')?.classList.add('hidden');
+                attPendingDataUrl = null;
+                const label = status === 'present' ? 'Hadir Tepat Waktu' : 'Terlambat';
+                showToast(`Clock In berhasil! ${timeStr} — ${label}`, 'success');
+                refreshAll();
+            })
+            .catch(err => {
+                if (statusEl) statusEl.textContent = err.message || 'Gagal menyimpan, coba lagi.';
+                if (confirmBtn) confirmBtn.disabled = false;
+            });
+        }
 
         // ============================================================
         // REFRESH ALL

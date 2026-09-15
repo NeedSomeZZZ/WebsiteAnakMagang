@@ -1,4 +1,11 @@
-<?php require_once __DIR__ . '/session.php'; require_login(); ?>
+<?php
+require_once __DIR__ . '/session.php';
+require_login();
+if (current_user_role() !== 'admin') {
+    header('Location: dashboard.php');
+    exit;
+}
+?>
 <!doctype html>
 <html lang="id">
 <head>

@@ -8,6 +8,10 @@
  *   $active           (string)  -> 'dashboard' | 'projects' | 'attendance' | 'tasks' | 'applications'
  *   $show_admin_link  (bool)    -> tampilkan link "Admin Dashboard" (default: false)
  */
+
+// Pastikan session.php sudah di-load (require_once aman dari double-include)
+require_once __DIR__ . '/../session.php';
+
 if (!isset($active)) {
     $active = '';
 }
@@ -20,8 +24,11 @@ $intern_nav_items = [
     'projects'     => ['label' => 'Projects',     'icon' => 'folder_open',     'href' => 'projects.php',     'i18n' => 'nav_projects'],
     'attendance'   => ['label' => 'Attendance',   'icon' => 'event_available', 'href' => 'attendance.php',   'i18n' => 'nav_attendance'],
     'tasks'        => ['label' => 'Tasks',        'icon' => 'view_kanban',     'href' => 'tasks.php',        'i18n' => 'nav_tasks'],
-    'applications' => ['label' => 'Applications', 'icon' => 'description',     'href' => 'applications.php', 'i18n' => 'nav_applications'],
 ];
+
+if (current_user_role() === 'admin') {
+    $intern_nav_items['applications'] = ['label' => 'Applications', 'icon' => 'description', 'href' => 'applications.php', 'i18n' => 'nav_applications'];
+}
 ?>
 <aside class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
     <div class="flex items-center gap-sm mb-xl px-sm">

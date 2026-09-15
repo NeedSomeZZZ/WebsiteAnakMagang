@@ -65,6 +65,8 @@ if ($action === 'today' && $method === 'GET') {
         'clock_in'    => $row['clock_in'],
         'photo_in'    => $row['photo_in'] ? $row['photo_in'] : null,
         'location_in' => $row['location_in'],
+        'lat_in'      => isset($row['lat_in']) ? (float) $row['lat_in'] : null,
+        'lng_in'      => isset($row['lng_in']) ? (float) $row['lng_in'] : null,
     ]);
     exit;
 }
@@ -147,10 +149,114 @@ if ($action === 'save' && $method === 'POST') {
     }
 
     echo json_encode([
-        'message' => 'Clock In berhasil disimpan',
-        'photo'   => $relativePath,
-        'time'    => $time,
+        'message'  => 'Clock In berhasil disimpan',
+        'photo'    => $relativePath,
+        'time'     => $time,
+        'location' => $location,
+        'lat'      => $lat,
+        'lng'      => $lng,
     ]);
+    exit;
+}
+
+// --------------------------------------------------------------
+// 5. RIWAYAT KEHADIRAN UNTUK KALENDER (?action=history, GET)
+//    Dipakai oleh attendance.php (kalender + tabel riwayat milik intern sendiri)
+// --------------------------------------------------------------
+if ($action === 'history' && $method === 'GET') {
+    $sql = "SELECT date, status, clock_in, clock_out, reason, location_in, lat_in, lng_in
+            FROM attendance WHERE username = ? ORDER BY date DESC";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    $rows = [];
+    while ($r = mysqli_fetch_assoc($result)) {
+        $rows[] = [
+            'date'        => $r['date'],
+            'status'      => $r['status'],
+            'clock_in'    => $r['clock_in'],
+            'clock_out'   => $r['clock_out'],
+            'reason'      => $r['reason'],
+            'location_in' => $r['location_in'],
+            'lat_in'      => $r['lat_in'] !== null ? (float) $r['lat_in'] : null,
+            'lng_in'      => $r['lng_in'] !== null ? (float) $r['lng_in'] : null,
+        ];
+    }
+    echo json_encode($rows);
+    exit;
+}
+
+// --------------------------------------------------------------
+// 6. CATAT / EDIT KEHADIRAN MANUAL DARI KALENDER (?action=upsert, POST)
+// --------------------------------------------------------------
+if ($action === 'upsert' && $method === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    $date     = trim($input['date'] ?? '');
+    $status   = $input['status'] ?? '';
+    $clockIn  = trim($input['clockIn'] ?? '');
+    $clockOut = trim($input['clockOut'] ?? '');
+    $reason   = trim($input['reason'] ?? '');
+
+    if (!$date || !in_array($status, ['present', 'late', 'absent'], true)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Data tidak lengkap (date/status)']);
+        exit;
+    }
+    if ($status === 'absent') { $clockIn = ''; $clockOut = ''; }
+
+    $sqlCheck = "SELECT id FROM attendance WHERE username = ? AND date = ? LIMIT 1";
+    $stmtCheck = mysqli_prepare($conn, $sqlCheck);
+    mysqli_stmt_bind_param($stmtCheck, "ss", $username, $date);
+    mysqli_stmt_execute($stmtCheck);
+    $existing = mysqli_fetch_assoc(mysqli_stmt_get_result($stmtCheck));
+
+    if ($existing) {
+        $sql = "UPDATE attendance SET status=?, clock_in=?, clock_out=?, reason=? WHERE id=?";
+        $stmt = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($stmt, "ssssi", $status, $clockIn, $clockOut, $reason, $existing['id']);
+    } else {
+        $sql = "INSERT INTO attendance (username, date, status, clock_in, clock_out, reason) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($stmt, "ssssss", $username, $date, $status, $clockIn, $clockOut, $reason);
+    }
+
+    if (!mysqli_stmt_execute($stmt)) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Gagal menyimpan ke database: ' . mysqli_error($conn)]);
+        exit;
+    }
+
+    echo json_encode(['message' => 'Kehadiran berhasil disimpan']);
+    exit;
+}
+
+// --------------------------------------------------------------
+// 7. HAPUS CATATAN KEHADIRAN (?action=delete, POST)
+// --------------------------------------------------------------
+if ($action === 'delete' && $method === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $date  = trim($input['date'] ?? '');
+
+    if (!$date) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Tanggal wajib diisi']);
+        exit;
+    }
+
+    $sql = "DELETE FROM attendance WHERE username = ? AND date = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "ss", $username, $date);
+
+    if (!mysqli_stmt_execute($stmt)) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Gagal menghapus data: ' . mysqli_error($conn)]);
+        exit;
+    }
+
+    echo json_encode(['message' => 'Catatan berhasil dihapus']);
     exit;
 }
 

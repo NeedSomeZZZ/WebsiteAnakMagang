@@ -171,20 +171,30 @@
             </div>
         </div>
 
-        <!-- Hidden camera inputs -->
-        <input type="file" accept="image/*" capture="user" id="tm-camera-in" class="hidden">
-
-        <!-- Capture Preview Modal -->
-        <div id="tm-modal" class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-md">
-            <div class="bg-surface-container-lowest rounded-2xl p-md max-w-sm w-full">
-                <h4 class="font-headline-sm text-headline-sm text-on-surface mb-sm text-center" id="tm-modal-title">Konfirmasi Clock In</h4>
-                <div class="rounded-xl overflow-hidden border border-outline-variant mb-sm bg-black">
-                    <canvas id="tm-canvas" class="w-full block"></canvas>
+        <!-- Live Camera Stream Modal -->
+        <div id="tm-modal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-md">
+            <div class="bg-surface-container-lowest rounded-2xl p-md max-w-sm w-full shadow-2xl">
+                <h4 class="font-headline-sm text-headline-sm text-on-surface mb-sm text-center" id="tm-modal-title">Clock In - Ambil Foto</h4>
+                
+                <!-- Live Video Feed -->
+                <div id="tm-video-wrap" class="relative rounded-xl overflow-hidden border border-outline-variant mb-sm bg-black aspect-[3/4] flex items-center justify-center">
+                    <video id="tm-video" autoplay playsinline class="w-full h-full object-cover"></video>
+                    <canvas id="tm-canvas" class="hidden w-full h-full object-cover"></canvas>
                 </div>
-                <p class="font-body-sm text-body-sm text-on-surface-variant text-center mb-md" id="tm-modal-status">Menyiapkan kamera...</p>
-                <div class="grid grid-cols-2 gap-sm">
-                    <button onclick="timemarkRetake()" class="w-full bg-surface-container-high text-on-surface rounded-lg py-sm font-label-md text-label-md">Ambil Ulang</button>
-                    <button id="tm-confirm-btn" onclick="timemarkConfirm()" class="w-full bg-primary text-on-primary rounded-lg py-sm font-label-md text-label-md disabled:opacity-40 disabled:cursor-not-allowed" disabled>Simpan</button>
+
+                <p class="font-body-sm text-body-sm text-on-surface-variant text-center mb-md" id="tm-modal-status">Membuka kamera...</p>
+
+                <!-- Action Controls -->
+                <div id="tm-cam-actions" class="grid grid-cols-2 gap-sm">
+                    <button onclick="timemarkCloseModal()" class="w-full bg-surface-container-high text-on-surface rounded-lg py-sm font-label-md text-label-md hover:bg-surface-container-highest">Batal</button>
+                    <button id="tm-capture-btn" onclick="timemarkCapture()" class="w-full bg-primary text-on-primary rounded-lg py-sm font-label-md text-label-md flex items-center justify-center gap-xs hover:opacity-90">
+                        <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+                        Jepret
+                    </button>
+                </div>
+                <div id="tm-confirm-actions" class="grid grid-cols-2 gap-sm hidden">
+                    <button onclick="timemarkRetake()" class="w-full bg-surface-container-high text-on-surface rounded-lg py-sm font-label-md text-label-md hover:bg-surface-container-highest">Ulangi</button>
+                    <button id="tm-confirm-btn" onclick="timemarkConfirm()" class="w-full bg-primary text-on-primary rounded-lg py-sm font-label-md text-label-md disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90" disabled>Simpan</button>
                 </div>
             </div>
         </div>
@@ -365,36 +375,88 @@ function toggleClock() {
             });
     }
 
-    // ---------------- Kamera + Geotag (wajib foto saat Clock In) ----------------
+    // ---------------- Kamera + Geotag (Live Camera Feed) ----------------
+    let tmStream = null;
     let tmPendingDataUrl = null;
     let tmPendingAddress = '';
     let tmPendingLat = null;
     let tmPendingLng = null;
 
-    function timemarkStartCapture() {
-        if (!navigator.mediaDevices && !window.FileReader) {
-            alert('Perangkat/browser ini tidak mendukung akses kamera.');
-            return;
+    async function timemarkStartCapture() {
+        const modal = document.getElementById('tm-modal');
+        const video = document.getElementById('tm-video');
+        const canvas = document.getElementById('tm-canvas');
+        const statusEl = document.getElementById('tm-modal-status');
+        const titleEl = document.getElementById('tm-modal-title');
+        const camActions = document.getElementById('tm-cam-actions');
+        const confirmActions = document.getElementById('tm-confirm-actions');
+
+        if (!modal || !video) return;
+
+        titleEl.textContent = 'Clock In - Ambil Foto';
+        statusEl.textContent = 'Membuka kamera...';
+        video.classList.remove('hidden');
+        canvas.classList.add('hidden');
+        camActions.classList.remove('hidden');
+        confirmActions.classList.add('hidden');
+        modal.classList.remove('hidden');
+
+        try {
+            tmStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+                audio: false
+            });
+            video.srcObject = tmStream;
+            statusEl.textContent = 'Posisikan wajah Anda lalu tekan Jepret.';
+        } catch (err) {
+            console.error('Camera access error:', err);
+            statusEl.textContent = 'Gagal mengakses kamera. Pastikan izin kamera telah diberikan.';
         }
-        const input = document.getElementById('tm-camera-in');
-        if (input) input.click();
     }
 
-    function timemarkHandleFile(e) {
-        const file = e.target.files && e.target.files[0];
-        e.target.value = ''; // reset supaya file yg sama bisa dipilih lagi nanti
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = evt => {
-            const img = new Image();
-            img.onload = () => timemarkComposeAndShow(img);
-            img.src = evt.target.result;
-        };
-        reader.readAsDataURL(file);
+    function timemarkStopCamera() {
+        if (tmStream) {
+            tmStream.getTracks().forEach(track => track.stop());
+            tmStream = null;
+        }
     }
 
-    const tmCamIn = document.getElementById('tm-camera-in');
-    if (tmCamIn) tmCamIn.addEventListener('change', timemarkHandleFile);
+    function timemarkCloseModal() {
+        timemarkStopCamera();
+        document.getElementById('tm-modal')?.classList.add('hidden');
+    }
+
+    function timemarkCapture() {
+        const video = document.getElementById('tm-video');
+        const canvas = document.getElementById('tm-canvas');
+        const videoWrap = document.getElementById('tm-video-wrap');
+        if (!video || !canvas || !video.videoWidth) return;
+
+        const vW = video.videoWidth;
+        const vH = video.videoHeight;
+        
+        // Draw video frame to temp canvas
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = vW;
+        tempCanvas.height = vH;
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.drawImage(video, 0, 0, vW, vH);
+
+        // Stop stream & switch to canvas view
+        timemarkStopCamera();
+        video.classList.add('hidden');
+        canvas.classList.remove('hidden');
+
+        const camActions = document.getElementById('tm-cam-actions');
+        const confirmActions = document.getElementById('tm-confirm-actions');
+        camActions.classList.add('hidden');
+        confirmActions.classList.remove('hidden');
+
+        // Create HTML Image element from captured video frame
+        const img = new Image();
+        img.onload = () => timemarkComposeAndShow(img);
+        img.src = tempCanvas.toDataURL('image/jpeg');
+    }
 
     function timemarkWrapAddress(addr, maxLen) {
         maxLen = maxLen || 42;
@@ -422,7 +484,6 @@ function toggleClock() {
         if (!modal || !canvas) return;
 
         titleEl.textContent = 'Konfirmasi Clock In';
-        modal.classList.remove('hidden');
         if (confirmBtn) confirmBtn.disabled = true;
         if (statusEl) statusEl.textContent = 'Mengambil lokasi...';
 
@@ -520,7 +581,6 @@ function toggleClock() {
     }
 
     function timemarkRetake() {
-        document.getElementById('tm-modal')?.classList.add('hidden');
         tmPendingDataUrl = null;
         timemarkStartCapture();
     }
