@@ -1,4 +1,4 @@
-<?php require_once __DIR__ . '/../session.php'; require_login(); ?>
+<?php require_once __DIR__ . '/../session.php'; require_admin(); ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>

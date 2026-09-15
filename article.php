@@ -8,7 +8,7 @@ if (file_exists(__DIR__ . '/Login/koneksi.php')) {
 }
 
 $is_logged_in = is_logged_in();
-$is_admin = ($is_logged_in && is_superadmin());
+$is_admin = ($is_logged_in && is_admin());
 $json_file = __DIR__ . '/uploads/articles.json';
 $upload_dir = __DIR__ . '/uploads/articles/';
 

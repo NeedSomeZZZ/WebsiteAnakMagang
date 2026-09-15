@@ -51,8 +51,39 @@ if (!function_exists('original_user_role')) {
 if (!function_exists('is_superadmin')) {
 	function is_superadmin(): bool
 	{
+		return current_user_role() === 'superadmin';
+	}
+}
+
+if (!function_exists('is_admin')) {
+	function is_admin(): bool
+	{
 		$role = current_user_role();
-		return $role === 'superadmin' || $role === 'admin';
+		return $role === 'admin' || $role === 'superadmin';
+	}
+}
+
+if (!function_exists('require_admin')) {
+	function require_admin(): void
+	{
+		require_login();
+		if (!is_admin()) {
+			$dashboard_url = file_exists(__DIR__ . '/dashboard.php') ? 'dashboard.php' : '../dashboard.php';
+			header('Location: ' . $dashboard_url);
+			exit;
+		}
+	}
+}
+
+if (!function_exists('require_superadmin')) {
+	function require_superadmin(): void
+	{
+		require_login();
+		if (!is_superadmin()) {
+			$admin_url = file_exists(__DIR__ . '/admin/admin-dashboard.php') ? 'admin/admin-dashboard.php' : 'admin-dashboard.php';
+			header('Location: ' . $admin_url);
+			exit;
+		}
 	}
 }
 

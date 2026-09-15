@@ -1,12 +1,6 @@
 <?php
 require_once __DIR__ . '/../session.php';
-require_login();
-
-// Restrict access to admin/superadmin role
-if (!is_superadmin()) {
-    header('Location: ../dashboard.php');
-    exit;
-}
+require_admin();
 
 // Database connection attempt
 $conn = null;

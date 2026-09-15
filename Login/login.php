@@ -10,7 +10,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $role     = mysqli_real_escape_string($conn, $_POST['role'] ?? 'intern');
 
     // Cek ke database berdasarkan username dan role
-    $query = "SELECT * FROM users WHERE username = '$username' AND role = '$role'";
+    // Jika login sebagai admin, cek juga role superadmin
+    if ($role === 'admin') {
+        $query = "SELECT * FROM users WHERE username = '$username' AND (role = 'admin' OR role = 'superadmin')";
+    } else {
+        $query = "SELECT * FROM users WHERE username = '$username' AND role = '$role'";
+    }
     $result = mysqli_query($conn, $query);
 
     if (mysqli_num_rows($result) > 0) {
@@ -26,7 +31,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['role'] = $user_data['role'];
             
             // Arahkan ke halaman utama/dashboard kamu
-            header('Location: ' . ($user_data['role'] === 'admin' ? '../admin/admin-dashboard.php' : '../dashboard.php'));
+            $redirect = '../dashboard.php';
+            if ($user_data['role'] === 'admin' || $user_data['role'] === 'superadmin') {
+                $redirect = '../admin/admin-dashboard.php';
+            }
+            header('Location: ' . $redirect);
             exit;
         } else {
             $error = 'Kata sandi yang Anda masukkan salah!';

@@ -25,9 +25,13 @@ $admin_nav_items = [
     'attendance' => ['label' => 'Kehadiran Intern', 'icon' => 'event_available',  'href' => $admin_prefix . 'admin-attendance.php'],
     'projects'   => ['label' => 'Projects',         'icon' => 'folder_open',      'href' => $admin_prefix . 'admin-projects.php'],
     'article'    => ['label' => 'Kelola Artikel',   'icon' => 'newspaper',        'href' => $admin_prefix . 'admin-articles.php'],
-    'superadmin' => ['label' => 'Superadmin Panel', 'icon' => 'verified_user',    'href' => $admin_prefix . 'superadmin.php'],
     'stats'      => ['label' => 'Statistics',       'icon' => 'insights',         'href' => $admin_prefix . 'admin-stats.php'],
 ];
+
+// Superadmin Panel hanya muncul untuk role superadmin
+if (is_superadmin()) {
+    $admin_nav_items['superadmin'] = ['label' => 'Superadmin Panel', 'icon' => 'verified_user', 'href' => $admin_prefix . 'superadmin.php'];
+}
 ?>
 <aside class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
     <div class="flex items-center gap-sm mb-xl px-sm">
