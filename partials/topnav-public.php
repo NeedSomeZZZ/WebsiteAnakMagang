@@ -1,25 +1,23 @@
 <?php
 /**
  * partials/topnav-public.php
- * TopNavBar untuk halaman publik (tanpa sidebar): index.php, verification.php
- *
- * Variabel yang bisa di-set SEBELUM include ini:
- *   $nav_icon      (string) -> nama material icon (default: 'work')
- *   $nav_home_href (string) -> link brand/logo (default: 'index.php')
- *   $nav_cta_label (string) -> teks tombol kanan (default: 'Masuk Portal')
- *   $nav_cta_href  (string) -> link tombol kanan (default: 'login/login.php')
+ * TopNavBar untuk halaman publik (tanpa sidebar): index.php, verification.php, article.php
  */
+$script_path = str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME'] ?? $_SERVER['SCRIPT_NAME'] ?? '');
+$is_in_admin_dir = (basename(dirname($script_path)) === 'admin');
+$root_prefix = $is_in_admin_dir ? '../' : '';
+
 if (!isset($nav_icon)) {
     $nav_icon = 'work';
 }
 if (!isset($nav_home_href)) {
-    $nav_home_href = 'index.php';
+    $nav_home_href = $root_prefix . 'index.php';
 }
 if (!isset($nav_cta_label)) {
     $nav_cta_label = 'Masuk Portal';
 }
 if (!isset($nav_cta_href)) {
-    $nav_cta_href = 'login/login.php';
+    $nav_cta_href = $root_prefix . 'Login/login.php';
 }
 ?>
 <header class="bg-surface-container-lowest border-b border-outline-variant shadow-sm sticky top-0 z-50">
@@ -30,6 +28,12 @@ if (!isset($nav_cta_href)) {
             </div>
             <a href="<?php echo htmlspecialchars($nav_home_href); ?>" class="font-headline-md text-headline-md font-bold text-primary" data-i18n="brand_name">Kedayweb</a>
         </div>
+        <nav class="flex flex-wrap justify-center gap-md">
+            <a href="<?php echo $root_prefix; ?>article.php" class="px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors">Artikel</a>
+            <a href="<?php echo $root_prefix; ?>index.php#features" class="px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors" data-i18n="nav_features">Fitur</a>
+            <a href="<?php echo $root_prefix; ?>index.php#faq" class="px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors" data-i18n="nav_faq">FAQ</a>
+            <a href="<?php echo $root_prefix; ?>index.php#contact" class="px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors" data-i18n="nav_contact">Kontak</a>
+        </nav>
         <div class="flex items-center gap-sm">
             <a href="<?php echo htmlspecialchars($nav_cta_href); ?>" class="bg-primary-container text-on-primary px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors" data-i18n="btn_portal_login"><?php echo htmlspecialchars($nav_cta_label); ?></a>
         </div>

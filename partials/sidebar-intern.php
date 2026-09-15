@@ -2,14 +2,9 @@
 /**
  * partials/sidebar-intern.php
  * Left sidebar (SideNavBar) yang dipakai bersama oleh semua halaman intern:
- * dashboard.php, projects.php, attendance.php, tasks.php, applications.php
- *
- * Variabel yang bisa di-set SEBELUM include ini:
- *   $active           (string)  -> 'dashboard' | 'projects' | 'attendance' | 'tasks' | 'applications'
- *   $show_admin_link  (bool)    -> tampilkan link "Admin Dashboard" (default: false)
+ * dashboard.php, projects.php, attendance.php, tasks.php, applications.php, article.php
  */
 
-// Pastikan session.php sudah di-load (require_once aman dari double-include)
 require_once __DIR__ . '/../session.php';
 
 if (!isset($active)) {
@@ -19,15 +14,21 @@ if (!isset($show_admin_link)) {
     $show_admin_link = false;
 }
 
+$script_path = str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME'] ?? $_SERVER['SCRIPT_NAME'] ?? '');
+$is_in_admin_dir = (basename(dirname($script_path)) === 'admin');
+$root_prefix = $is_in_admin_dir ? '../' : '';
+$admin_prefix = $is_in_admin_dir ? '' : 'admin/';
+
 $intern_nav_items = [
-    'dashboard'    => ['label' => 'Dashboard',    'icon' => 'dashboard',       'href' => 'dashboard.php',    'i18n' => 'nav_dashboard'],
-    'projects'     => ['label' => 'Projects',     'icon' => 'folder_open',     'href' => 'projects.php',     'i18n' => 'nav_projects'],
-    'attendance'   => ['label' => 'Attendance',   'icon' => 'event_available', 'href' => 'attendance.php',   'i18n' => 'nav_attendance'],
-    'tasks'        => ['label' => 'Tasks',        'icon' => 'view_kanban',     'href' => 'tasks.php',        'i18n' => 'nav_tasks'],
+    'dashboard'    => ['label' => 'Dashboard',           'icon' => 'dashboard',       'href' => $root_prefix . 'dashboard.php',    'i18n' => 'nav_dashboard'],
+    'projects'     => ['label' => 'Projects',            'icon' => 'folder_open',     'href' => $root_prefix . 'projects.php',     'i18n' => 'nav_projects'],
+    'attendance'   => ['label' => 'Attendance',          'icon' => 'event_available', 'href' => $root_prefix . 'attendance.php',   'i18n' => 'nav_attendance'],
+    'tasks'        => ['label' => 'Tasks',               'icon' => 'view_kanban',     'href' => $root_prefix . 'tasks.php',        'i18n' => 'nav_tasks'],
+    'article'      => ['label' => 'Aktivitas & Artikel', 'icon' => 'newspaper',       'href' => $root_prefix . 'article.php',      'i18n' => 'nav_article'],
 ];
 
-if (current_user_role() === 'admin') {
-    $intern_nav_items['applications'] = ['label' => 'Applications', 'icon' => 'description', 'href' => 'applications.php', 'i18n' => 'nav_applications'];
+if (current_user_role() === 'admin' || current_user_role() === 'superadmin') {
+    $intern_nav_items['applications'] = ['label' => 'Applications', 'icon' => 'description', 'href' => $root_prefix . 'applications.php', 'i18n' => 'nav_applications'];
 }
 ?>
 <aside class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
@@ -48,8 +49,8 @@ if (current_user_role() === 'admin') {
                 <span data-i18n="<?php echo $item['i18n']; ?>"><?php echo $item['label']; ?></span>
             </a>
         <?php endforeach; ?>
-        <?php if ($show_admin_link): ?>
-            <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md active:scale-[0.98] transition-transform" href="admin-dashboard.php">
+        <?php if ($show_admin_link || current_user_role() === 'admin' || current_user_role() === 'superadmin'): ?>
+            <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md active:scale-[0.98] transition-transform" href="<?php echo $admin_prefix; ?>admin-dashboard.php">
                 <span class="material-symbols-outlined">admin_panel_settings</span>
                 <span data-i18n="nav_admin_dashboard">Admin Dashboard</span>
             </a>
@@ -60,7 +61,7 @@ if (current_user_role() === 'admin') {
             <span class="material-symbols-outlined text-primary">account_circle</span>
             <span class="font-label-sm text-on-surface truncate"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
         </div>
-        <a class="flex items-center gap-md px-md py-sm rounded-lg font-label-md text-label-md text-error hover:bg-error-container" href="logout.php">
+        <a class="flex items-center gap-md px-md py-sm rounded-lg font-label-md text-label-md text-error hover:bg-error-container" href="<?php echo $root_prefix; ?>logout.php">
             <span class="material-symbols-outlined">logout</span>
             <span>Keluar</span>
         </a>
