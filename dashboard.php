@@ -673,8 +673,5 @@ function toggleClock() {
 </script>
 <script src="project-store.js"></script>
 <script src="intern-store.js"></script>
-<script src="lang.js"></script>
-<script src="language-ui.js"></script>
-<script src="performance.js"></script>
 </body>
 </html>

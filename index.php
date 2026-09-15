@@ -460,9 +460,6 @@ if (!is_array($positions) || empty($positions)) {
             modal.classList.add('hidden');
         }
     </script>
-    <script src="lang.js"></script>
-    <script src="language-ui.js"></script>
-    <script src="performance.js"></script>
 </body>
 
 </html>

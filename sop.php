@@ -369,7 +369,5 @@
         <div class="h-md"></div>
     </div>
 </main>
-<script src="lang.js"></script>
-<script src="language-ui.js"></script>
 </body>
 </html>

@@ -677,9 +677,6 @@ if (is_admin()) {
             renderKanban();
         });
     </script>
-    <script src="lang.js"></script>
-    <script src="language-ui.js"></script>
-    <script src="performance.js"></script>
 </body>
 
 </html>

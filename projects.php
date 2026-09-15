@@ -260,8 +260,5 @@ if (is_admin()) {
   <div id="toast" class="fixed bottom-5 right-5 z-[60] hidden rounded-lg bg-slate-900 px-4 py-3 text-sm font-semibold text-white"></div>
   <script src="project-store.js"></script>
   <script src="projects-ui.js"></script>
-  <script src="lang.js"></script>
-  <script src="language-ui.js"></script>
-  <script src="performance.js"></script>
 </body>
 </html>
