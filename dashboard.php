@@ -18,7 +18,7 @@
 </head>
 <body class="bg-background text-on-surface font-body-md flex h-screen overflow-hidden">
 <!-- SideNavBar (Desktop) -->
-<?php $active = 'dashboard'; $show_admin_link = true; include 'partials/sidebar-intern.php'; ?>
+<?php $active = 'applications'; include 'partials/sidebar-intern.php'; ?>
 
 <!-- Main Content Canvas -->
 <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto relative">
@@ -70,10 +70,6 @@
                 </div>
                 <div>
                     <div class="font-headline-xl text-headline-xl text-on-surface">95%</div>
-                    <div class="flex items-center gap-xs mt-1">
-                        <span class="material-symbols-outlined text-[14px] text-green-600">trending_up</span>
-                        <span class="font-body-sm text-body-sm text-on-surface-variant">+2% from last month</span>
-                    </div>
                 </div>
             </a>
             <!-- Stat: Tasks Done -->
@@ -86,7 +82,6 @@
                 </div>
                 <div>
                     <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-tasks-done-val">24</div>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1" data-i18n="stat_this_sprint">This sprint</p>
                 </div>
             </a>
             <!-- Stat: Active Projects -->
@@ -99,7 +94,6 @@
                 </div>
                 <div>
                     <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-active-proj-val">3</div>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1" data-i18n="stat_cross_func">Cross-functional</p>
                 </div>
             </a>
             <!-- Stat: Pending Tasks -->
@@ -124,7 +118,6 @@
                 </div>
                 <div>
                     <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-total-proj-val">0</div>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Proyek yang diikuti</p>
                 </div>
             </a>
             <!-- Stat: Completed Projects -->
@@ -137,7 +130,6 @@
                 </div>
                 <div>
                     <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-completed-proj-val">0</div>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Semua task rampung</p>
                 </div>
             </a>
         </div>
