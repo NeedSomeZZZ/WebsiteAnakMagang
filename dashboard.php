@@ -18,7 +18,7 @@
 </head>
 <body class="bg-background text-on-surface font-body-md flex h-screen overflow-hidden">
 <!-- SideNavBar (Desktop) -->
-<?php $active = 'applications'; include 'partials/sidebar-intern.php'; ?>
+ <?php $active = 'dashboard'; include 'partials/sidebar-intern.php'; ?>
 
 <!-- Main Content Canvas -->
 <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto relative">
@@ -70,6 +70,10 @@
                 </div>
                 <div>
                     <div class="font-headline-xl text-headline-xl text-on-surface">95%</div>
+                    <div class="flex items-center gap-xs mt-1">
+                        <span class="material-symbols-outlined text-[14px] text-green-600">trending_up</span>
+                        <span class="font-body-sm text-body-sm text-on-surface-variant">+2% from last month</span>
+                    </div>
                 </div>
             </a>
             <!-- Stat: Tasks Done -->
@@ -82,6 +86,7 @@
                 </div>
                 <div>
                     <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-tasks-done-val">24</div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1" data-i18n="stat_this_sprint">This sprint</p>
                 </div>
             </a>
             <!-- Stat: Active Projects -->
@@ -94,6 +99,7 @@
                 </div>
                 <div>
                     <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-active-proj-val">3</div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1" data-i18n="stat_cross_func">Cross-functional</p>
                 </div>
             </a>
             <!-- Stat: Pending Tasks -->
@@ -118,6 +124,7 @@
                 </div>
                 <div>
                     <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-total-proj-val">0</div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Proyek yang diikuti</p>
                 </div>
             </a>
             <!-- Stat: Completed Projects -->
@@ -130,6 +137,7 @@
                 </div>
                 <div>
                     <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-completed-proj-val">0</div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Semua task rampung</p>
                 </div>
             </a>
         </div>
@@ -146,26 +154,17 @@
                     <span class="inline-flex items-center gap-xs px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm mb-md" id="tm-status-badge">
                         Belum Absen
                     </span>
-                    <div class="w-full grid grid-cols-2 gap-sm mb-md text-left">
+                    <div class="w-full mb-md text-left">
                         <div class="p-sm rounded-lg border border-outline-variant bg-surface-bright overflow-hidden">
                             <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Jam Masuk</p>
                             <p class="font-headline-sm text-headline-sm text-on-surface font-bold" id="tm-in-time">--:--</p>
-                            <img id="tm-in-photo" class="hidden w-full h-16 object-cover rounded-md mt-xs" alt="Foto clock in">
-                        </div>
-                        <div class="p-sm rounded-lg border border-outline-variant bg-surface-bright overflow-hidden">
-                            <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Jam Keluar</p>
-                            <p class="font-headline-sm text-headline-sm text-on-surface font-bold" id="tm-out-time">--:--</p>
-                            <img id="tm-out-photo" class="hidden w-full h-16 object-cover rounded-md mt-xs" alt="Foto clock out">
+                            <img id="tm-in-photo" class="hidden w-full h-32 object-cover rounded-md mt-xs" alt="Foto clock in">
                         </div>
                     </div>
-                    <div class="w-full grid grid-cols-2 gap-sm">
-                        <button id="tm-clockin-btn" onclick="timemarkStartCapture('in')" class="w-full bg-primary text-on-primary hover:shadow-md transition-all rounded-lg py-sm px-md font-label-md text-label-md flex items-center justify-center gap-sm active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed">
+                    <div class="w-full">
+                        <button id="tm-clockin-btn" onclick="timemarkStartCapture()" class="w-full bg-primary text-on-primary hover:shadow-md transition-all rounded-lg py-sm px-md font-label-md text-label-md flex items-center justify-center gap-sm active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed">
                             <span class="material-symbols-outlined text-[18px]">photo_camera</span>
                             Clock In
-                        </button>
-                        <button id="tm-clockout-btn" onclick="timemarkStartCapture('out')" class="w-full bg-surface-container-high text-on-surface hover:shadow-md transition-all rounded-lg py-sm px-md font-label-md text-label-md flex items-center justify-center gap-sm active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed" disabled>
-                            <span class="material-symbols-outlined text-[18px]">photo_camera</span>
-                            Clock Out
                         </button>
                     </div>
                 </div>
@@ -174,12 +173,11 @@
 
         <!-- Hidden camera inputs -->
         <input type="file" accept="image/*" capture="user" id="tm-camera-in" class="hidden">
-        <input type="file" accept="image/*" capture="user" id="tm-camera-out" class="hidden">
 
         <!-- Capture Preview Modal -->
         <div id="tm-modal" class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-md">
             <div class="bg-surface-container-lowest rounded-2xl p-md max-w-sm w-full">
-                <h4 class="font-headline-sm text-headline-sm text-on-surface mb-sm text-center" id="tm-modal-title">Konfirmasi Absen</h4>
+                <h4 class="font-headline-sm text-headline-sm text-on-surface mb-sm text-center" id="tm-modal-title">Konfirmasi Clock In</h4>
                 <div class="rounded-xl overflow-hidden border border-outline-variant mb-sm bg-black">
                     <canvas id="tm-canvas" class="w-full block"></canvas>
                 </div>
@@ -195,6 +193,9 @@
 </main>
 
 <script>
+// Username dari sesi PHP yang sedang login (dipakai untuk simpan absensi ke database)
+const CURRENT_USERNAME = <?php echo json_encode(current_user_name()); ?>;
+
 // Determine intern name from URL parameter
 const params = new URLSearchParams(window.location.search);
 const internParam = params.get('intern');
@@ -298,7 +299,7 @@ function toggleClock() {
     });
 
     // ============================================================
-    // TIMEMARK ATTENDANCE (Clock In / Clock Out)
+    // TIMEMARK ATTENDANCE (Clock In)
     // ============================================================
     function timemarkPad(n) { return String(n).padStart(2, '0'); }
 
@@ -334,68 +335,55 @@ function toggleClock() {
     }
 
     function timemarkRefreshUI() {
-        if (!window.InternStore) return;
-        const name = InternStore.getCurrentUser();
-        const today = timemarkToday();
-        const rec = InternStore.getAttendance(name).find(r => r.date === today);
         const inTimeEl = document.getElementById('tm-in-time');
-        const outTimeEl = document.getElementById('tm-out-time');
         const inPhotoEl = document.getElementById('tm-in-photo');
-        const outPhotoEl = document.getElementById('tm-out-photo');
         const btnIn = document.getElementById('tm-clockin-btn');
-        const btnOut = document.getElementById('tm-clockout-btn');
 
-        const showPhoto = (el, dataUrl) => {
+        const showPhoto = (el, url) => {
             if (!el) return;
-            if (dataUrl) { el.src = dataUrl; el.classList.remove('hidden'); }
+            if (url) { el.src = url; el.classList.remove('hidden'); }
             else { el.classList.add('hidden'); el.removeAttribute('src'); }
         };
 
-        if (rec && rec.clockIn) {
-            if (inTimeEl) inTimeEl.textContent = rec.clockIn;
-            showPhoto(inPhotoEl, rec.photoIn);
-            if (btnIn) btnIn.disabled = true;
-            if (rec.clockOut) {
-                if (outTimeEl) outTimeEl.textContent = rec.clockOut;
-                showPhoto(outPhotoEl, rec.photoOut);
-                if (btnOut) btnOut.disabled = true;
-                timemarkSetBadge('Sudah Clock Out', 'done');
-            } else {
-                if (outTimeEl) outTimeEl.textContent = '--:--';
-                showPhoto(outPhotoEl, null);
-                if (btnOut) btnOut.disabled = false;
-                timemarkSetBadge('Sedang Bekerja', 'active');
-            }
-        } else {
-            if (inTimeEl) inTimeEl.textContent = '--:--';
-            if (outTimeEl) outTimeEl.textContent = '--:--';
-            showPhoto(inPhotoEl, null);
-            showPhoto(outPhotoEl, null);
-            if (btnIn) btnIn.disabled = false;
-            if (btnOut) btnOut.disabled = true;
-            timemarkSetBadge('Belum Absen', 'idle');
-        }
+        fetch('attendance-api.php?action=today')
+            .then(r => r.json())
+            .then(rec => {
+                if (rec && rec.exists && rec.clock_in) {
+                    if (inTimeEl) inTimeEl.textContent = rec.clock_in;
+                    showPhoto(inPhotoEl, rec.photo_in);
+                    if (btnIn) btnIn.disabled = true;
+                    timemarkSetBadge('Sudah Absen', 'done');
+                } else {
+                    if (inTimeEl) inTimeEl.textContent = '--:--';
+                    showPhoto(inPhotoEl, null);
+                    if (btnIn) btnIn.disabled = false;
+                    timemarkSetBadge('Belum Absen', 'idle');
+                }
+            })
+            .catch(() => {
+                timemarkSetBadge('Gagal memuat status absen', 'idle');
+            });
     }
 
-    // ---------------- Kamera + Geotag (wajib foto saat Clock In/Out) ----------------
-    let tmPendingType = null;   // 'in' | 'out'
+    // ---------------- Kamera + Geotag (wajib foto saat Clock In) ----------------
     let tmPendingDataUrl = null;
+    let tmPendingAddress = '';
+    let tmPendingLat = null;
+    let tmPendingLng = null;
 
-    function timemarkStartCapture(type) {
+    function timemarkStartCapture() {
         if (!navigator.mediaDevices && !window.FileReader) {
             alert('Perangkat/browser ini tidak mendukung akses kamera.');
             return;
         }
-        tmPendingType = type;
-        const input = document.getElementById(type === 'in' ? 'tm-camera-in' : 'tm-camera-out');
+        const input = document.getElementById('tm-camera-in');
         if (input) input.click();
     }
 
-    function timemarkHandleFile(e, type) {
+    function timemarkHandleFile(e) {
         const file = e.target.files && e.target.files[0];
         e.target.value = ''; // reset supaya file yg sama bisa dipilih lagi nanti
         if (!file) return;
-        tmPendingType = type;
         const reader = new FileReader();
         reader.onload = evt => {
             const img = new Image();
@@ -406,9 +394,7 @@ function toggleClock() {
     }
 
     const tmCamIn = document.getElementById('tm-camera-in');
-    const tmCamOut = document.getElementById('tm-camera-out');
-    if (tmCamIn) tmCamIn.addEventListener('change', e => timemarkHandleFile(e, 'in'));
-    if (tmCamOut) tmCamOut.addEventListener('change', e => timemarkHandleFile(e, 'out'));
+    if (tmCamIn) tmCamIn.addEventListener('change', timemarkHandleFile);
 
     function timemarkWrapAddress(addr, maxLen) {
         maxLen = maxLen || 42;
@@ -435,7 +421,7 @@ function toggleClock() {
         const titleEl = document.getElementById('tm-modal-title');
         if (!modal || !canvas) return;
 
-        titleEl.textContent = tmPendingType === 'in' ? 'Konfirmasi Clock In' : 'Konfirmasi Clock Out';
+        titleEl.textContent = 'Konfirmasi Clock In';
         modal.classList.remove('hidden');
         if (confirmBtn) confirmBtn.disabled = true;
         if (statusEl) statusEl.textContent = 'Mengambil lokasi...';
@@ -497,6 +483,10 @@ function toggleClock() {
             if (statusEl) statusEl.textContent = 'Foto siap — cek dulu sebelum disimpan.';
         }
 
+        tmPendingAddress = '';
+        tmPendingLat = null;
+        tmPendingLng = null;
+
         if (!navigator.geolocation) {
             if (statusEl) statusEl.textContent = 'Lokasi tidak tersedia di perangkat ini.';
             draw(['Lokasi tidak tersedia']);
@@ -506,16 +496,23 @@ function toggleClock() {
         navigator.geolocation.getCurrentPosition(
             pos => {
                 const { latitude, longitude } = pos.coords;
+                tmPendingLat = latitude;
+                tmPendingLng = longitude;
                 fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
                     .then(r => r.json())
                     .then(data => {
                         const addr = data && data.display_name ? data.display_name : `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+                        tmPendingAddress = addr;
                         draw(timemarkWrapAddress(addr));
                     })
-                    .catch(() => draw([`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`]));
+                    .catch(() => {
+                        tmPendingAddress = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+                        draw([tmPendingAddress]);
+                    });
             },
             () => {
                 if (statusEl) statusEl.textContent = 'Izin lokasi ditolak — foto disimpan tanpa lokasi.';
+                tmPendingAddress = 'Lokasi tidak diizinkan';
                 draw(['Lokasi tidak diizinkan']);
             },
             { timeout: 8000 }
@@ -525,27 +522,48 @@ function toggleClock() {
     function timemarkRetake() {
         document.getElementById('tm-modal')?.classList.add('hidden');
         tmPendingDataUrl = null;
-        timemarkStartCapture(tmPendingType);
+        timemarkStartCapture();
     }
 
+    const TM_CUTOFF_HOUR = 9; // 09:00 batas tepat waktu
+
     function timemarkConfirm() {
-        if (!tmPendingDataUrl || !window.InternStore) return;
-        const name = InternStore.getCurrentUser();
-        const today = timemarkToday();
+        if (!tmPendingDataUrl) return;
+        const confirmBtn = document.getElementById('tm-confirm-btn');
+        const statusEl = document.getElementById('tm-modal-status');
         const now = new Date();
         const timeStr = `${timemarkPad(now.getHours())}:${timemarkPad(now.getMinutes())}`;
+        const status = now.getHours() >= TM_CUTOFF_HOUR ? 'late' : 'present';
 
-        if (tmPendingType === 'in') {
-            const status = now.getHours() >= InternStore.CUTOFF_HOUR ? 'late' : 'present';
-            InternStore.upsertAttendance(name, { date: today, status, clockIn: timeStr, clockOut: '', reason: '', photoIn: tmPendingDataUrl });
-        } else {
-            const existing = InternStore.getAttendance(name).find(r => r.date === today) || { date: today, status: 'present', clockIn: '', reason: '' };
-            InternStore.upsertAttendance(name, { ...existing, date: today, clockOut: timeStr, photoOut: tmPendingDataUrl });
-        }
+        if (confirmBtn) confirmBtn.disabled = true;
+        if (statusEl) statusEl.textContent = 'Menyimpan ke database...';
 
-        document.getElementById('tm-modal')?.classList.add('hidden');
-        tmPendingDataUrl = null;
-        timemarkRefreshUI();
+        fetch('attendance-api.php?action=save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                time: timeStr,
+                status: status,
+                photo: tmPendingDataUrl,
+                location: tmPendingAddress,
+                lat: tmPendingLat,
+                lng: tmPendingLng
+            })
+        })
+            .then(async r => {
+                const data = await r.json().catch(() => ({}));
+                if (!r.ok) throw new Error(data.error || 'Gagal menyimpan absensi');
+                return data;
+            })
+            .then(() => {
+                document.getElementById('tm-modal')?.classList.add('hidden');
+                tmPendingDataUrl = null;
+                timemarkRefreshUI();
+            })
+            .catch(err => {
+                if (statusEl) statusEl.textContent = err.message || 'Gagal menyimpan, coba lagi.';
+                if (confirmBtn) confirmBtn.disabled = false;
+            });
     }
 </script>
 <script src="project-store.js"></script>
