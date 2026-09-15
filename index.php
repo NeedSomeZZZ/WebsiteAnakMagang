@@ -134,36 +134,36 @@ if (!is_array($positions) || empty($positions)) {
                         <!-- Step 1 -->
                         <div class="flex items-start gap-md relative">
                             <div id="step1-dot"
-                                class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-label-sm text-label-sm shrink-0 z-10 border-[3px] border-surface-container-lowest ring-2 ring-surface-container-low font-bold">
+                                class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-label-sm text-label-sm shrink-0 z-10 border-[3px] border-surface-container-lowest font-bold transition-all duration-300">
                                 1</div>
                             <div class="pt-1">
-                                <h4 class="font-label-md text-label-md text-on-surface" data-i18n="recruit_step1">Data
+                                <h4 id="step1-label" class="font-label-md text-label-md text-on-surface-variant transition-colors duration-300" data-i18n="recruit_step1">Data
                                     Diri</h4>
-                                <p class="font-body-sm text-body-sm text-on-surface-variant"
+                                <p id="step1-desc" class="font-body-sm text-body-sm text-outline transition-colors duration-300"
                                     data-i18n="recruit_step1_d">Informasi kontak dasar</p>
                             </div>
                         </div>
                         <!-- Step 2 -->
                         <div class="flex items-start gap-md relative">
                             <div id="step2-dot"
-                                class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-label-sm text-label-sm shrink-0 z-10 border-[3px] border-surface-container-lowest font-bold">
+                                class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-label-sm text-label-sm shrink-0 z-10 border-[3px] border-surface-container-lowest font-bold transition-all duration-300">
                                 2</div>
                             <div class="pt-1">
-                                <h4 class="font-label-md text-label-md text-on-surface-variant"
+                                <h4 id="step2-label" class="font-label-md text-label-md text-on-surface-variant transition-colors duration-300"
                                     data-i18n="recruit_step2">Pendidikan &amp; Posisi</h4>
-                                <p class="font-body-sm text-body-sm text-outline" data-i18n="recruit_step2_d">Asal
+                                <p id="step2-desc" class="font-body-sm text-body-sm text-outline transition-colors duration-300" data-i18n="recruit_step2_d">Asal
                                     kampus dan pilihan posisi</p>
                             </div>
                         </div>
                         <!-- Step 3 -->
                         <div class="flex items-start gap-md relative">
                             <div id="step3-dot"
-                                class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-label-sm text-label-sm shrink-0 z-10 border-[3px] border-surface-container-lowest font-bold">
+                                class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-label-sm text-label-sm shrink-0 z-10 border-[3px] border-surface-container-lowest font-bold transition-all duration-300">
                                 3</div>
                             <div class="pt-1">
-                                <h4 class="font-label-md text-label-md text-on-surface-variant"
+                                <h4 id="step3-label" class="font-label-md text-label-md text-on-surface-variant transition-colors duration-300"
                                     data-i18n="recruit_step3">Berkas</h4>
-                                <p class="font-body-sm text-body-sm text-outline" data-i18n="recruit_step3_d">CV &amp;
+                                <p id="step3-desc" class="font-body-sm text-body-sm text-outline transition-colors duration-300" data-i18n="recruit_step3_d">CV &amp;
                                     Tautan Portofolio</p>
                             </div>
                         </div>
@@ -299,13 +299,105 @@ if (!is_array($positions) || empty($positions)) {
     </footer>
 
     <script>
+        /* ─── Step Indicator Helpers ─── */
+
+        /**
+         * Aktifkan indikator step (lingkaran berwarna primary + centang).
+         * @param {number} step - nomor step (1, 2, atau 3)
+         */
+        function activateStep(step) {
+            const dot = document.getElementById('step' + step + '-dot');
+            if (!dot) return;
+            // Hapus state tidak aktif
+            dot.classList.remove(
+                'bg-surface-container-highest', 'text-on-surface-variant',
+                'bg-primary-container'
+            );
+            // Tambahkan state aktif
+            dot.classList.add('bg-primary', 'text-on-primary', 'scale-110', 'shadow-md');
+            dot.innerHTML = '<span class="material-symbols-outlined text-[16px]" style="font-variation-settings:\'FILL\' 1">check</span>';
+
+            // Aktifkan juga teks label di samping dot
+            const stepLabel = document.getElementById('step' + step + '-label');
+            if (stepLabel) stepLabel.classList.replace('text-on-surface-variant', 'text-on-surface');
+            const stepDesc = document.getElementById('step' + step + '-desc');
+            if (stepDesc) stepDesc.classList.replace('text-outline', 'text-on-surface-variant');
+        }
+
+        /**
+         * Nonaktifkan indikator step (kembali ke state abu-abu).
+         * @param {number} step - nomor step (1, 2, atau 3)
+         */
+        function deactivateStep(step) {
+            const dot = document.getElementById('step' + step + '-dot');
+            if (!dot) return;
+            dot.classList.remove('bg-primary', 'text-on-primary', 'bg-green-600', 'text-white', 'scale-110', 'shadow-md');
+            dot.classList.add('bg-surface-container-highest', 'text-on-surface-variant');
+            dot.innerHTML = step;
+        }
+
+        /* ─── Real-time Step 1: Nama Depan + Nama Belakang + Email ─── */
+        function checkStep1() {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName  = document.getElementById('lastName').value.trim();
+            const email     = document.getElementById('email').value.trim();
+            const emailOk   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+            if (firstName && lastName && email && emailOk) {
+                activateStep(1);
+            } else {
+                deactivateStep(1);
+            }
+        }
+
+        /* ─── Real-time Step 2: Posisi yang Dilamar ─── */
+        function checkStep2() {
+            const role = document.getElementById('role').value;
+            if (role && role !== '') {
+                activateStep(2);
+            } else {
+                deactivateStep(2);
+            }
+        }
+
+        /* ─── Real-time Step 3: Upload CV ─── */
+        function checkStep3() {
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput && fileInput.files && fileInput.files.length > 0) {
+                activateStep(3);
+            } else {
+                deactivateStep(3);
+            }
+        }
+
+        /* ─── File Upload Handler ─── */
         function handleFileUpload(input) {
             if (input.files && input.files[0]) {
                 document.getElementById('upload-text').textContent = '✓ ' + input.files[0].name;
                 document.getElementById('upload-area').classList.add('border-primary', 'bg-primary-fixed');
+            } else {
+                document.getElementById('upload-text').textContent = 'Klik untuk mengunggah atau seret file ke sini';
+                document.getElementById('upload-area').classList.remove('border-primary', 'bg-primary-fixed');
             }
+            checkStep3();
         }
 
+        /* ─── Pasang Event Listeners saat DOM siap ─── */
+        document.addEventListener('DOMContentLoaded', function () {
+            // Step 1 listeners
+            ['firstName', 'lastName', 'email'].forEach(function (id) {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', checkStep1);
+            });
+
+            // Step 2 listener
+            const roleEl = document.getElementById('role');
+            if (roleEl) roleEl.addEventListener('change', checkStep2);
+
+            // Step 3 listener (sudah di-handle oleh handleFileUpload via onchange)
+        });
+
+        /* ─── Submit Application ─── */
         function submitApplication() {
             const firstName = document.getElementById('firstName').value.trim();
             const lastName  = document.getElementById('lastName').value.trim();
@@ -314,11 +406,9 @@ if (!is_array($positions) || empty($positions)) {
             const portfolio = document.getElementById('portfolio') ? document.getElementById('portfolio').value.trim() : '';
             const fileInput = document.getElementById('fileInput');
 
-            const fillMsg    = (typeof t === 'function' ? t('recruit_fill') : null) || 'Silakan lengkapi semua kolom wajib.';
-            const successMsg = (typeof t === 'function' ? t('recruit_success') : null) || 'Pendaftaran magang berhasil dikirim!';
-            const touchMsg   = (typeof t === 'function' ? t('recruit_touch') : null) || 'Tim Kedayweb akan segera menghubungi Anda!';
+            const fillMsg = (typeof t === 'function' ? t('recruit_fill') : null) || 'Silakan lengkapi semua kolom wajib.';
 
-            if (!firstName || !email || !role) {
+            if (!firstName || !lastName || !email || !role) {
                 alert(fillMsg);
                 return;
             }
@@ -333,47 +423,37 @@ if (!is_array($positions) || empty($positions)) {
                 formData.append('cv_file', fileInput.files[0]);
             }
 
-            // Step 1 animation
-            document.getElementById('step1-dot').classList.remove('bg-surface-container-highest');
-            document.getElementById('step1-dot').classList.add('bg-green-600', 'text-white');
-            document.getElementById('step1-dot').innerHTML = '✓';
-
             fetch('api_submit_application.php', {
                 method: 'POST',
                 body: formData
             })
             .then(res => res.json())
             .then(data => {
-                // Step 2 animation
-                document.getElementById('step2-dot').classList.remove('bg-surface-container-highest');
-                document.getElementById('step2-dot').classList.add('bg-green-600', 'text-white');
-                document.getElementById('step2-dot').innerHTML = '✓';
+                setTimeout(() => {
+                    // Tampilkan modal
+                    document.getElementById('applicant-name').textContent = `${firstName} ${lastName}`;
+                    document.getElementById('applicant-email').textContent = email;
+                    document.getElementById('applicant-role').textContent = role;
 
-            setTimeout(() => {
-                // Show modal
-                document.getElementById('applicant-name').textContent = `${firstName} ${lastName}`;
-                document.getElementById('applicant-email').textContent = email;
-                document.getElementById('applicant-role').textContent = role;
-                
-                const modal = document.getElementById('successModal');
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
+                    const modal = document.getElementById('successModal');
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
 
-                // Reset form
-                document.getElementById('application-form-el').reset();
-                document.getElementById('upload-text').textContent = 'Klik untuk mengunggah atau seret file ke sini';
-                document.getElementById('upload-area').classList.remove('border-primary', 'bg-primary-fixed');
-                
-                // Reset dots
-                ['step1-dot', 'step2-dot', 'step3-dot'].forEach((id, idx) => {
-                    const el = document.getElementById(id);
-                    el.classList.remove('bg-green-600', 'text-white');
-                    el.classList.add('bg-surface-container-highest');
-                    el.innerHTML = idx + 1;
-                });
-            }, 600);
+                    // Reset form
+                    document.getElementById('application-form-el').reset();
+                    document.getElementById('upload-text').textContent = 'Klik untuk mengunggah atau seret file ke sini';
+                    document.getElementById('upload-area').classList.remove('border-primary', 'bg-primary-fixed');
+
+                    // Reset semua dot ke state awal
+                    [1, 2, 3].forEach(function (s) { deactivateStep(s); });
+                }, 600);
+            })
+            .catch(() => {
+                alert('Terjadi kesalahan saat mengirim pendaftaran. Silakan coba lagi.');
+            });
         }
 
+        /* ─── Close Modal ─── */
         function closeModal() {
             const modal = document.getElementById('successModal');
             modal.classList.remove('flex');

@@ -36,19 +36,19 @@ if (is_superadmin()) {
 }
 ?>
 <aside class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
-    <div class="flex items-center gap-sm mb-xl px-sm">
-        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
+    <a href="<?php echo $root_prefix; ?>index.php" class="flex items-center gap-sm mb-xl px-sm rounded-lg transition-all duration-200 hover:bg-surface-container-high group" title="Kembali ke Beranda" aria-label="Kembali ke Beranda">
+        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary group-hover:opacity-80 transition-opacity">
             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
         </div>
         <div>
             <?php if (isset($sidebar_title_html)): ?>
-                <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold"><?php echo $sidebar_title_html; ?></h2>
+                <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold group-hover:underline"><?php echo $sidebar_title_html; ?></h2>
             <?php else: ?>
-                <h2 class="font-headline-lg text-on-surface font-bold"><?php echo htmlspecialchars($sidebar_title); ?></h2>
+                <h2 class="font-headline-lg text-on-surface font-bold group-hover:underline"><?php echo htmlspecialchars($sidebar_title); ?></h2>
             <?php endif; ?>
             <p class="font-label-sm text-label-sm text-on-surface-variant"><?php echo htmlspecialchars($sidebar_subtitle); ?></p>
         </div>
-    </div>
+    </a>
     <nav class="flex-1 space-y-sm">
         <?php foreach ($admin_nav_items as $key => $item): ?>
             <?php $is_active = ($active === $key); ?>

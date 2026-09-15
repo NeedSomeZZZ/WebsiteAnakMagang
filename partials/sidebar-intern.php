@@ -24,10 +24,8 @@ $intern_nav_items = [
     'projects'     => ['label' => 'Projects',            'icon' => 'folder_open',     'href' => $root_prefix . 'projects.php',     'i18n' => 'nav_projects'],
     'attendance'   => ['label' => 'Attendance',          'icon' => 'event_available', 'href' => $root_prefix . 'attendance.php',   'i18n' => 'nav_attendance'],
     'tasks'        => ['label' => 'Tasks',               'icon' => 'view_kanban',     'href' => $root_prefix . 'tasks.php',        'i18n' => 'nav_tasks'],
-    'article'        => ['label' => 'Aktivitas & Artikel', 'icon' => 'newspaper',       'href' => $root_prefix . 'article.php',      'i18n' => 'nav_article'],
-    'gallery'        => ['label' => 'Galeri Kegiatan',     'icon' => 'collections',     'href' => $root_prefix . 'galeryanakmagang.php', 'i18n' => 'nav_gallery'],
-    'events_history' => ['label' => 'Histori Event',       'icon' => 'stars',           'href' => $root_prefix . 'event_history.php', 'i18n' => 'nav_events'],
-    'about'          => ['label' => 'Tentang Kedayweb',   'icon' => 'info',            'href' => $root_prefix . 'about.php',         'i18n' => 'nav_about'],
+    'article'      => ['label' => 'Aktivitas & Artikel', 'icon' => 'newspaper',       'href' => $root_prefix . 'article.php',      'i18n' => 'nav_article'],
+    'sop'          => ['label' => 'SOP',                 'icon' => 'description',     'href' => $root_prefix . 'sop.php',          'i18n' => 'nav_sop'],
 ];
 
 if (current_user_role() === 'admin' || current_user_role() === 'superadmin') {
@@ -35,15 +33,15 @@ if (current_user_role() === 'admin' || current_user_role() === 'superadmin') {
 }
 ?>
 <aside class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
-    <div class="flex items-center gap-sm mb-xl px-sm">
-        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
+    <a href="<?php echo $root_prefix; ?>index.php" class="flex items-center gap-sm mb-xl px-sm rounded-lg transition-all duration-200 hover:bg-surface-container-high group" title="Kembali ke Beranda" aria-label="Kembali ke Beranda">
+        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary group-hover:opacity-80 transition-opacity">
             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
         </div>
         <div>
-            <h1 class="font-headline-md text-headline-md text-primary font-bold" data-i18n="brand_name">Kedayweb</h1>
+            <h1 class="font-headline-md text-headline-md text-primary font-bold group-hover:underline" data-i18n="brand_name">Kedayweb</h1>
             <p class="font-label-sm text-label-sm text-on-surface-variant" data-i18n="brand_subtitle">Portal PKL</p>
         </div>
-    </div>
+    </a>
     <nav class="flex-1 space-y-sm">
         <?php foreach ($intern_nav_items as $key => $item): ?>
             <?php $is_active = ($active === $key); ?>

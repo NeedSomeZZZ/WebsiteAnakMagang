@@ -9,10 +9,16 @@
 if (!isset($mobile_title)) {
     $mobile_title = 'Kedayweb';
 }
+
+// Deteksi apakah file saat ini ada di dalam subfolder (mis. /admin/)
+if (!isset($root_prefix)) {
+    $script_path = str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME'] ?? $_SERVER['SCRIPT_NAME'] ?? '');
+    $root_prefix = (basename(dirname($script_path)) === 'admin') ? '../' : '';
+}
 ?>
 <header class="md:hidden flex justify-between items-center px-md w-full h-16 bg-surface-container-lowest border-b border-outline-variant shadow-sm fixed top-0 z-50">
 <h1 class="font-headline-md text-headline-md font-bold text-primary font-geist">
-    <a href="index.php"><?php echo htmlspecialchars($mobile_title); ?></a>
+    <a href="<?php echo $root_prefix; ?>index.php" class="hover:underline hover:opacity-80 transition-opacity" title="Kembali ke Beranda" aria-label="Kembali ke Beranda"><?php echo htmlspecialchars($mobile_title); ?></a>
 </h1>    <div class="flex items-center gap-sm">
         <span class="font-label-sm text-on-surface truncate max-w-[8rem]"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
         <a href="logout.php" class="text-error" aria-label="Keluar" title="Keluar">
