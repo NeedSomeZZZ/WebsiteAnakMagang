@@ -86,11 +86,11 @@ $userName = current_user_name();
         <!-- Functional Top Stats Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
             <!-- Stat 1: Tasks Done -->
-            <a href="internspace.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-5 flex flex-col justify-between min-h-[140px] relative overflow-hidden group block hover:shadow-md transition-all">
+            <a href="internspace.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-36 block hover:shadow-md transition-all">
                 <div class="flex justify-between items-start">
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-bold">Tugas Selesai</span>
                     <div class="p-2 rounded-xl bg-green-100 text-green-700">
-                        <span class="material-symbols-outlined text-[20px]">check_circle</span>
+                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">task_alt</span>
                     </div>
                 </div>
                 <div>
@@ -100,35 +100,9 @@ $userName = current_user_name();
                     </p>
                 </div>
             </a>
-                <div class="flex justify-between items-start">
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-bold">Tugas Selesai</span>
-                    <div class="p-2 rounded-xl bg-green-100 text-green-700">
-                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">task_alt</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="font-headline-xl text-headline-xl text-slate-900 font-bold font-geist" id="stat-tasks-progress-val">0</div>
-                    <p class="font-body-sm text-body-sm text-blue-600 font-semibold mt-1 flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[14px]">pending</span> In Progress & Review
-                    </p>
-                </div>
-            </a>
 
             <!-- Stat 2: Tasks In Progress -->
-            <a href="tasks.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-5 flex flex-col justify-between min-h-[140px] relative overflow-hidden group block">
-                <div class="flex justify-between items-start">
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-bold">Sedang Dikerjakan</span>
-                    <div class="p-2 rounded-xl bg-blue-100 text-blue-700">
-                        <span class="material-symbols-outlined text-[20px]">pending</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="font-headline-xl text-headline-xl text-slate-900 font-bold font-geist" id="stat-tasks-progress-val">0</div>
-                    <p class="font-body-sm text-body-sm text-blue-600 font-semibold mt-1 flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[14px]">pending</span> In Progress & Review
-                    </p>
-                </div>
-            </a>
+            <a href="tasks.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-36 block hover:shadow-md transition-all">
                 <div class="flex justify-between items-start">
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-bold">Sedang Dikerjakan</span>
                     <div class="p-2 rounded-xl bg-blue-100 text-blue-700">
@@ -136,13 +110,15 @@ $userName = current_user_name();
                     </div>
                 </div>
                 <div>
-                    <div class="font-headline-xl text-headline-xl text-slate-900 font-bold font-geist" id="stat-total-proj-val">0</div>
-                    <p class="font-body-sm text-body-sm text-indigo-600 font-semibold mt-1">Proyek aktif di portal</p>
+                    <div class="font-headline-xl text-headline-xl text-slate-900 font-bold font-geist" id="stat-tasks-progress-val">0</div>
+                    <p class="font-body-sm text-body-sm text-blue-600 font-semibold mt-1 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">pending</span> In Progress & Review
+                    </p>
                 </div>
             </a>
 
             <!-- Stat 3: Total Projects -->
-            <a href="projects.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-5 flex flex-col justify-between min-h-[140px] relative overflow-hidden group block">
+            <a href="projects.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-36 block hover:shadow-md transition-all">
                 <div class="flex justify-between items-start">
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-bold">Total Proyek</span>
                     <div class="p-2 rounded-xl bg-indigo-100 text-indigo-700">
@@ -154,28 +130,9 @@ $userName = current_user_name();
                     <p class="font-body-sm text-body-sm text-indigo-600 font-semibold mt-1">Proyek aktif di portal</p>
                 </div>
             </a>
-                        <span class="material-symbols-outlined text-[20px]">folder_open</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="font-headline-xl text-headline-xl text-slate-900 font-bold font-geist" id="stat-completed-proj-val">0</div>
-                    <p class="font-body-sm text-body-sm text-purple-600 font-semibold mt-1">Semua task rampung</p>
-                </div>
-            </a>
 
             <!-- Stat 4: Completed Projects -->
-            <a href="projects.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-5 flex flex-col justify-between min-h-[140px] relative overflow-hidden group block">
-                <div class="flex justify-between items-start">
-                    <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-bold">Proyek Selesai</span>
-                    <div class="p-2 rounded-xl bg-purple-100 text-purple-700">
-                        <span class="material-symbols-outlined text-[20px]">task_alt</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="font-headline-xl text-headline-xl text-slate-900 font-bold font-geist" id="stat-completed-proj-val">0</div>
-                    <p class="font-body-sm text-body-sm text-purple-600 font-semibold mt-1">Semua task rampung</p>
-                </div>
-            </a>
+            <a href="projects.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-36 block hover:shadow-md transition-all">
                 <div class="flex justify-between items-start">
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-bold">Proyek Selesai</span>
                     <div class="p-2 rounded-xl bg-purple-100 text-purple-700">
@@ -183,7 +140,8 @@ $userName = current_user_name();
                     </div>
                 </div>
                 <div>
-<p class="font-body-sm text-body-sm text-purple-600 font-semibold mt-1">Semua task rampung</p>
+                    <div class="font-headline-xl text-headline-xl text-slate-900 font-bold font-geist" id="stat-completed-proj-val">0</div>
+                    <p class="font-body-sm text-body-sm text-purple-600 font-semibold mt-1">Semua task rampung</p>
                 </div>
             </a>
         </div>
