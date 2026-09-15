@@ -133,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Fetch Database Users
 $users = [];
 if ($conn) {
-    $res = @mysqli_query($conn, "SELECT id, username, role FROM users ORDER BY id ASC");
+    $res = @mysqli_query($conn, "SELECT id, username, password, role FROM users ORDER BY id ASC");
     if ($res) {
         while ($row = mysqli_fetch_assoc($res)) {
             $users[] = $row;
@@ -262,6 +262,7 @@ $current_active_role = current_user_role();
                             <tr class="border-b border-outline-variant bg-surface-container-low text-on-surface-variant">
                                 <th class="py-3 px-4 font-semibold">ID User</th>
                                 <th class="py-3 px-4 font-semibold">Username / Email</th>
+                                <th class="py-3 px-4 font-semibold">Password</th>
                                 <th class="py-3 px-4 font-semibold">Role Sekarang</th>
                                 <th class="py-3 px-4 font-semibold text-right">Ubah Role</th>
                             </tr>
@@ -269,13 +270,22 @@ $current_active_role = current_user_role();
                         <tbody class="divide-y divide-outline-variant">
                             <?php if (empty($users)): ?>
                                 <tr>
-                                    <td colspan="4" class="text-center py-6 text-on-surface-variant">Tidak ada data user di database.</td>
+                                    <td colspan="5" class="text-center py-6 text-on-surface-variant">Tidak ada data user di database.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($users as $u): ?>
                                     <tr class="hover:bg-surface-container-low">
                                         <td class="py-3 px-4 font-bold">#<?php echo (int) $u['id']; ?></td>
                                         <td class="py-3 px-4 font-medium text-on-surface"><?php echo htmlspecialchars($u['username'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                        <td class="py-3 px-4 font-mono text-sm">
+                                            <div class="flex items-center gap-2">
+                                                <span class="password-text hidden bg-surface-container-high px-2 py-0.5 rounded text-xs text-primary font-bold select-all"><?php echo htmlspecialchars($u['password'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></span>
+                                                <span class="password-hidden text-xs text-on-surface-variant font-bold">••••••••</span>
+                                                <button type="button" onclick="togglePassword(this)" class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer p-1 rounded-lg hover:bg-surface-container-high" title="Lihat/Sembunyikan Password">
+                                                    <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                                </button>
+                                            </div>
+                                        </td>
                                         <td class="py-3 px-4">
                                             <span class="px-2.5 py-1 text-xs rounded-full font-bold <?php echo $u['role'] === 'admin' || $u['role'] === 'superadmin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'; ?>">
                                                 <?php echo strtoupper(htmlspecialchars($u['role'], ENT_QUOTES, 'UTF-8')); ?>
@@ -389,5 +399,23 @@ $current_active_role = current_user_role();
             </form>
         </div>
     </div>
+    <script>
+        function togglePassword(btn) {
+            const parent = btn.parentElement;
+            const textSpan = parent.querySelector('.password-text');
+            const hiddenSpan = parent.querySelector('.password-hidden');
+            const icon = btn.querySelector('.material-symbols-outlined');
+            
+            if (textSpan.classList.contains('hidden')) {
+                textSpan.classList.remove('hidden');
+                hiddenSpan.classList.add('hidden');
+                icon.textContent = 'visibility_off';
+            } else {
+                textSpan.classList.add('hidden');
+                hiddenSpan.classList.remove('hidden');
+                icon.textContent = 'visibility';
+            }
+        }
+    </script>
 </body>
 </html>

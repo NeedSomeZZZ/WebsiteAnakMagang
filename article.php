@@ -369,54 +369,7 @@ if (!$featured_article && count($articles) > 0) {
     <?php endif; ?>
 
     <!-- Main Canvas -->
-    <main class="flex-1 flex flex-col <?php echo $is_logged_in ? 'md:ml-[16.5rem] h-screen overflow-y-auto relative' : 'w-full relative'; ?>">
-        <!-- Top Header -->
-        <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10">
-            <div class="flex justify-between items-center px-gutter w-full max-w-container-max mx-auto h-full">
-                <div class="flex items-center gap-md">
-                    <h1 class="font-headline-md font-bold text-primary flex items-center gap-xs">
-                        <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">newspaper</span>
-                        <span>Aktivitas & Artikel</span>
-                    </h1>
-                </div>
-
-                <div class="flex items-center gap-sm">
-                    <!-- Global Search Bar -->
-                    <div class="relative w-64 hidden sm:block">
-                        <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
-                        <input id="article-search" oninput="filterArticles()" class="w-full pl-xl pr-md py-xs rounded-full bg-surface-bright border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary-fixed focus:outline-none font-body-sm text-body-sm transition-all" placeholder="Cari aktivitas atau artikel..." type="text"/>
-                    </div>
-
-                    <?php if ($is_admin): ?>
-                        <!-- Super Admin Add Article Button -->
-                        <button onclick="openFormModal()" class="flex items-center gap-xs px-md py-2 bg-primary text-on-primary rounded-full font-label-md hover:bg-primary-container hover:text-on-primary-container transition-all shadow-sm hover:shadow-md cursor-pointer active:scale-95">
-                            <span class="material-symbols-outlined">add_circle</span>
-                            <span>Tambah Artikel</span>
-                        </button>
-                    <?php endif; ?>
-
-                    <div class="h-8 w-px bg-outline-variant mx-xs"></div>
-
-                    <?php if ($is_logged_in): ?>
-                        <!-- User Profile Badge -->
-                        <div class="flex items-center gap-xs p-xs pr-md rounded-full border border-outline-variant bg-surface-container-lowest">
-                            <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container overflow-hidden">
-                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
-                            </div>
-                            <span class="font-label-md text-label-md hidden sm:inline-block"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
-                            <?php if ($is_admin): ?>
-                                <span class="text-[10px] uppercase tracking-wider font-bold bg-error-container text-on-error-container px-2 py-0.5 rounded-full ml-1">Admin</span>
-                            <?php endif; ?>
-                        </div>
-                    <?php else: ?>
-                        <!-- Public CTA Button -->
-                        <a href="Login/login.php" class="bg-primary text-on-primary px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors shadow-sm">
-                            Masuk Portal
-                        </a>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </header>
+    <main class="<?php echo $is_logged_in ? 'md:ml-[16.5rem]' : ''; ?> flex-1">
 
         <!-- Main Body Content -->
         <div class="w-full max-w-container-max mx-auto p-md md:p-gutter flex flex-col gap-xl">
@@ -434,82 +387,88 @@ if (!$featured_article && count($articles) > 0) {
                 </div>
             <?php endif; ?>
 
-            <!-- Page Title & Subtitle Banner -->
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-md border-b border-outline-variant/60 pb-md">
-                <div>
-                    <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold">Jurnal & Activity Log Anak Magang</h2>
-                    <p class="font-body-md text-on-surface-variant mt-xs">Dokumentasi kegiatan, karya project, workshop, dan keseruan harian peserta magang Kedayweb.</p>
-                </div>
-                
-                <!-- Category Filter Chips -->
-                <div class="flex items-center gap-xs overflow-x-auto pb-xs">
-                    <button onclick="filterCategory('all', this)" class="category-chip active flex items-center gap-xs px-md py-xs rounded-full font-label-md text-label-md bg-primary text-on-primary shadow-xs transition-all cursor-pointer">
-                        <span>Semua</span>
-                    </button>
-                    <button onclick="filterCategory('Aktivitas Harian', this)" class="category-chip flex items-center gap-xs px-md py-xs rounded-full font-label-md text-label-md bg-surface-container-high text-on-surface-variant hover:bg-primary-container hover:text-on-primary-container transition-all cursor-pointer">
-                        <span>Aktivitas Harian</span>
-                    </button>
-                    <button onclick="filterCategory('Project & Coding', this)" class="category-chip flex items-center gap-xs px-md py-xs rounded-full font-label-md text-label-md bg-surface-container-high text-on-surface-variant hover:bg-primary-container hover:text-on-primary-container transition-all cursor-pointer">
-                        <span>Project & Coding</span>
-                    </button>
-                    <button onclick="filterCategory('Workshop & Mentoring', this)" class="category-chip flex items-center gap-xs px-md py-xs rounded-full font-label-md text-label-md bg-surface-container-high text-on-surface-variant hover:bg-primary-container hover:text-on-primary-container transition-all cursor-pointer">
-                        <span>Workshop</span>
-                    </button>
-                    <button onclick="filterCategory('Prestasi', this)" class="category-chip flex items-center gap-xs px-md py-xs rounded-full font-label-md text-label-md bg-surface-container-high text-on-surface-variant hover:bg-primary-container hover:text-on-primary-container transition-all cursor-pointer">
-                        <span>Prestasi</span>
-                    </button>
+            <!-- Hero Banner Premium Style -->
+            <div class="relative w-full rounded-2xl overflow-hidden bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-900 text-white p-6 md:p-10 shadow-xl border border-indigo-900/50">
+                <div class="relative z-10 max-w-3xl space-y-3">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold border border-blue-400/30 backdrop-blur-md">
+                        <span class="material-symbols-outlined text-sm">newspaper</span>
+                        <span>Portal Jurnal & Portal Artikel Magang</span>
+                    </span>
+                    <h2 class="font-geist text-3xl md:text-4xl font-extrabold tracking-tight text-white">Jurnal & Activity Log Anak Magang</h2>
+                    <p class="text-slate-300 text-sm leading-relaxed max-w-2xl">
+                        Dokumentasi lengkap mengenai rilis fitur, jurnal harian, artikel teknis coding, serta pencapaian prestasi peserta magang Kedayweb.
+                    </p>
+
+                    <!-- Category Filter Chips -->
+                    <div class="flex items-center gap-2 overflow-x-auto pt-4 border-t border-white/10">
+                        <button onclick="filterCategory('all', this)" class="category-chip active flex items-center gap-1 px-4 py-2 rounded-xl font-geist text-xs font-bold bg-blue-600 text-white shadow-md transition-all cursor-pointer">
+                            <span>Semua Artikel</span>
+                        </button>
+                        <button onclick="filterCategory('Aktivitas Harian', this)" class="category-chip flex items-center gap-1 px-4 py-2 rounded-xl font-geist text-xs font-semibold bg-white/10 text-slate-200 hover:bg-white/20 border border-white/10 transition-all cursor-pointer">
+                            <span>Aktivitas Harian</span>
+                        </button>
+                        <button onclick="filterCategory('Project & Coding', this)" class="category-chip flex items-center gap-1 px-4 py-2 rounded-xl font-geist text-xs font-semibold bg-white/10 text-slate-200 hover:bg-white/20 border border-white/10 transition-all cursor-pointer">
+                            <span>Project & Coding</span>
+                        </button>
+                        <button onclick="filterCategory('Workshop & Mentoring', this)" class="category-chip flex items-center gap-1 px-4 py-2 rounded-xl font-geist text-xs font-semibold bg-white/10 text-slate-200 hover:bg-white/20 border border-white/10 transition-all cursor-pointer">
+                            <span>Workshop</span>
+                        </button>
+                        <button onclick="filterCategory('Prestasi', this)" class="category-chip flex items-center gap-1 px-4 py-2 rounded-xl font-geist text-xs font-semibold bg-white/10 text-slate-200 hover:bg-white/20 border border-white/10 transition-all cursor-pointer">
+                            <span>Prestasi</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- Featured Hero Article (if available) -->
             <?php if ($featured_article): ?>
-                <div id="featured-banner" class="article-item group relative w-full rounded-2xl overflow-hidden bg-surface-container-lowest border border-outline-variant shadow-md hover:shadow-xl transition-all duration-300" data-category="<?php echo htmlspecialchars($featured_article['category'], ENT_QUOTES, 'UTF-8'); ?>" data-title="<?php echo htmlspecialchars(strtolower($featured_article['title']), ENT_QUOTES, 'UTF-8'); ?>">
-                    <div class="grid grid-cols-1 lg:grid-cols-12 items-stretch min-h-[320px]">
+                <div id="featured-banner" class="article-item group relative w-full rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300" data-category="<?php echo htmlspecialchars($featured_article['category'], ENT_QUOTES, 'UTF-8'); ?>" data-title="<?php echo htmlspecialchars(strtolower($featured_article['title']), ENT_QUOTES, 'UTF-8'); ?>">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 items-stretch min-h-[340px]">
                         <!-- Hero Image -->
-                        <div class="lg:col-span-7 relative overflow-hidden min-h-[240px] lg:min-h-full">
+                        <div class="lg:col-span-7 relative overflow-hidden min-h-[260px] lg:min-h-full bg-slate-100">
                             <img src="<?php echo htmlspecialchars($featured_article['image_url'], ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($featured_article['title'], ENT_QUOTES, 'UTF-8'); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent lg:hidden"></div>
-                            <span class="absolute top-md left-md glass-badge px-md py-xs rounded-full font-label-md text-primary font-semibold flex items-center gap-xs shadow-sm">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent lg:hidden"></div>
+                            <span class="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-amber-300 border border-amber-400/30 text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 shadow-sm">
                                 <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
-                                Featured Activity
+                                Featured Article
                             </span>
                         </div>
                         
                         <!-- Hero Details -->
-                        <div class="lg:col-span-5 p-lg md:p-xl flex flex-col justify-between bg-surface-container-lowest">
+                        <div class="lg:col-span-5 p-6 md:p-8 flex flex-col justify-between bg-white">
                             <div>
-                                <div class="flex items-center gap-xs text-on-surface-variant font-label-sm mb-xs">
-                                    <span class="bg-primary-container text-on-primary-container px-sm py-0.5 rounded-md font-semibold"><?php echo htmlspecialchars($featured_article['category'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                <div class="flex items-center gap-2 text-slate-500 text-xs font-semibold mb-2">
+                                    <span class="bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded-full font-bold"><?php echo htmlspecialchars($featured_article['category'], ENT_QUOTES, 'UTF-8'); ?></span>
                                     <span>•</span>
-                                    <span><?php echo date('d M Y', strtotime($featured_article['created_at'])); ?></span>
+                                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs">calendar_today</span><?php echo date('d M Y', strtotime($featured_article['created_at'])); ?></span>
                                 </div>
-                                <h3 class="font-headline-lg font-bold text-on-surface hover:text-primary transition-colors cursor-pointer line-clamp-2" onclick="openDetailModal(<?php echo htmlspecialchars(json_encode($featured_article), ENT_QUOTES, 'UTF-8'); ?>)">
+                                <h3 class="font-geist font-bold text-xl md:text-2xl text-slate-900 hover:text-blue-600 transition-colors cursor-pointer line-clamp-2 leading-snug" onclick="openDetailModal(<?php echo htmlspecialchars(json_encode($featured_article), ENT_QUOTES, 'UTF-8'); ?>)">
                                     <?php echo htmlspecialchars($featured_article['title'], ENT_QUOTES, 'UTF-8'); ?>
                                 </h3>
-                                <p class="font-body-md text-on-surface-variant mt-sm line-clamp-3">
+                                <p class="text-slate-600 text-xs md:text-sm mt-3 line-clamp-3 leading-relaxed">
                                     <?php echo htmlspecialchars($featured_article['excerpt'], ENT_QUOTES, 'UTF-8'); ?>
                                 </p>
                             </div>
 
-                            <div class="flex items-center justify-between mt-lg pt-md border-t border-outline-variant/60">
-                                <div class="flex items-center gap-xs">
-                                    <span class="material-symbols-outlined text-outline text-md">person</span>
-                                    <span class="font-label-md font-medium text-on-surface"><?php echo htmlspecialchars($featured_article['author'], ENT_QUOTES, 'UTF-8'); ?></span>
+                            <div class="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
+                                <div class="flex items-center gap-1.5 text-xs text-slate-700 font-semibold">
+                                    <span class="material-symbols-outlined text-blue-600 text-base">person</span>
+                                    <span><?php echo htmlspecialchars($featured_article['author'], ENT_QUOTES, 'UTF-8'); ?></span>
                                 </div>
 
-                                <div class="flex items-center gap-xs">
-                                    <button onclick="openDetailModal(<?php echo htmlspecialchars(json_encode($featured_article), ENT_QUOTES, 'UTF-8'); ?>)" class="flex items-center gap-xs text-primary font-label-md font-bold hover:underline cursor-pointer">
-                                        <span>Baca Artikel</span>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="openDetailModal(<?php echo htmlspecialchars(json_encode($featured_article), ENT_QUOTES, 'UTF-8'); ?>)" class="flex items-center gap-1 text-blue-600 font-bold text-xs hover:underline cursor-pointer">
+                                        <span>Baca Selengkapnya</span>
                                         <span class="material-symbols-outlined text-sm">arrow_forward</span>
                                     </button>
 
                                     <?php if ($is_admin): ?>
-                                        <div class="flex items-center gap-xs ml-sm border-l border-outline-variant pl-xs">
-                                            <button onclick="openFormModal(<?php echo htmlspecialchars(json_encode($featured_article), ENT_QUOTES, 'UTF-8'); ?>)" class="p-xs text-primary hover:bg-primary-container rounded-lg transition-colors" title="Edit Artikel">
-                                                <span class="material-symbols-outlined text-md">edit</span>
+                                        <div class="flex items-center gap-1 ml-2 border-l border-slate-200 pl-2">
+                                            <button onclick="openFormModal(<?php echo htmlspecialchars(json_encode($featured_article), ENT_QUOTES, 'UTF-8'); ?>)" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit Artikel">
+                                                <span class="material-symbols-outlined text-[18px]">edit</span>
                                             </button>
-                                            <button onclick="confirmDelete(<?php echo intval($featured_article['id']); ?>, '<?php echo htmlspecialchars(addslashes($featured_article['title']), ENT_QUOTES, 'UTF-8'); ?>')" class="p-xs text-error hover:bg-error-container rounded-lg transition-colors" title="Hapus Artikel">
-                                                <span class="material-symbols-outlined text-md">delete</span>
+                                            <button onclick="confirmDelete(<?php echo intval($featured_article['id']); ?>, '<?php echo htmlspecialchars(addslashes($featured_article['title']), ENT_QUOTES, 'UTF-8'); ?>')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Hapus Artikel">
+                                                <span class="material-symbols-outlined text-[18px]">delete</span>
                                             </button>
                                         </div>
                                     <?php endif; ?>
@@ -522,30 +481,48 @@ if (!$featured_article && count($articles) > 0) {
 
             <!-- Articles Grid Section -->
             <div>
-                <div class="flex items-center justify-between mb-md">
-                    <h3 class="font-headline-md font-bold text-on-surface">Semua Aktivitas & Artikel</h3>
-                    <span id="article-count" class="font-label-md text-on-surface-variant"><?php echo count($articles); ?> Aktivitas Ditemukan</span>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 border-b border-slate-200 pb-4">
+                    <div>
+                        <h3 class="font-geist font-bold text-xl text-slate-900">Semua Aktivitas & Artikel</h3>
+                        <span id="article-count" class="text-xs font-semibold text-slate-500"><?php echo count($articles); ?> Aktivitas Ditemukan</span>
+                    </div>
+
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <!-- Global Search Bar -->
+                        <div class="relative w-full sm:w-64">
+                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-sm">search</span>
+                            <input id="article-search" oninput="filterArticles()" class="w-full pl-9 pr-4 py-2 rounded-xl bg-white border border-slate-200 focus:border-blue-600 focus:outline-none text-xs transition-colors" placeholder="Cari aktivitas atau artikel..." type="text"/>
+                        </div>
+
+                        <?php if ($is_admin): ?>
+                            <!-- Admin Add Article Button -->
+                            <button onclick="openFormModal()" class="shrink-0 flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95">
+                                <span class="material-symbols-outlined text-sm">add_circle</span>
+                                <span>Tambah Artikel</span>
+                            </button>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
-                <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+                <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <?php if (empty($articles)): ?>
-                        <div class="col-span-full py-xl text-center flex flex-col items-center justify-center bg-surface-container-lowest rounded-2xl border border-dashed border-outline-variant p-xl">
-                            <span class="material-symbols-outlined text-5xl text-outline mb-sm">article_off</span>
-                            <p class="font-headline-md font-bold text-on-surface">Belum ada artikel aktivitas</p>
-                            <p class="font-body-md text-on-surface-variant mt-xs">Super Admin dapat menambahkan artikel aktivitas anak magang baru dengan menekan tombol diatas.</p>
+                        <div class="col-span-full py-16 text-center flex flex-col items-center justify-center bg-white rounded-2xl border border-dashed border-slate-200 p-8">
+                            <span class="material-symbols-outlined text-5xl text-slate-300 mb-2">article_off</span>
+                            <p class="font-geist font-bold text-slate-700 text-base">Belum ada artikel aktivitas</p>
+                            <p class="text-xs text-slate-500 mt-1">Super Admin dapat menambahkan artikel aktivitas anak magang baru dengan menekan tombol diatas.</p>
                         </div>
                     <?php else: ?>
                         <?php foreach ($articles as $item): ?>
-                            <div class="article-item article-card bg-surface-container-lowest rounded-2xl border border-outline-variant overflow-hidden flex flex-col justify-between" data-category="<?php echo htmlspecialchars($item['category'], ENT_QUOTES, 'UTF-8'); ?>" data-title="<?php echo htmlspecialchars(strtolower($item['title']), ENT_QUOTES, 'UTF-8'); ?>">
+                            <div class="article-item article-card bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition-all group" data-category="<?php echo htmlspecialchars($item['category'], ENT_QUOTES, 'UTF-8'); ?>" data-title="<?php echo htmlspecialchars(strtolower($item['title']), ENT_QUOTES, 'UTF-8'); ?>">
                                 <div>
                                     <!-- Card Header Image -->
-                                    <div class="relative h-48 w-full overflow-hidden bg-surface-container-high cursor-pointer" onclick="openDetailModal(<?php echo htmlspecialchars(json_encode($item), ENT_QUOTES, 'UTF-8'); ?>)">
-                                        <img src="<?php echo htmlspecialchars($item['image_url'], ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item['title'], ENT_QUOTES, 'UTF-8'); ?>" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"/>
-                                        <span class="absolute top-sm left-sm bg-surface-container-lowest/90 backdrop-blur-md px-sm py-0.5 rounded-full font-label-sm text-primary font-semibold shadow-xs">
+                                    <div class="relative h-48 w-full overflow-hidden bg-slate-100 cursor-pointer" onclick="openDetailModal(<?php echo htmlspecialchars(json_encode($item), ENT_QUOTES, 'UTF-8'); ?>)">
+                                        <img src="<?php echo htmlspecialchars($item['image_url'], ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item['title'], ENT_QUOTES, 'UTF-8'); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"/>
+                                        <span class="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
                                             <?php echo htmlspecialchars($item['category'], ENT_QUOTES, 'UTF-8'); ?>
                                         </span>
                                         <?php if (!empty($item['is_featured'])): ?>
-                                            <span class="absolute top-sm right-sm bg-amber-500 text-white px-2 py-0.5 rounded-full font-label-sm font-bold flex items-center gap-0.5 shadow-xs">
+                                            <span class="absolute top-3 right-3 bg-amber-500 text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-sm">
                                                 <span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">star</span>
                                                 Featured
                                             </span>
@@ -553,39 +530,39 @@ if (!$featured_article && count($articles) > 0) {
                                     </div>
 
                                     <!-- Card Content Body -->
-                                    <div class="p-md flex flex-col gap-xs">
-                                        <div class="flex items-center gap-xs text-on-surface-variant font-label-sm">
-                                            <span class="material-symbols-outlined text-xs">calendar_today</span>
+                                    <div class="p-5 flex flex-col gap-2">
+                                        <div class="flex items-center gap-2 text-slate-500 text-xs font-medium">
+                                            <span class="material-symbols-outlined text-xs text-blue-600">calendar_today</span>
                                             <span><?php echo date('d M Y', strtotime($item['created_at'])); ?></span>
                                             <span>•</span>
-                                            <span class="material-symbols-outlined text-xs">person</span>
-                                            <span class="truncate max-w-[120px]"><?php echo htmlspecialchars($item['author'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                            <span class="material-symbols-outlined text-xs text-blue-600">person</span>
+                                            <span class="truncate max-w-[120px] font-semibold text-slate-700"><?php echo htmlspecialchars($item['author'], ENT_QUOTES, 'UTF-8'); ?></span>
                                         </div>
 
-                                        <h4 class="font-headline-sm font-bold text-on-surface hover:text-primary transition-colors cursor-pointer line-clamp-2 mt-xs" onclick="openDetailModal(<?php echo htmlspecialchars(json_encode($item), ENT_QUOTES, 'UTF-8'); ?>)">
+                                        <h4 class="font-geist font-bold text-base text-slate-900 hover:text-blue-600 transition-colors cursor-pointer line-clamp-2 leading-snug" onclick="openDetailModal(<?php echo htmlspecialchars(json_encode($item), ENT_QUOTES, 'UTF-8'); ?>)">
                                             <?php echo htmlspecialchars($item['title'], ENT_QUOTES, 'UTF-8'); ?>
                                         </h4>
 
-                                        <p class="font-body-sm text-on-surface-variant line-clamp-3 mt-xs">
+                                        <p class="text-slate-600 text-xs line-clamp-3 leading-relaxed">
                                             <?php echo htmlspecialchars($item['excerpt'], ENT_QUOTES, 'UTF-8'); ?>
                                         </p>
                                     </div>
                                 </div>
 
                                 <!-- Card Footer Actions -->
-                                <div class="p-md pt-0 border-t border-outline-variant/40 mt-sm flex items-center justify-between">
-                                    <button onclick="openDetailModal(<?php echo htmlspecialchars(json_encode($item), ENT_QUOTES, 'UTF-8'); ?>)" class="text-primary font-label-md font-bold hover:underline flex items-center gap-xs cursor-pointer">
+                                <div class="p-5 pt-0 border-t border-slate-100 mt-3 pt-3 flex items-center justify-between">
+                                    <button onclick="openDetailModal(<?php echo htmlspecialchars(json_encode($item), ENT_QUOTES, 'UTF-8'); ?>)" class="text-blue-600 font-bold text-xs hover:underline flex items-center gap-1 cursor-pointer">
                                         <span>Selengkapnya</span>
                                         <span class="material-symbols-outlined text-sm">arrow_forward</span>
                                     </button>
 
                                     <?php if ($is_admin): ?>
-                                        <div class="flex items-center gap-xs">
-                                            <button onclick="openFormModal(<?php echo htmlspecialchars(json_encode($item), ENT_QUOTES, 'UTF-8'); ?>)" class="p-xs text-primary hover:bg-primary-container rounded-lg transition-colors" title="Edit Artikel Super Admin">
-                                                <span class="material-symbols-outlined text-md">edit</span>
+                                        <div class="flex items-center gap-1">
+                                            <button onclick="openFormModal(<?php echo htmlspecialchars(json_encode($item), ENT_QUOTES, 'UTF-8'); ?>)" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit Artikel">
+                                                <span class="material-symbols-outlined text-[18px]">edit</span>
                                             </button>
-                                            <button onclick="confirmDelete(<?php echo intval($item['id']); ?>, '<?php echo htmlspecialchars(addslashes($item['title']), ENT_QUOTES, 'UTF-8'); ?>')" class="p-xs text-error hover:bg-error-container rounded-lg transition-colors" title="Hapus Artikel Super Admin">
-                                                <span class="material-symbols-outlined text-md">delete</span>
+                                            <button onclick="confirmDelete(<?php echo intval($item['id']); ?>, '<?php echo htmlspecialchars(addslashes($item['title']), ENT_QUOTES, 'UTF-8'); ?>')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Hapus Artikel">
+                                                <span class="material-symbols-outlined text-[18px]">delete</span>
                                             </button>
                                         </div>
                                     <?php endif; ?>

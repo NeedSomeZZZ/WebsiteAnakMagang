@@ -4,7 +4,7 @@ require_admin();
 require_once __DIR__ . '/../Login/koneksi.php';
 
 $users = [];
-$users_query = mysqli_query($conn, 'SELECT id, username, role FROM users ORDER BY id ASC');
+$users_query = mysqli_query($conn, 'SELECT id, username, password, role FROM users ORDER BY id ASC');
 if ($users_query) {
     while ($user = mysqli_fetch_assoc($users_query)) {
         $users[] = $user;
@@ -104,16 +104,30 @@ $total_admins = count(array_filter($users, static function (array $user): bool {
                         <thead>
                             <tr class="border-b border-outline-variant text-on-surface-variant text-left">
                                 <th class="pb-2 pr-4 font-semibold">ID</th>
-                                <th class="pb-2 pr-4 font-semibold">Username</th>
+                                <th class="pb-2 pr-4 font-semibold">Username / Email</th>
+                                <th class="pb-2 pr-4 font-semibold">Password</th>
                                 <th class="pb-2 pr-4 font-semibold">Role</th>
                             </tr>
                         </thead>
                         <tbody id="users-table-body" class="divide-y divide-outline-variant">
                             <?php foreach ($users as $user): ?>
                                 <tr class="user-row hover:bg-surface-container-low transition-colors">
-                                    <td class="py-2 pr-4 font-medium"><?php echo (int) $user['id']; ?></td>
-                                    <td class="py-2 pr-4"><?php echo htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8'); ?></td>
-                                    <td class="py-2 pr-4 text-on-surface-variant"><?php echo htmlspecialchars($user['role'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td class="py-2.5 pr-4 font-medium"><?php echo (int) $user['id']; ?></td>
+                                    <td class="py-2.5 pr-4 font-semibold text-on-surface"><?php echo htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td class="py-2.5 pr-4 font-mono text-sm">
+                                        <div class="flex items-center gap-2">
+                                            <span class="password-text hidden bg-surface-container-high px-2 py-0.5 rounded text-xs text-primary font-bold select-all"><?php echo htmlspecialchars($user['password'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></span>
+                                            <span class="password-hidden text-xs text-on-surface-variant font-bold">••••••••</span>
+                                            <button type="button" onclick="togglePassword(this)" class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer p-1 rounded-lg hover:bg-surface-container-high" title="Lihat/Sembunyikan Password">
+                                                <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td class="py-2.5 pr-4 text-on-surface-variant">
+                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold <?php echo $user['role'] === 'superadmin' ? 'bg-purple-100 text-purple-700' : ($user['role'] === 'admin' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'); ?>">
+                                            <?php echo strtoupper(htmlspecialchars($user['role'], ENT_QUOTES, 'UTF-8')); ?>
+                                        </span>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -125,6 +139,23 @@ $total_admins = count(array_filter($users, static function (array $user): bool {
     </main>
 
     <script>
+        function togglePassword(btn) {
+            const parent = btn.parentElement;
+            const textSpan = parent.querySelector('.password-text');
+            const hiddenSpan = parent.querySelector('.password-hidden');
+            const icon = btn.querySelector('.material-symbols-outlined');
+            
+            if (textSpan.classList.contains('hidden')) {
+                textSpan.classList.remove('hidden');
+                hiddenSpan.classList.add('hidden');
+                icon.textContent = 'visibility_off';
+            } else {
+                textSpan.classList.add('hidden');
+                hiddenSpan.classList.remove('hidden');
+                icon.textContent = 'visibility';
+            }
+        }
+
         document.getElementById('search-user').addEventListener('input', event => {
             const filter = event.target.value.toLowerCase().trim();
             const rows = document.querySelectorAll('.user-row');

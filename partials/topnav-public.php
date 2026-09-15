@@ -29,6 +29,9 @@ if (!isset($nav_cta_href)) {
             <a href="<?php echo htmlspecialchars($nav_home_href); ?>" class="font-headline-md text-headline-md font-bold text-primary" data-i18n="brand_name">Kedayweb</a>
         </div>
         <nav class="flex flex-wrap justify-center gap-md">
+            <a href="<?php echo $root_prefix; ?>about.php" class="px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors flex items-center gap-1"><span class="material-symbols-outlined text-sm">info</span>Tentang</a>
+            <a href="<?php echo $root_prefix; ?>event_history.php" class="px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors flex items-center gap-1"><span class="material-symbols-outlined text-sm">stars</span>Histori Event</a>
+            <a href="<?php echo $root_prefix; ?>galeryanakmagang.php" class="px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors">Galeri Magang</a>
             <a href="<?php echo $root_prefix; ?>article.php" class="px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors">Artikel</a>
             <a href="<?php echo $root_prefix; ?>index.php#features" class="px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors" data-i18n="nav_features">Fitur</a>
             <a href="<?php echo $root_prefix; ?>index.php#faq" class="px-md py-sm rounded-lg font-label-md text-label-md hover:bg-primary transition-colors" data-i18n="nav_faq">FAQ</a>

@@ -1,15 +1,6 @@
 <?php 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Helper nama user agar partial sidebar tidak error
-if (!function_exists('current_user_name')) {
-    function current_user_name() {
-        return $_SESSION['user_name'] ?? $_SESSION['username'] ?? 'INT-2024-001';
-    }
-}
-
+require_once __DIR__ . '/session.php';
+require_login();
 $userName = current_user_name();
 
 // --------------------------------------------------------------------------
@@ -249,7 +240,14 @@ if (isset($_GET['action'])) {
   </style>
 </head>
 <body class="min-h-screen bg-canvas text-slate-900">
-<?php $active = 'projects'; include 'partials/sidebar-intern.php'; ?>
+<?php 
+$active = 'projects'; 
+if (is_admin()) {
+    include 'partials/sidebar-admin.php';
+} else {
+    include 'partials/sidebar-intern.php';
+}
+?>
   <main class="md:ml-[16.5rem]">
     <header class="flex h-16 items-center justify-between border-b border-line bg-white px-5 md:px-8">
       <h1 class="font-geist text-lg font-bold text-primary" data-i18n="nav_projects">Projects</h1>

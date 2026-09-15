@@ -1,21 +1,6 @@
 <?php 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Cek apakah user sudah login
-if (!isset($_SESSION['user_id'])) {
-    // Jalankan jika halaman login sudah ada:
-    // header('Location: login.php');
-    // exit;
-}
-
-// Helper nama user agar sidebar-intern.php tidak Fatal Error
-if (!function_exists('current_user_name')) {
-    function current_user_name() {
-        return $_SESSION['user_name'] ?? $_SESSION['username'] ?? 'INT-2024-001';
-    }
-}
+require_once __DIR__ . '/session.php';
+require_login();
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -71,8 +56,14 @@ if (!function_exists('current_user_name')) {
 
 <body class="bg-surface text-on-surface font-body-md text-body-md h-screen overflow-hidden flex">
 
-    <!-- SideNavBar -->
-<?php $active = 'tasks'; include 'partials/sidebar-intern.php'; ?>
+<?php 
+$active = 'tasks'; 
+if (is_admin()) {
+    include 'partials/sidebar-admin.php';
+} else {
+    include 'partials/sidebar-intern.php';
+}
+?>
 
     <!-- Main Content Area -->
     <main class="flex-1 md:ml-[16.5rem] flex flex-col h-full bg-surface overflow-x-auto">

@@ -24,7 +24,10 @@ $intern_nav_items = [
     'projects'     => ['label' => 'Projects',            'icon' => 'folder_open',     'href' => $root_prefix . 'projects.php',     'i18n' => 'nav_projects'],
     'attendance'   => ['label' => 'Attendance',          'icon' => 'event_available', 'href' => $root_prefix . 'attendance.php',   'i18n' => 'nav_attendance'],
     'tasks'        => ['label' => 'Tasks',               'icon' => 'view_kanban',     'href' => $root_prefix . 'tasks.php',        'i18n' => 'nav_tasks'],
-    'article'      => ['label' => 'Aktivitas & Artikel', 'icon' => 'newspaper',       'href' => $root_prefix . 'article.php',      'i18n' => 'nav_article'],
+    'article'        => ['label' => 'Aktivitas & Artikel', 'icon' => 'newspaper',       'href' => $root_prefix . 'article.php',      'i18n' => 'nav_article'],
+    'gallery'        => ['label' => 'Galeri Kegiatan',     'icon' => 'collections',     'href' => $root_prefix . 'galeryanakmagang.php', 'i18n' => 'nav_gallery'],
+    'events_history' => ['label' => 'Histori Event',       'icon' => 'stars',           'href' => $root_prefix . 'event_history.php', 'i18n' => 'nav_events'],
+    'about'          => ['label' => 'Tentang Kedayweb',   'icon' => 'info',            'href' => $root_prefix . 'about.php',         'i18n' => 'nav_about'],
 ];
 
 if (current_user_role() === 'admin' || current_user_role() === 'superadmin') {

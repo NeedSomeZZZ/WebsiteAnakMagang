@@ -21,10 +21,11 @@ $root_prefix = $is_in_admin_dir ? '../' : '';
 
 $admin_nav_items = [
     'dashboard'    => ['label' => 'Dashboard',        'icon' => 'dashboard',        'href' => $admin_prefix . 'admin-dashboard.php'],
+    'tasks'        => ['label' => 'Kanban Board',     'icon' => 'view_kanban',      'href' => $root_prefix . 'tasks.php'],
     'applications' => ['label' => 'Pendaftaran',      'icon' => 'description',      'href' => $root_prefix . 'applications.php'],
     'users'        => ['label' => 'Users',            'icon' => 'people',           'href' => $admin_prefix . 'admin-users.php'],
     'attendance'   => ['label' => 'Kehadiran Intern', 'icon' => 'event_available',  'href' => $admin_prefix . 'admin-attendance.php'],
-    'projects'     => ['label' => 'Projects',         'icon' => 'folder_open',      'href' => $admin_prefix . 'admin-projects.php'],
+    'projects'     => ['label' => 'Projects',         'icon' => 'folder_open',      'href' => $root_prefix . 'projects.php'],
     'article'      => ['label' => 'Kelola Artikel',   'icon' => 'newspaper',        'href' => $admin_prefix . 'admin-articles.php'],
     'stats'        => ['label' => 'Statistics',       'icon' => 'insights',         'href' => $admin_prefix . 'admin-stats.php'],
 ];
