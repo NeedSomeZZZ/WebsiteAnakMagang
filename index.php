@@ -248,6 +248,38 @@ if (!is_array($positions) || empty($positions)) {
         </section>
     </main>
 
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-md backdrop-blur-sm transition-all duration-300">
+        <div class="w-full max-w-md bg-surface rounded-2xl p-xl shadow-2xl border border-outline-variant transform transition-all scale-100 flex flex-col items-center text-center">
+            <div class="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 mb-md">
+                <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+            </div>
+            <h3 class="font-headline-md text-headline-md font-bold text-on-surface mb-xs" data-i18n="recruit_modal_title">Pendaftaran Berhasil!</h3>
+            <p class="font-body-sm text-body-sm text-on-surface-variant mb-lg" data-i18n="recruit_modal_desc">
+                Terima kasih telah mendaftar. Data pendaftaran Anda telah kami terima dan tersimpan dalam sistem. Tim Kedayweb akan segera meninjau aplikasi Anda.
+            </p>
+
+            <div class="w-full bg-surface-container-low rounded-xl p-md text-left mb-lg border border-outline-variant space-y-xs">
+                <div class="flex justify-between text-xs">
+                    <span class="text-on-surface-variant font-medium">Nama:</span>
+                    <span id="applicant-name" class="font-bold text-on-surface"></span>
+                </div>
+                <div class="flex justify-between text-xs">
+                    <span class="text-on-surface-variant font-medium">Email:</span>
+                    <span id="applicant-email" class="font-bold text-on-surface"></span>
+                </div>
+                <div class="flex justify-between text-xs">
+                    <span class="text-on-surface-variant font-medium">Posisi:</span>
+                    <span id="applicant-role" class="font-bold text-primary"></span>
+                </div>
+            </div>
+
+            <button onclick="closeModal()" class="w-full bg-primary text-on-primary rounded-xl py-sm font-label-md font-bold hover:bg-primary-container transition-colors shadow-md active:scale-95">
+                Tutup & Kembali
+            </button>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="bg-surface-container-high border-t border-outline-variant w-full py-xl mt-auto">
         <div
@@ -276,41 +308,76 @@ if (!is_array($positions) || empty($positions)) {
 
         function submitApplication() {
             const firstName = document.getElementById('firstName').value.trim();
-            const lastName = document.getElementById('lastName').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const role = document.getElementById('role').value;
+            const lastName  = document.getElementById('lastName').value.trim();
+            const email     = document.getElementById('email').value.trim();
+            const role      = document.getElementById('role').value;
+            const portfolio = document.getElementById('portfolio') ? document.getElementById('portfolio').value.trim() : '';
+            const fileInput = document.getElementById('fileInput');
 
-            const fillMsg = (typeof t === 'function' ? t('recruit_fill') : null) || 'Silakan lengkapi semua kolom wajib.';
+            const fillMsg    = (typeof t === 'function' ? t('recruit_fill') : null) || 'Silakan lengkapi semua kolom wajib.';
             const successMsg = (typeof t === 'function' ? t('recruit_success') : null) || 'Pendaftaran magang berhasil dikirim!';
-            const touchMsg = (typeof t === 'function' ? t('recruit_touch') : null) || 'Tim Kedayweb akan segera menghubungi Anda!';
+            const touchMsg   = (typeof t === 'function' ? t('recruit_touch') : null) || 'Tim Kedayweb akan segera menghubungi Anda!';
 
-            if (!firstName || !lastName || !email || !role) {
+            if (!firstName || !email || !role) {
                 alert(fillMsg);
                 return;
             }
 
-            // Simulate stepping through
+            const formData = new FormData();
+            formData.append('first_name', firstName);
+            formData.append('last_name', lastName);
+            formData.append('email', email);
+            formData.append('position', role);
+            formData.append('portfolio', portfolio);
+            if (fileInput && fileInput.files[0]) {
+                formData.append('cv_file', fileInput.files[0]);
+            }
+
+            // Step 1 animation
             document.getElementById('step1-dot').classList.remove('bg-surface-container-highest');
             document.getElementById('step1-dot').classList.add('bg-green-600', 'text-white');
             document.getElementById('step1-dot').innerHTML = '✓';
 
-            setTimeout(() => {
+            fetch('api_submit_application.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                // Step 2 animation
                 document.getElementById('step2-dot').classList.remove('bg-surface-container-highest');
                 document.getElementById('step2-dot').classList.add('bg-green-600', 'text-white');
                 document.getElementById('step2-dot').innerHTML = '✓';
-            }, 400);
 
             setTimeout(() => {
-                document.getElementById('step3-dot').classList.remove('bg-surface-container-highest');
-                document.getElementById('step3-dot').classList.add('bg-green-600', 'text-white');
-                document.getElementById('step3-dot').innerHTML = '✓';
-            }, 800);
+                // Show modal
+                document.getElementById('applicant-name').textContent = `${firstName} ${lastName}`;
+                document.getElementById('applicant-email').textContent = email;
+                document.getElementById('applicant-role').textContent = role;
+                
+                const modal = document.getElementById('successModal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
 
-            setTimeout(() => {
-                alert(`${successMsg}\n\nNama: ${firstName} ${lastName}\nEmail: ${email}\nPosisi: ${role}\n\n${touchMsg}`);
-                // Redirect to dashboard after successful registration
-                window.location.href = 'dashboard.php';
-            }, 1200);
+                // Reset form
+                document.getElementById('application-form-el').reset();
+                document.getElementById('upload-text').textContent = 'Klik untuk mengunggah atau seret file ke sini';
+                document.getElementById('upload-area').classList.remove('border-primary', 'bg-primary-fixed');
+                
+                // Reset dots
+                ['step1-dot', 'step2-dot', 'step3-dot'].forEach((id, idx) => {
+                    const el = document.getElementById(id);
+                    el.classList.remove('bg-green-600', 'text-white');
+                    el.classList.add('bg-surface-container-highest');
+                    el.innerHTML = idx + 1;
+                });
+            }, 600);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('successModal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
         }
     </script>
     <script src="lang.js"></script>

@@ -1,17 +1,101 @@
 <?php
 require_once __DIR__ . '/session.php';
-require_login();
-if (current_user_role() !== 'admin') {
-    header('Location: dashboard.php');
-    exit;
+require_admin(); // Memastikan hanya Admin dan Superadmin yang bisa mengakses halaman ini
+
+// Database connection attempt
+$conn = null;
+if (file_exists(__DIR__ . '/Login/koneksi.php')) {
+    include_once __DIR__ . '/Login/koneksi.php';
 }
+
+// Action: Update status or delete application
+$action_msg = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $app_id = intval($_POST['app_id'] ?? 0);
+    $action = $_POST['action'] ?? '';
+    
+    if ($app_id > 0) {
+        if ($action === 'delete') {
+            if ($conn) {
+                $stmt = mysqli_prepare($conn, "DELETE FROM `applications` WHERE id = ?");
+                if ($stmt) {
+                    mysqli_stmt_bind_param($stmt, "i", $app_id);
+                    mysqli_stmt_execute($stmt);
+                    mysqli_stmt_close($stmt);
+                }
+            }
+            // Delete from JSON fallback if exists
+            $json_file = __DIR__ . '/uploads/applications.json';
+            if (file_exists($json_file)) {
+                $apps_json = json_decode(file_get_contents($json_file), true) ?: [];
+                $apps_json = array_filter($apps_json, function($a) use ($app_id) {
+                    return intval($a['id'] ?? 0) !== $app_id;
+                });
+                file_put_contents($json_file, json_encode(array_values($apps_json), JSON_PRETTY_PRINT));
+            }
+            $action_msg = 'Pendaftaran berhasil dihapus.';
+        } elseif (in_array($action, ['review', 'interview', 'offer', 'rejected'])) {
+            if ($conn) {
+                $stmt = mysqli_prepare($conn, "UPDATE `applications` SET status = ? WHERE id = ?");
+                if ($stmt) {
+                    mysqli_stmt_bind_param($stmt, "si", $action, $app_id);
+                    mysqli_stmt_execute($stmt);
+                    mysqli_stmt_close($stmt);
+                }
+            }
+            // Update JSON fallback
+            $json_file = __DIR__ . '/uploads/applications.json';
+            if (file_exists($json_file)) {
+                $apps_json = json_decode(file_get_contents($json_file), true) ?: [];
+                foreach ($apps_json as &$a) {
+                    if (intval($a['id'] ?? 0) === $app_id) {
+                        $a['status'] = $action;
+                    }
+                }
+                file_put_contents($json_file, json_encode($apps_json, JSON_PRETTY_PRINT));
+            }
+            $action_msg = 'Status pendaftaran berhasil diperbarui.';
+        }
+    }
+}
+
+// Fetch applications
+$applications = [];
+
+// 1. Try DB first
+if ($conn) {
+    // Check if table exists
+    $table_check = mysqli_query($conn, "SHOW TABLES LIKE 'applications'");
+    if (mysqli_num_rows($table_check) > 0) {
+        $result = mysqli_query($conn, "SELECT * FROM `applications` ORDER BY id DESC");
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $applications[] = $row;
+            }
+        }
+    }
+}
+
+// 2. Fallback to JSON if DB returned empty or no DB
+if (empty($applications)) {
+    $json_file = __DIR__ . '/uploads/applications.json';
+    if (file_exists($json_file)) {
+        $applications = json_decode(file_get_contents($json_file), true) ?: [];
+    }
+}
+
+// Count stats
+$total_apps = count($applications);
+$count_review = count(array_filter($applications, fn($a) => ($a['status'] ?? 'review') === 'review'));
+$count_interview = count(array_filter($applications, fn($a) => ($a['status'] ?? '') === 'interview'));
+$count_offer = count(array_filter($applications, fn($a) => ($a['status'] ?? '') === 'offer'));
 ?>
 <!doctype html>
 <html lang="id">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Kedayweb - Applications</title>
+  <title>Kelola Pendaftaran Magang - Admin Panel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:FILL@0..1" rel="stylesheet">
@@ -20,155 +104,227 @@ if (current_user_role() !== 'admin') {
   <style>
     body { font-family: Inter, sans-serif; }
     .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 500; }
-    .nav:hover { background: #eff4ff; color: #00236f; }
     .tab.active { color: #00236f; border-color: #00236f; }
   </style>
 </head>
-<body class="min-h-screen bg-canvas text-slate-900">
-<?php $active = 'applications'; include 'partials/sidebar-intern.php'; ?>
+<body class="min-h-screen bg-slate-50 text-slate-900">
+<?php $active = 'applications'; include 'partials/sidebar-admin.php'; ?>
   <main class="min-h-screen md:ml-[16.5rem]">
-    <header class="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-line bg-white px-5 md:px-8">
+    <header class="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-5 md:px-8">
       <div class="relative hidden w-full max-w-md sm:block">
-        <span class="material-symbols-outlined absolute left-3 top-2 text-slate-500">search</span>
-        <input class="w-full rounded-lg border border-line bg-slate-50 py-2 pl-10 pr-4 text-sm outline-none focus:border-primary" placeholder="Search applications..." type="search">
+        <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400">search</span>
+        <input id="searchInput" onkeyup="filterApplications()" class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-10 pr-4 text-sm outline-none focus:border-blue-600 focus:bg-white transition-colors" placeholder="Cari pelamar (nama, email, posisi)..." type="search">
       </div>
       <div class="ml-auto flex items-center gap-3">
-        <button aria-label="Notifications" class="relative rounded-full p-2 text-slate-600">
-          <span class="material-symbols-outlined">notifications</span>
-          <i class="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-600"></i>
-        </button>
-        <span class="flex items-center gap-2 rounded-full border border-line py-1 pl-1 pr-3 text-sm font-semibold text-slate-700">
-          <span class="material-symbols-outlined rounded-full bg-blue-100 p-1 text-primary">account_circle</span>
+        <span class="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 py-1 pl-1 pr-3 text-sm font-semibold text-slate-700">
+          <span class="material-symbols-outlined rounded-full bg-blue-100 p-1 text-blue-700">account_circle</span>
           <?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?>
+          <span class="ml-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] text-white uppercase tracking-wider"><?php echo htmlspecialchars(current_user_role(), ENT_QUOTES, 'UTF-8'); ?></span>
         </span>
-        <a href="logout.php" class="text-red-600 hover:text-red-700" title="Keluar" aria-label="Keluar">
+        <a href="logout.php" class="text-slate-500 hover:text-red-600 transition-colors" title="Keluar">
           <span class="material-symbols-outlined">logout</span>
         </a>
       </div>
     </header>
+
     <div class="mx-auto max-w-7xl p-5 md:p-8">
+      <?php if (!empty($action_msg)): ?>
+        <div class="mb-6 rounded-xl bg-emerald-50 p-4 text-sm font-medium text-emerald-800 border border-emerald-200 flex items-center gap-2">
+          <span class="material-symbols-outlined text-emerald-600">check_circle</span>
+          <?php echo htmlspecialchars($action_msg, ENT_QUOTES, 'UTF-8'); ?>
+        </div>
+      <?php endif; ?>
+
       <div class="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p class="mb-2 text-sm font-semibold uppercase tracking-wider text-primary">Career center</p>
-          <h1 class="font-geist text-3xl font-bold">My Applications</h1>
-          <p class="mt-2 text-slate-600">Follow every opportunity from application to offer.</p>
+          <p class="mb-1 text-xs font-bold uppercase tracking-wider text-blue-700">Admin Control Center</p>
+          <h1 class="font-geist text-3xl font-bold">Data Pendaftaran Magang</h1>
+          <p class="mt-1 text-slate-600 text-sm">Kelola pendaftaran masuk dari form dashboard utama.</p>
         </div>
-        <a href="pendaftaran.php" class="inline-flex items-center justify-center gap-2 rounded-lg bg-brand px-5 py-3 text-sm font-bold text-white hover:bg-primary transition-colors">
-          <span class="material-symbols-outlined text-lg">add</span>Explore open roles
-        </a>
       </div>
-      <section class="mb-7 grid gap-4 sm:grid-cols-3">
-        <div class="rounded-2xl border border-line bg-white p-5">
+
+      <!-- Stats -->
+      <section class="mb-7 grid gap-4 sm:grid-cols-4">
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div class="flex justify-between text-slate-600">
-            <span class="text-sm font-semibold uppercase">Active</span>
-            <span class="material-symbols-outlined rounded-full bg-blue-100 p-2 text-primary">pending_actions</span>
+            <span class="text-xs font-bold uppercase text-slate-500">Total Pelamar</span>
+            <span class="material-symbols-outlined rounded-full bg-slate-100 p-2 text-slate-700">description</span>
           </div>
-          <p class="mt-5 font-geist text-4xl font-bold">3</p>
-          <p class="mt-1 text-sm text-slate-600">Applications in progress</p>
+          <p class="mt-4 font-geist text-3xl font-bold"><?php echo $total_apps; ?></p>
         </div>
-        <div class="rounded-2xl border border-line bg-white p-5">
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div class="flex justify-between text-slate-600">
-            <span class="text-sm font-semibold uppercase">Interviews</span>
+            <span class="text-xs font-bold uppercase text-slate-500">Menunggu Review</span>
+            <span class="material-symbols-outlined rounded-full bg-blue-100 p-2 text-blue-700">pending_actions</span>
+          </div>
+          <p class="mt-4 font-geist text-3xl font-bold text-blue-700"><?php echo $count_review; ?></p>
+        </div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="flex justify-between text-slate-600">
+            <span class="text-xs font-bold uppercase text-slate-500">Interview</span>
             <span class="material-symbols-outlined rounded-full bg-amber-100 p-2 text-amber-700">calendar_month</span>
           </div>
-          <p class="mt-5 font-geist text-4xl font-bold">1</p>
-          <p class="mt-1 text-sm text-slate-600">Next interview this week</p>
+          <p class="mt-4 font-geist text-3xl font-bold text-amber-700"><?php echo $count_interview; ?></p>
         </div>
-        <div class="rounded-2xl border border-line bg-white p-5">
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div class="flex justify-between text-slate-600">
-            <span class="text-sm font-semibold uppercase">Offers</span>
-            <span class="material-symbols-outlined rounded-full bg-emerald-100 p-2 text-emerald-700">celebration</span>
+            <span class="text-xs font-bold uppercase text-slate-500">Diterima / Offer</span>
+            <span class="material-symbols-outlined rounded-full bg-emerald-100 p-2 text-emerald-700">verified</span>
           </div>
-          <p class="mt-5 font-geist text-4xl font-bold">1</p>
-          <p class="mt-1 text-sm text-slate-600">Congratulations, Alex!</p>
+          <p class="mt-4 font-geist text-3xl font-bold text-emerald-700"><?php echo $count_offer; ?></p>
         </div>
       </section>
-      <section class="overflow-hidden rounded-2xl border border-line bg-white">
-        <div class="flex flex-col justify-between gap-4 border-b border-line p-5 sm:flex-row sm:items-center">
+
+      <!-- Main Applications Pipeline Table -->
+      <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex flex-col justify-between gap-4 border-b border-slate-200 p-5 sm:flex-row sm:items-center">
           <div>
-            <h2 class="font-geist text-xl font-bold">Application pipeline</h2>
-            <p class="mt-1 text-sm text-slate-600">Your latest application activity and next steps.</p>
+            <h2 class="font-geist text-lg font-bold">Daftar Pendaftar Magang</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Semua aplikasi yang dikirimkan via form magang di index page.</p>
           </div>
-          <button class="rounded-lg border border-line px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
-            <span class="material-symbols-outlined align-middle text-lg">filter_list</span> All statuses
-          </button>
         </div>
-        <div class="flex gap-6 overflow-x-auto border-b border-line px-5">
-          <button data-filter="all" class="tab active shrink-0 border-b-2 py-4 text-sm font-semibold">All applications <span class="ml-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs">4</span></button>
-          <button data-filter="interview" class="tab shrink-0 border-b-2 border-transparent py-4 text-sm font-semibold text-slate-500">Interviewing</button>
-          <button data-filter="review" class="tab shrink-0 border-b-2 border-transparent py-4 text-sm font-semibold text-slate-500">Under review</button>
-          <button data-filter="offer" class="tab shrink-0 border-b-2 border-transparent py-4 text-sm font-semibold text-slate-500">Offer</button>
+
+        <!-- Filters Tabs -->
+        <div class="flex gap-6 overflow-x-auto border-b border-slate-200 px-5">
+          <button data-filter="all" onclick="filterStatus('all', this)" class="tab active shrink-0 border-b-2 border-blue-700 py-3.5 text-sm font-semibold">Semua (<?php echo $total_apps; ?>)</button>
+          <button data-filter="review" onclick="filterStatus('review', this)" class="tab shrink-0 border-b-2 border-transparent py-3.5 text-sm font-semibold text-slate-500 hover:text-slate-900">Perlu Review (<?php echo $count_review; ?>)</button>
+          <button data-filter="interview" onclick="filterStatus('interview', this)" class="tab shrink-0 border-b-2 border-transparent py-3.5 text-sm font-semibold text-slate-500 hover:text-slate-900">Interview (<?php echo $count_interview; ?>)</button>
+          <button data-filter="offer" onclick="filterStatus('offer', this)" class="tab shrink-0 border-b-2 border-transparent py-3.5 text-sm font-semibold text-slate-500 hover:text-slate-900">Offer (<?php echo $count_offer; ?>)</button>
         </div>
-        <div id="apps" class="divide-y divide-line">
-          <article data-status="interview" class="app grid gap-4 p-5 md:grid-cols-[auto_1fr_auto] md:items-center">
-            <div class="grid h-12 w-12 place-items-center rounded-xl bg-blue-100 font-geist text-lg font-bold text-primary">TC</div>
-            <div>
-              <div class="flex flex-wrap items-center gap-2">
-                <h3 class="font-geist text-lg font-bold">Product Design Intern</h3>
-                <span class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">Interview scheduled</span>
-              </div>
-              <p class="mt-1 text-sm text-slate-600">TechCorp · San Francisco, CA · Applied Oct 18, 2024</p>
-              <p class="mt-3 text-sm"><strong>Next step:</strong> Portfolio interview with Sarah Jenkins on Oct 25 at 10:00 AM.</p>
+
+        <div id="apps-container" class="divide-y divide-slate-100">
+          <?php if (empty($applications)): ?>
+            <div class="p-12 text-center text-slate-500">
+              <span class="material-symbols-outlined text-4xl text-slate-300 block mb-2">folder_off</span>
+              <p class="font-semibold text-slate-700">Belum ada data pendaftaran</p>
+              <p class="text-xs text-slate-500 mt-1">Pendaftaran yang dikirim melalui form landing page akan muncul di sini secara otomatis.</p>
             </div>
-            <button class="details rounded-lg border border-primary px-4 py-2 text-sm font-bold text-primary hover:bg-blue-50 transition-colors">View details</button>
-          </article>
-          <article data-status="review" class="app grid gap-4 p-5 md:grid-cols-[auto_1fr_auto] md:items-center">
-            <div class="grid h-12 w-12 place-items-center rounded-xl bg-violet-100 font-geist text-lg font-bold text-violet-800">NS</div>
-            <div>
-              <div class="flex flex-wrap items-center gap-2">
-                <h3 class="font-geist text-lg font-bold">Frontend Developer Intern</h3>
-                <span class="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-bold text-primary">Under review</span>
-              </div>
-              <p class="mt-1 text-sm text-slate-600">Nova Studio · Remote · Applied Oct 15, 2024</p>
-              <p class="mt-3 text-sm"><strong>Update:</strong> Your technical portfolio is being reviewed by the hiring team.</p>
-            </div>
-            <button class="details rounded-lg border border-primary px-4 py-2 text-sm font-bold text-primary hover:bg-blue-50 transition-colors">View details</button>
-          </article>
-          <article data-status="review" class="app grid gap-4 p-5 md:grid-cols-[auto_1fr_auto] md:items-center">
-            <div class="grid h-12 w-12 place-items-center rounded-xl bg-rose-100 font-geist text-lg font-bold text-rose-800">AC</div>
-            <div>
-              <div class="flex flex-wrap items-center gap-2">
-                <h3 class="font-geist text-lg font-bold">UX Research Intern</h3>
-                <span class="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-bold text-primary">Under review</span>
-              </div>
-              <p class="mt-1 text-sm text-slate-600">Atlas Collective · New York, NY · Applied Oct 11, 2024</p>
-              <p class="mt-3 text-sm"><strong>Update:</strong> Application received. Expect an update within 5 business days.</p>
-            </div>
-            <button class="details rounded-lg border border-primary px-4 py-2 text-sm font-bold text-primary hover:bg-blue-50 transition-colors">View details</button>
-          </article>
-          <article data-status="offer" class="app grid gap-4 p-5 md:grid-cols-[auto_1fr_auto] md:items-center">
-            <div class="grid h-12 w-12 place-items-center rounded-xl bg-emerald-100 font-geist text-lg font-bold text-emerald-800">PV</div>
-            <div>
-              <div class="flex flex-wrap items-center gap-2">
-                <h3 class="font-geist text-lg font-bold">Digital Marketing Intern</h3>
-                <span class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-800">Offer received</span>
-              </div>
-              <p class="mt-1 text-sm text-slate-600">Pixel Ventures · Hybrid · Applied Sep 28, 2024</p>
-              <p class="mt-3 text-sm"><strong>Action required:</strong> Review and respond to your offer by Oct 27, 2024.</p>
-            </div>
-            <button class="details rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white hover:bg-primary transition-colors">Review offer</button>
-          </article>
+          <?php else: ?>
+            <?php foreach ($applications as $app): 
+              $id = intval($app['id'] ?? 0);
+              $fname = htmlspecialchars($app['first_name'] ?? '', ENT_QUOTES, 'UTF-8');
+              $lname = htmlspecialchars($app['last_name'] ?? '', ENT_QUOTES, 'UTF-8');
+              $full_name = trim($fname . ' ' . $lname);
+              $email = htmlspecialchars($app['email'] ?? '', ENT_QUOTES, 'UTF-8');
+              $pos = htmlspecialchars($app['position'] ?? '-', ENT_QUOTES, 'UTF-8');
+              $portfolio = htmlspecialchars($app['portfolio'] ?? '', ENT_QUOTES, 'UTF-8');
+              $cv = htmlspecialchars($app['cv_file'] ?? '', ENT_QUOTES, 'UTF-8');
+              $status = strtolower($app['status'] ?? 'review');
+              $created = htmlspecialchars($app['created_at'] ?? '', ENT_QUOTES, 'UTF-8');
+              
+              // Status Badge Config
+              $badge_class = 'bg-blue-100 text-blue-800';
+              $status_label = 'Under Review';
+              if ($status === 'interview') {
+                  $badge_class = 'bg-amber-100 text-amber-800';
+                  $status_label = 'Interview Scheduled';
+              } elseif ($status === 'offer') {
+                  $badge_class = 'bg-emerald-100 text-emerald-800';
+                  $status_label = 'Offer Received';
+              } elseif ($status === 'rejected') {
+                  $badge_class = 'bg-rose-100 text-rose-800';
+                  $status_label = 'Ditolak';
+              }
+            ?>
+              <article data-status="<?php echo $status; ?>" class="app-item grid gap-4 p-5 md:grid-cols-[auto_1fr_auto] md:items-center hover:bg-slate-50/50 transition-colors">
+                <div class="grid h-12 w-12 place-items-center rounded-xl bg-blue-50 font-geist text-base font-bold text-blue-700 uppercase">
+                  <?php echo substr($fname, 0, 1) . substr($lname, 0, 1); ?>
+                </div>
+                <div>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <h3 class="font-geist text-base font-bold text-slate-900"><?php echo $full_name; ?></h3>
+                    <span class="rounded-full px-2.5 py-0.5 text-xs font-bold <?php echo $badge_class; ?>">
+                      <?php echo $status_label; ?>
+                    </span>
+                  </div>
+                  <p class="mt-1 text-xs text-slate-500">
+                    <span class="font-medium text-slate-700"><?php echo $pos; ?></span> · <?php echo $email; ?> · Didaftarkan: <?php echo $created; ?>
+                  </p>
+                  
+                  <div class="mt-2 flex flex-wrap gap-4 text-xs">
+                    <?php if (!empty($portfolio)): ?>
+                      <a href="<?php echo $portfolio; ?>" target="_blank" class="inline-flex items-center gap-1 font-semibold text-blue-600 hover:underline">
+                        <span class="material-symbols-outlined text-[14px]">link</span> Portofolio: <?php echo $portfolio; ?>
+                      </a>
+                    <?php endif; ?>
+
+                    <?php if (!empty($cv)): ?>
+                      <a href="<?php echo $cv; ?>" target="_blank" class="inline-flex items-center gap-1 font-semibold text-emerald-600 hover:underline">
+                        <span class="material-symbols-outlined text-[14px]">download</span> Lihat Resume CV
+                      </a>
+                    <?php endif; ?>
+                  </div>
+                </div>
+
+                <!-- Admin Action Buttons -->
+                <div class="flex items-center gap-2">
+                  <form method="POST" class="inline-flex gap-1">
+                    <input type="hidden" name="app_id" value="<?php echo $id; ?>">
+                    <select name="action" onchange="this.form.submit()" class="rounded-lg border border-slate-200 bg-white py-1.5 px-3 text-xs font-semibold text-slate-700 focus:border-blue-600 outline-none shadow-sm cursor-pointer">
+                      <option value="">Ubah Status...</option>
+                      <option value="review" <?php echo $status === 'review' ? 'selected' : ''; ?>>Review</option>
+                      <option value="interview" <?php echo $status === 'interview' ? 'selected' : ''; ?>>Interview</option>
+                      <option value="offer" <?php echo $status === 'offer' ? 'selected' : ''; ?>>Offer (Diterima)</option>
+                      <option value="rejected" <?php echo $status === 'rejected' ? 'selected' : ''; ?>>Ditolak</option>
+                    </select>
+                  </form>
+
+                  <form method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pendaftaran ini?');" class="inline">
+                    <input type="hidden" name="app_id" value="<?php echo $id; ?>">
+                    <input type="hidden" name="action" value="delete">
+                    <button type="submit" class="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-400 hover:border-red-200 hover:bg-red-50 hover:text-red-600 transition-colors" title="Hapus">
+                      <span class="material-symbols-outlined text-[18px]">delete</span>
+                    </button>
+                  </form>
+                </div>
+              </article>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </div>
-        <p id="empty" class="hidden p-10 text-center text-sm text-slate-600">No applications match this filter.</p>
+        <p id="empty-search" class="hidden p-10 text-center text-sm text-slate-500">Tidak ada pendaftaran yang sesuai dengan pencarian/filter.</p>
       </section>
     </div>
   </main>
+
   <script>
-    document.querySelectorAll('.tab').forEach(b => b.onclick = () => {
-      let n = 0;
-      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-      b.classList.add('active');
-      document.querySelectorAll('.app').forEach(x => {
-        let show = b.dataset.filter === 'all' || x.dataset.status === b.dataset.filter;
-        x.classList.toggle('hidden', !show);
-        n += show ? 1 : 0;
+    let activeFilter = 'all';
+
+    function filterStatus(filter, btn) {
+      activeFilter = filter;
+      document.querySelectorAll('.tab').forEach(b => {
+        b.classList.remove('active', 'border-blue-700');
+        b.classList.add('border-transparent', 'text-slate-500');
       });
-      document.getElementById('empty').classList.toggle('hidden', n > 0);
-    });
-    document.querySelectorAll('.details').forEach(b => b.onclick = () => alert('Application details are ready to connect to your backend.'));
+      btn.classList.add('active', 'border-blue-700');
+      btn.classList.remove('border-transparent', 'text-slate-500');
+      filterApplications();
+    }
+
+    function filterApplications() {
+      const query = (document.getElementById('searchInput').value || '').toLowerCase();
+      const items = document.querySelectorAll('.app-item');
+      let visibleCount = 0;
+
+      items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        const status = item.dataset.status;
+
+        const matchesFilter = (activeFilter === 'all' || status === activeFilter);
+        const matchesQuery  = text.includes(query);
+
+        if (matchesFilter && matchesQuery) {
+          item.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+
+      const emptyEl = document.getElementById('empty-search');
+      if (emptyEl) {
+        emptyEl.classList.toggle('hidden', visibleCount > 0 || items.length === 0);
+      }
+    }
   </script>
-  <script src="lang.js"></script>
-  <script src="language-ui.js"></script>
-  <script src="performance.js"></script>
 </body>
 </html>
