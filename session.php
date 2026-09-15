@@ -31,12 +31,6 @@ if (!function_exists('current_user_name')) {
 if (!function_exists('current_user_role')) {
 	function current_user_role(): string
 	{
-		if (!empty($_COOKIE['cooked_role'])) {
-			return (string) $_COOKIE['cooked_role'];
-		}
-		if (!empty($_SESSION['cooked_role'])) {
-			return (string) $_SESSION['cooked_role'];
-		}
 		return (string) ($_SESSION['role'] ?? '');
 	}
 }
@@ -84,21 +78,5 @@ if (!function_exists('require_superadmin')) {
 			header('Location: ' . $admin_url);
 			exit;
 		}
-	}
-}
-
-if (!function_exists('cook_role')) {
-	function cook_role(string $role): void
-	{
-		$_SESSION['cooked_role'] = $role;
-		setcookie('cooked_role', $role, time() + 86400, '/');
-	}
-}
-
-if (!function_exists('clear_cooked_role')) {
-	function clear_cooked_role(): void
-	{
-		unset($_SESSION['cooked_role']);
-		setcookie('cooked_role', '', time() - 3600, '/');
 	}
 }

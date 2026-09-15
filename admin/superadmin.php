@@ -53,15 +53,40 @@ $msg_type = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
-    if ($action === 'cook_role') {
-        $target_role = $_POST['role'] ?? 'admin';
-        cook_role($target_role);
-        $msg = "Cookie Role berhasil dimasak menjadi: " . strtoupper($target_role);
-        $msg_type = "success";
-    } elseif ($action === 'clear_role') {
-        clear_cooked_role();
-        $msg = "Cookie Role berhasil dihapus. Peran dikembalikan ke role akun asli.";
-        $msg_type = "info";
+    if ($action === 'add_user') {
+        $username = trim($_POST['username'] ?? '');
+        $password = trim($_POST['password'] ?? '');
+        $role     = trim($_POST['role'] ?? 'intern');
+
+        if (empty($username) || empty($password)) {
+            $msg = "Username dan Password wajib diisi!";
+            $msg_type = "danger";
+        } elseif ($conn) {
+            // Check existing username
+            $check_stmt = mysqli_prepare($conn, "SELECT id FROM users WHERE username = ?");
+            mysqli_stmt_bind_param($check_stmt, "s", $username);
+            mysqli_stmt_execute($check_stmt);
+            mysqli_stmt_store_result($check_stmt);
+
+            if (mysqli_stmt_num_rows($check_stmt) > 0) {
+                $msg = "Username '{$username}' sudah terdaftar!";
+                $msg_type = "danger";
+            } else {
+                $insert_stmt = mysqli_prepare($conn, "INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
+                if ($insert_stmt) {
+                    mysqli_stmt_bind_param($insert_stmt, "sss", $username, $password, $role);
+                    if (mysqli_stmt_execute($insert_stmt)) {
+                        $msg = "User baru '{$username}' dengan role '{$role}' berhasil ditambahkan!";
+                        $msg_type = "success";
+                    } else {
+                        $msg = "Gagal menambahkan user ke database.";
+                        $msg_type = "danger";
+                    }
+                    mysqli_stmt_close($insert_stmt);
+                }
+            }
+            mysqli_stmt_close($check_stmt);
+        }
     } elseif ($action === 'update_user_role') {
         $user_id = intval($_POST['user_id'] ?? 0);
         $new_role = trim($_POST['role'] ?? 'intern');
@@ -118,7 +143,6 @@ if ($conn) {
 
 $positions = get_index_positions($positions_file);
 $current_active_role = current_user_role();
-$cooked_cookie = $_COOKIE['cooked_role'] ?? $_SESSION['cooked_role'] ?? null;
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -153,14 +177,6 @@ $cooked_cookie = $_COOKIE['cooked_role'] ?? $_SESSION['cooked_role'] ?? null;
                 <span>Superadmin Control Center</span>
             </h2>
             <div class="flex items-center gap-3">
-                <!-- Cooked Role Indicator Badge -->
-                <?php if (!empty($cooked_cookie)): ?>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 font-label-sm font-bold border border-amber-300 shadow-sm animate-pulse">
-                        <span class="material-symbols-outlined text-sm">cookie</span>
-                        <span>Cooked Role: <?php echo htmlspecialchars(strtoupper($cooked_cookie), ENT_QUOTES, 'UTF-8'); ?></span>
-                    </span>
-                <?php endif; ?>
-
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
@@ -185,60 +201,6 @@ $cooked_cookie = $_COOKIE['cooked_role'] ?? $_SESSION['cooked_role'] ?? null;
                     </button>
                 </div>
             <?php endif; ?>
-
-            <!-- Section 1: Cookie & Role Switcher ("Cook Role Admin") -->
-            <div class="glass-card rounded-2xl border border-outline-variant p-6 shadow-sm">
-                <div class="flex items-center gap-3 mb-3">
-                    <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
-                        <span class="material-symbols-outlined">cookie</span>
-                    </div>
-                    <div>
-                        <h3 class="font-headline-md font-bold text-on-surface">Kontrol & Switcher Role Cookie ("Cook Admin")</h3>
-                        <p class="text-sm text-on-surface-variant">Ubah role sesi/cookie secara instan untuk menguji tampilan aplikasi (index.php, dashboard, admin) tanpa perlu relogin.</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-5">
-                    <!-- Cook Admin -->
-                    <form action="superadmin.php" method="POST">
-                        <input type="hidden" name="action" value="cook_role"/>
-                        <input type="hidden" name="role" value="admin"/>
-                        <button type="submit" class="w-full p-4 rounded-xl bg-primary text-on-primary font-label-md hover:bg-primary-container hover:text-on-primary-container transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95">
-                            <span class="material-symbols-outlined">shield</span>
-                            <span>🍳 Cook Role Admin</span>
-                        </button>
-                    </form>
-
-                    <!-- Cook Superadmin -->
-                    <form action="superadmin.php" method="POST">
-                        <input type="hidden" name="action" value="cook_role"/>
-                        <input type="hidden" name="role" value="superadmin"/>
-                        <button type="submit" class="w-full p-4 rounded-xl bg-indigo-600 text-white font-label-md hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95">
-                            <span class="material-symbols-outlined">verified_user</span>
-                            <span>👑 Cook Role Superadmin</span>
-                        </button>
-                    </form>
-
-                    <!-- Cook Intern -->
-                    <form action="superadmin.php" method="POST">
-                        <input type="hidden" name="action" value="cook_role"/>
-                        <input type="hidden" name="role" value="intern"/>
-                        <button type="submit" class="w-full p-4 rounded-xl bg-emerald-600 text-white font-label-md hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95">
-                            <span class="material-symbols-outlined">school</span>
-                            <span>🎓 Cook Role Intern</span>
-                        </button>
-                    </form>
-
-                    <!-- Reset Cookie -->
-                    <form action="superadmin.php" method="POST">
-                        <input type="hidden" name="action" value="clear_role"/>
-                        <button type="submit" class="w-full p-4 rounded-xl bg-slate-200 text-slate-800 font-label-md hover:bg-slate-300 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95">
-                            <span class="material-symbols-outlined">restart_alt</span>
-                            <span>🔄 Reset / Clear Cookie</span>
-                        </button>
-                    </form>
-                </div>
-            </div>
 
             <!-- Section 2: Manage Positions on index.php -->
             <div class="glass-card rounded-2xl border border-outline-variant p-6 shadow-sm">
@@ -283,8 +245,16 @@ $cooked_cookie = $_COOKIE['cooked_role'] ?? $_SESSION['cooked_role'] ?? null;
 
             <!-- Section 3: Manage Database User Roles -->
             <div class="glass-card rounded-2xl border border-outline-variant p-6 shadow-sm">
-                <h3 class="font-headline-md font-bold text-on-surface mb-1">Manajemen Role User Database</h3>
-                <p class="text-sm text-on-surface-variant mb-4">Ubah role akun pengguna di database secara permanen.</p>
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h3 class="font-headline-md font-bold text-on-surface">Manajemen User & Role Database</h3>
+                        <p class="text-sm text-on-surface-variant">Kelola dan tambah pengguna baru serta ubah role akun di database.</p>
+                    </div>
+                    <button onclick="document.getElementById('add-user-modal').classList.remove('hidden')" class="px-4 py-2 bg-indigo-600 text-white rounded-xl font-label-md hover:bg-indigo-700 transition-all flex items-center gap-2 shadow-sm">
+                        <span class="material-symbols-outlined">person_add</span>
+                        <span>Tambah User Baru</span>
+                    </button>
+                </div>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left">
@@ -333,6 +303,45 @@ $cooked_cookie = $_COOKIE['cooked_role'] ?? $_SESSION['cooked_role'] ?? null;
 
         </div>
     </main>
+
+    <!-- Modal Tambah User Baru -->
+    <div id="add-user-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 hidden backdrop-blur-sm">
+        <div class="bg-surface-container-lowest rounded-2xl max-w-md w-full p-6 shadow-2xl border border-outline-variant">
+            <div class="flex justify-between items-center pb-3 border-b border-outline-variant mb-4">
+                <h3 class="font-headline-md font-bold text-indigo-700 flex items-center gap-2">
+                    <span class="material-symbols-outlined">person_add</span>
+                    <span>Tambah User Baru</span>
+                </h3>
+                <button onclick="document.getElementById('add-user-modal').classList.add('hidden')" class="text-on-surface-variant hover:text-on-surface">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <form action="superadmin.php" method="POST" class="space-y-4">
+                <input type="hidden" name="action" value="add_user"/>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Username / Email</label>
+                    <input type="text" name="username" required placeholder="Masukkan username atau email" class="w-full px-3 py-2 border border-outline-variant rounded-xl text-sm outline-none focus:border-indigo-600"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Password</label>
+                    <input type="password" name="password" required placeholder="Masukkan password" class="w-full px-3 py-2 border border-outline-variant rounded-xl text-sm outline-none focus:border-indigo-600"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Role Akun</label>
+                    <select name="role" class="w-full px-3 py-2 border border-outline-variant rounded-xl text-sm outline-none focus:border-indigo-600">
+                        <option value="intern">INTERN (Anak Magang)</option>
+                        <option value="admin">ADMIN</option>
+                        <option value="superadmin">SUPERADMIN</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="document.getElementById('add-user-modal').classList.add('hidden')" class="px-4 py-2 border rounded-xl text-sm">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors">Simpan User</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Modal Tambah Posisi -->
     <div id="add-pos-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 hidden backdrop-blur-sm">
