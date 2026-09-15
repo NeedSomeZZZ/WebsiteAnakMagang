@@ -146,11 +146,15 @@
             <div>
                 <h2 class="font-headline-lg">Kehadiran Semua Intern</h2>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
+                <button onclick="exportAllAdminAttendanceCSV()" class="px-3.5 py-1.5 bg-primary text-on-primary rounded-xl text-xs font-bold hover:opacity-90 flex items-center gap-1 shadow-sm">
+                    <span class="material-symbols-outlined text-[16px]">download</span>
+                    <span>Export CSV</span>
+                </button>
                 <a href="admin-dashboard.php" class="text-sm text-primary hover:underline flex items-center gap-1">
                     <span class="material-symbols-outlined text-[18px]">arrow_back</span> Kembali ke Dashboard
                 </a>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 ml-2">
                     <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
                     </div>
@@ -519,6 +523,85 @@
         function renderAll() {
             renderCalendar();
             renderRoster();
+        }
+
+        function exportAllAdminAttendanceCSV() {
+            const interns = InternStore.list();
+            if (!interns.length) {
+                alert('Tidak ada data intern.');
+                return;
+            }
+
+            const statusLabel = { present: 'Hadir', late: 'Terlambat', absent: 'Tidak Masuk' };
+            const allRecords = [];
+
+            // Kumpulkan semua data kehadiran dari seluruh intern
+            interns.forEach(intern => {
+                const records = InternStore.getAttendance(intern.name);
+                records.forEach(r => {
+                    allRecords.push({
+                        internName: intern.name,
+                        division: intern.division || '-',
+                        date: r.date,
+                        clockIn: r.clockIn || '--:--',
+                        clockOut: r.clockOut || '--:--',
+                        status: r.status,
+                        reason: r.reason || '-'
+                    });
+                });
+            });
+
+            if (!allRecords.length) {
+                alert('Belum ada data kehadiran intern yang tercatat.');
+                return;
+            }
+
+            // Urutkan berdasarkan Tanggal & Jam (DateTime) secara menurun / terbaru dulu (terbaru ke terlama)
+            allRecords.sort((a, b) => {
+                const dtA = `${a.date} ${a.clockIn !== '--:--' ? a.clockIn : '00:00'}`;
+                const dtB = `${b.date} ${b.clockIn !== '--:--' ? b.clockIn : '00:00'}`;
+                return dtB.localeCompare(dtA);
+            });
+
+            const rows = [['Nama Intern', 'Divisi', 'Tanggal', 'Jam Masuk', 'Jam Keluar', 'Status', 'Alasan']];
+
+            allRecords.forEach(r => {
+                const [y, m, d] = r.date.split('-');
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                const dateObj = new Date(+y, +m - 1, +d);
+                const cleanDate = `${days[dateObj.getDay()]} ${String(d).padStart(2, '0')} ${months[+m - 1]} ${y}`;
+
+                rows.push([
+                    r.internName,
+                    r.division,
+                    cleanDate,
+                    r.clockIn,
+                    r.clockOut,
+                    statusLabel[r.status] || r.status,
+                    r.reason
+                ]);
+            });
+
+            // "sep=;" memberitahu Microsoft Excel untuk otomatis membagi data ke dalam KOTAK-KOTAK / GRID CELL yang rapi saat dibuka
+            const csvRows = rows.map(row => 
+                row.map(val => {
+                    const str = String(val || '').replace(/"/g, '""');
+                    return `"${str}"`;
+                }).join(';')
+            );
+
+            const csvContent = "sep=;\r\n" + csvRows.join('\r\n');
+
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Kehadiran_Semua_Intern_${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         }
 
         document.addEventListener('DOMContentLoaded', () => {

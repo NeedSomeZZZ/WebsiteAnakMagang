@@ -1106,10 +1106,20 @@
             if (!data.length) { showToast('Belum ada data untuk diekspor.', 'warning'); return; }
 
             const statusLabel = { present: 'Hadir', late: 'Terlambat', absent: 'Tidak Masuk' };
+            
+            // Format tanggal yang bersih tanpa koma di dalam teks (misal: "Selasa 01 Sep 2026")
+            function cleanDateDisplay(ds) {
+                const [y, m, d] = ds.split('-');
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                const dateObj = new Date(+y, +m - 1, +d);
+                return `${days[dateObj.getDay()]} ${String(d).padStart(2, '0')} ${months[+m - 1]} ${y}`;
+            }
+
             const rows = [['Tanggal', 'Jam Masuk', 'Jam Keluar', 'Status', 'Alasan']];
             data.forEach(r => {
                 rows.push([
-                    formatDateDisplay(r.date),
+                    cleanDateDisplay(r.date),
                     r.clockIn || '--:--',
                     r.clockOut || '--:--',
                     statusLabel[r.status] || r.status,
@@ -1117,8 +1127,15 @@
                 ]);
             });
 
-            const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
-            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            // Pemisah koma dengan pembungkus tanda petik ganda (") untuk menjaga isi teks tetap rapi
+            const csvContent = rows.map(row => 
+                row.map(val => {
+                    const str = String(val || '').replace(/"/g, '""');
+                    return `"${str}"`;
+                }).join(',')
+            ).join('\r\n');
+
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
