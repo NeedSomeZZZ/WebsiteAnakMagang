@@ -2,13 +2,7 @@
 /**
  * partials/sidebar-admin.php
  * Left sidebar (Sidebar) yang dipakai bersama oleh semua halaman admin:
- * admin-dashboard.php, admin-users.php, admin-attendance.php, admin-projects.php, admin-stats.php
- *
- * Variabel yang bisa di-set SEBELUM include ini:
- *   $active            (string) -> 'dashboard' | 'users' | 'attendance' | 'projects' | 'stats'
- *   $sidebar_title      (string) -> judul teks biasa (default: 'Kedayweb')
- *   $sidebar_title_html (string) -> judul dalam bentuk HTML mentah (override $sidebar_title, dipakai admin-dashboard.php)
- *   $sidebar_subtitle   (string) -> sub-judul (default: 'Admin Panel')
+ * admin-dashboard.php, admin-users.php, admin-attendance.php, admin-projects.php, admin-stats.php, admin-articles.php, superadmin.php
  */
 if (!isset($active)) {
     $active = '';
@@ -20,14 +14,19 @@ if (!isset($sidebar_subtitle)) {
     $sidebar_subtitle = 'Admin Panel';
 }
 
+$script_path = str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME'] ?? $_SERVER['SCRIPT_NAME'] ?? '');
+$is_in_admin_dir = (basename(dirname($script_path)) === 'admin');
+$admin_prefix = $is_in_admin_dir ? '' : 'admin/';
+$root_prefix = $is_in_admin_dir ? '../' : '';
+
 $admin_nav_items = [
-    'dashboard'  => ['label' => 'Dashboard',        'icon' => 'dashboard',        'href' => 'admin-dashboard.php'],
-    'users'      => ['label' => 'Users',            'icon' => 'people',           'href' => 'admin-users.php'],
-    'attendance' => ['label' => 'Kehadiran Intern', 'icon' => 'event_available',  'href' => 'admin-attendance.php'],
-    'projects'   => ['label' => 'Projects',         'icon' => 'folder_open',      'href' => 'admin-projects.php'],
-    'article'    => ['label' => 'Kelola Artikel',   'icon' => 'newspaper',        'href' => 'admin-articles.php'],
-    'superadmin' => ['label' => 'Superadmin Panel', 'icon' => 'verified_user',    'href' => 'superadmin.php'],
-    'stats'      => ['label' => 'Statistics',       'icon' => 'insights',         'href' => 'admin-stats.php'],
+    'dashboard'  => ['label' => 'Dashboard',        'icon' => 'dashboard',        'href' => $admin_prefix . 'admin-dashboard.php'],
+    'users'      => ['label' => 'Users',            'icon' => 'people',           'href' => $admin_prefix . 'admin-users.php'],
+    'attendance' => ['label' => 'Kehadiran Intern', 'icon' => 'event_available',  'href' => $admin_prefix . 'admin-attendance.php'],
+    'projects'   => ['label' => 'Projects',         'icon' => 'folder_open',      'href' => $admin_prefix . 'admin-projects.php'],
+    'article'    => ['label' => 'Kelola Artikel',   'icon' => 'newspaper',        'href' => $admin_prefix . 'admin-articles.php'],
+    'superadmin' => ['label' => 'Superadmin Panel', 'icon' => 'verified_user',    'href' => $admin_prefix . 'superadmin.php'],
+    'stats'      => ['label' => 'Statistics',       'icon' => 'insights',         'href' => $admin_prefix . 'admin-stats.php'],
 ];
 ?>
 <aside class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
@@ -58,7 +57,7 @@ $admin_nav_items = [
             <span class="material-symbols-outlined text-primary">account_circle</span>
             <span class="font-label-sm text-on-surface truncate"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
         </div>
-        <a class="flex items-center gap-md px-md py-sm rounded-lg font-label-md text-error hover:bg-error-container" href="logout.php">
+        <a class="flex items-center gap-md px-md py-sm rounded-lg font-label-md text-error hover:bg-error-container" href="<?php echo $root_prefix; ?>logout.php">
             <span class="material-symbols-outlined">logout</span>
             <span>Keluar</span>
         </a>

@@ -2,8 +2,8 @@
 require_once __DIR__ . '/../session.php';
 require_login();
 
-// Restrict access to admin role
-if (current_user_role() !== 'admin') {
+// Restrict access to admin/superadmin role
+if (!is_superadmin()) {
     header('Location: ../dashboard.php');
     exit;
 }
