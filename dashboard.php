@@ -171,6 +171,9 @@
             </div>
         </div>
 
+        <!-- Hidden fallback camera input -->
+        <input type="file" accept="image/*" capture="user" id="tm-camera-fallback" class="hidden">
+
         <!-- Live Camera Stream Modal -->
         <div id="tm-modal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-md">
             <div class="bg-surface-container-lowest rounded-2xl p-md max-w-sm w-full shadow-2xl">
@@ -189,7 +192,7 @@
                     <button onclick="timemarkCloseModal()" class="w-full bg-surface-container-high text-on-surface rounded-lg py-sm font-label-md text-label-md hover:bg-surface-container-highest">Batal</button>
                     <button id="tm-capture-btn" onclick="timemarkCapture()" class="w-full bg-primary text-on-primary rounded-lg py-sm font-label-md text-label-md flex items-center justify-center gap-xs hover:opacity-90">
                         <span class="material-symbols-outlined text-[18px]">photo_camera</span>
-                        Jepret
+                        Ambil Foto
                     </button>
                 </div>
                 <div id="tm-confirm-actions" class="grid grid-cols-2 gap-sm hidden">
@@ -391,6 +394,12 @@ function toggleClock() {
         const camActions = document.getElementById('tm-cam-actions');
         const confirmActions = document.getElementById('tm-confirm-actions');
 
+        // Check navigator.mediaDevices support
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            timemarkTriggerFallback();
+            return;
+        }
+
         if (!modal || !video) return;
 
         titleEl.textContent = 'Clock In - Ambil Foto';
@@ -407,12 +416,48 @@ function toggleClock() {
                 audio: false
             });
             video.srcObject = tmStream;
-            statusEl.textContent = 'Posisikan wajah Anda lalu tekan Jepret.';
+            statusEl.textContent = 'Posisikan wajah Anda lalu tekan Ambil Foto.';
         } catch (err) {
-            console.error('Camera access error:', err);
-            statusEl.textContent = 'Gagal mengakses kamera. Pastikan izin kamera telah diberikan.';
+            console.warn('Camera live feed failed, falling back to camera input:', err);
+            timemarkCloseModal();
+            timemarkTriggerFallback();
         }
     }
+
+    function timemarkTriggerFallback() {
+        const fallbackInput = document.getElementById('tm-camera-fallback');
+        if (fallbackInput) fallbackInput.click();
+    }
+
+    function timemarkHandleFallbackFile(e) {
+        const file = e.target.files && e.target.files[0];
+        e.target.value = '';
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = evt => {
+            const img = new Image();
+            img.onload = () => {
+                const modal = document.getElementById('tm-modal');
+                const video = document.getElementById('tm-video');
+                const canvas = document.getElementById('tm-canvas');
+                const camActions = document.getElementById('tm-cam-actions');
+                const confirmActions = document.getElementById('tm-confirm-actions');
+
+                if (video) video.classList.add('hidden');
+                if (canvas) canvas.classList.remove('hidden');
+                if (camActions) camActions.classList.add('hidden');
+                if (confirmActions) confirmActions.classList.remove('hidden');
+                if (modal) modal.classList.remove('hidden');
+
+                timemarkComposeAndShow(img);
+            };
+            img.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    const tmFallbackInput = document.getElementById('tm-camera-fallback');
+    if (tmFallbackInput) tmFallbackInput.addEventListener('change', timemarkHandleFallbackFile);
 
     function timemarkStopCamera() {
         if (tmStream) {

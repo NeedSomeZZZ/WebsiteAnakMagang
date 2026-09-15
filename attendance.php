@@ -592,6 +592,9 @@
         </div>
     </div>
 
+    <!-- Hidden fallback camera input -->
+    <input type="file" accept="image/*" capture="environment" id="att-camera-fallback" class="hidden">
+
     <!-- ============================================================
      CLOCK IN CONFIRMATION MODAL (Live Camera Stream)
      ============================================================ -->
@@ -610,7 +613,7 @@
                 <button onclick="attCloseModal()" class="w-full bg-surface-container-high text-on-surface rounded-xl py-2.5 font-label-md text-label-md hover:bg-surface-container-highest">Batal</button>
                 <button id="att-capture-btn" onclick="attCapture()" class="w-full bg-primary text-on-primary rounded-xl py-2.5 font-label-md text-label-md flex items-center justify-center gap-2 hover:opacity-90">
                     <span class="material-symbols-outlined text-[18px]">photo_camera</span>
-                    Jepret
+                    Ambil Foto
                 </button>
             </div>
             <div id="att-confirm-actions" class="grid grid-cols-2 gap-3 hidden">
@@ -1206,6 +1209,12 @@
             const camActions = document.getElementById('att-cam-actions');
             const confirmActions = document.getElementById('att-confirm-actions');
 
+            // Check navigator.mediaDevices support
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                attTriggerFallback();
+                return;
+            }
+
             if (!modal || !video) return;
 
             titleEl.textContent = 'Clock In - Ambil Foto';
@@ -1222,12 +1231,48 @@
                     audio: false
                 });
                 video.srcObject = attStream;
-                statusEl.textContent = 'Posisikan wajah Anda lalu tekan Jepret.';
+                statusEl.textContent = 'Posisikan wajah Anda lalu tekan Ambil Foto.';
             } catch (err) {
-                console.error('Camera access error:', err);
-                statusEl.textContent = 'Gagal mengakses kamera. Pastikan izin kamera telah diberikan.';
+                console.warn('Camera live feed failed, falling back to camera input:', err);
+                attCloseModal();
+                attTriggerFallback();
             }
         }
+
+        function attTriggerFallback() {
+            const fallbackInput = document.getElementById('att-camera-fallback');
+            if (fallbackInput) fallbackInput.click();
+        }
+
+        function attHandleFallbackFile(e) {
+            const file = e.target.files && e.target.files[0];
+            e.target.value = '';
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = evt => {
+                const img = new Image();
+                img.onload = () => {
+                    const modal = document.getElementById('att-modal');
+                    const video = document.getElementById('att-video');
+                    const canvas = document.getElementById('att-canvas');
+                    const camActions = document.getElementById('att-cam-actions');
+                    const confirmActions = document.getElementById('att-confirm-actions');
+
+                    if (video) video.classList.add('hidden');
+                    if (canvas) canvas.classList.remove('hidden');
+                    if (camActions) camActions.classList.add('hidden');
+                    if (confirmActions) confirmActions.classList.remove('hidden');
+                    if (modal) modal.classList.remove('hidden');
+
+                    attComposeAndShow(img);
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        const attFallbackInput = document.getElementById('att-camera-fallback');
+        if (attFallbackInput) attFallbackInput.addEventListener('change', attHandleFallbackFile);
 
         function attStopCamera() {
             if (attStream) {
