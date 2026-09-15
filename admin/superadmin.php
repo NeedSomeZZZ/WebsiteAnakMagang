@@ -100,6 +100,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $msg_type = "success";
             }
         }
+    } elseif ($action === 'delete_user') {
+        $user_id = intval($_POST['user_id'] ?? 0);
+        $current_session_user_id = intval($_SESSION['user_id'] ?? 0);
+
+        if ($conn && $user_id > 0) {
+            if ($user_id === $current_session_user_id) {
+                $msg = "Anda tidak dapat menghapus akun Anda sendiri yang sedang digunakan!";
+                $msg_type = "danger";
+            } else {
+                $get_u = mysqli_prepare($conn, "SELECT username FROM users WHERE id = ?");
+                mysqli_stmt_bind_param($get_u, "i", $user_id);
+                mysqli_stmt_execute($get_u);
+                $res_u = mysqli_stmt_get_result($get_u);
+                $u_row = mysqli_fetch_assoc($res_u);
+                $deleted_name = $u_row['username'] ?? "ID #{$user_id}";
+                mysqli_stmt_close($get_u);
+
+                $stmt = mysqli_prepare($conn, "DELETE FROM users WHERE id = ?");
+                if ($stmt) {
+                    mysqli_stmt_bind_param($stmt, "i", $user_id);
+                    if (mysqli_stmt_execute($stmt)) {
+                        $msg = "Akun user '{$deleted_name}' (ID #{$user_id}) berhasil dihapus permanen!";
+                        $msg_type = "success";
+                    } else {
+                        $msg = "Gagal menghapus user dari database.";
+                        $msg_type = "danger";
+                    }
+                    mysqli_stmt_close($stmt);
+                }
+            }
+        }
     } elseif ($action === 'add_position') {
         $positions = get_index_positions($positions_file);
         $max_id = 0;
@@ -231,7 +262,7 @@ $current_active_role = current_user_role();
                                 </p>
                             </div>
 
-                            <form action="superadmin.php" method="POST" onsubmit="return confirm('Hapus posisi ini dari index.php?')">
+                            <form action="superadmin.php" method="POST" class="confirm-action-form" data-confirm-title="Hapus Posisi Magang" data-confirm-message="Apakah Anda yakin ingin menghapus posisi ini dari index.php?">
                                 <input type="hidden" name="action" value="delete_position"/>
                                 <input type="hidden" name="pos_id" value="<?php echo (int) $pos['id']; ?>"/>
                                 <button type="submit" class="text-error hover:bg-red-50 p-2 rounded-lg transition-colors" title="Hapus Posisi">
@@ -264,7 +295,7 @@ $current_active_role = current_user_role();
                                 <th class="py-3 px-4 font-semibold">Username / Email</th>
                                 <th class="py-3 px-4 font-semibold">Password</th>
                                 <th class="py-3 px-4 font-semibold">Role Sekarang</th>
-                                <th class="py-3 px-4 font-semibold text-right">Ubah Role</th>
+                                <th class="py-3 px-4 font-semibold text-right">Kelola Role & Akun</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-outline-variant">
@@ -292,16 +323,28 @@ $current_active_role = current_user_role();
                                             </span>
                                         </td>
                                         <td class="py-3 px-4 text-right">
-                                            <form action="superadmin.php" method="POST" class="inline-flex items-center gap-2">
-                                                <input type="hidden" name="action" value="update_user_role"/>
-                                                <input type="hidden" name="user_id" value="<?php echo (int) $u['id']; ?>"/>
-                                                <select name="role" class="px-3 py-1 text-xs border border-outline-variant rounded-lg bg-surface-container-lowest">
-                                                    <option value="intern" <?php echo $u['role'] === 'intern' ? 'selected' : ''; ?>>INTERN</option>
-                                                    <option value="admin" <?php echo $u['role'] === 'admin' ? 'selected' : ''; ?>>ADMIN</option>
-                                                    <option value="superadmin" <?php echo $u['role'] === 'superadmin' ? 'selected' : ''; ?>>SUPERADMIN</option>
-                                                </select>
-                                                <button type="submit" class="px-3 py-1 text-xs bg-primary text-on-primary rounded-lg font-bold hover:bg-primary-container">Simpan</button>
-                                            </form>
+                                            <div class="inline-flex items-center gap-2">
+                                                <!-- Form Ubah Role -->
+                                                <form action="superadmin.php" method="POST" class="inline-flex items-center gap-1.5">
+                                                    <input type="hidden" name="action" value="update_user_role"/>
+                                                    <input type="hidden" name="user_id" value="<?php echo (int) $u['id']; ?>"/>
+                                                    <select name="role" class="px-2.5 py-1 text-xs border border-outline-variant rounded-lg bg-surface-container-lowest font-medium">
+                                                        <option value="intern" <?php echo $u['role'] === 'intern' ? 'selected' : ''; ?>>INTERN</option>
+                                                        <option value="admin" <?php echo $u['role'] === 'admin' ? 'selected' : ''; ?>>ADMIN</option>
+                                                        <option value="superadmin" <?php echo $u['role'] === 'superadmin' ? 'selected' : ''; ?>>SUPERADMIN</option>
+                                                    </select>
+                                                    <button type="submit" class="px-2.5 py-1 text-xs bg-primary text-on-primary rounded-lg font-bold hover:bg-primary-container transition-colors shadow-xs cursor-pointer">Simpan</button>
+                                                </form>
+
+                                                <!-- Form Hapus User -->
+                                                <form action="superadmin.php" method="POST" class="inline-block confirm-action-form" data-confirm-title="Hapus Akun User" data-confirm-message="PERINGATAN SUPERADMIN: Apakah Anda yakin ingin menghapus akun '<?php echo htmlspecialchars(addslashes($u['username']), ENT_QUOTES, 'UTF-8'); ?>' (ID #<?php echo (int) $u['id']; ?>)? Tindakan ini akan menghapus akun secara permanen!">
+                                                    <input type="hidden" name="action" value="delete_user"/>
+                                                    <input type="hidden" name="user_id" value="<?php echo (int) $u['id']; ?>"/>
+                                                    <button type="submit" class="px-2.5 py-1 text-xs bg-red-50 text-red-700 hover:bg-red-600 hover:text-white border border-red-200 rounded-lg font-bold transition-all flex items-center gap-1 cursor-pointer" title="Hapus Akun">
+                                                        <span class="material-symbols-outlined text-[14px]">delete</span> Hapus
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -399,6 +442,9 @@ $current_active_role = current_user_role();
             </form>
         </div>
     </div>
+
+    <?php include '../partials/confirm-modal.php'; ?>
+
     <script>
         function togglePassword(btn) {
             const parent = btn.parentElement;
@@ -416,6 +462,26 @@ $current_active_role = current_user_role();
                 icon.textContent = 'visibility';
             }
         }
+
+        document.querySelectorAll('.confirm-action-form').forEach(form => {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const title = this.getAttribute('data-confirm-title') || 'Konfirmasi Tindakan';
+                const message = this.getAttribute('data-confirm-message') || 'Apakah Anda yakin ingin melanjutkan tindakan ini?';
+                
+                const confirmed = await window.showConfirmModal({
+                    title: title,
+                    message: message,
+                    confirmText: 'Ya, Hapus',
+                    cancelText: 'Batal',
+                    type: 'danger'
+                });
+
+                if (confirmed) {
+                    this.submit();
+                }
+            });
+        });
     </script>
 </body>
 </html>

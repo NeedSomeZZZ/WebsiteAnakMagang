@@ -105,7 +105,9 @@ $total_admins = count(array_filter($users, static function (array $user): bool {
                             <tr class="border-b border-outline-variant text-on-surface-variant text-left">
                                 <th class="pb-2 pr-4 font-semibold">ID</th>
                                 <th class="pb-2 pr-4 font-semibold">Username / Email</th>
-                                <th class="pb-2 pr-4 font-semibold">Password</th>
+                                <?php if (current_user_role() === 'superadmin'): ?>
+                                    <th class="pb-2 pr-4 font-semibold">Password</th>
+                                <?php endif; ?>
                                 <th class="pb-2 pr-4 font-semibold">Role</th>
                             </tr>
                         </thead>
@@ -114,15 +116,17 @@ $total_admins = count(array_filter($users, static function (array $user): bool {
                                 <tr class="user-row hover:bg-surface-container-low transition-colors">
                                     <td class="py-2.5 pr-4 font-medium"><?php echo (int) $user['id']; ?></td>
                                     <td class="py-2.5 pr-4 font-semibold text-on-surface"><?php echo htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8'); ?></td>
-                                    <td class="py-2.5 pr-4 font-mono text-sm">
-                                        <div class="flex items-center gap-2">
-                                            <span class="password-text hidden bg-surface-container-high px-2 py-0.5 rounded text-xs text-primary font-bold select-all"><?php echo htmlspecialchars($user['password'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></span>
-                                            <span class="password-hidden text-xs text-on-surface-variant font-bold">••••••••</span>
-                                            <button type="button" onclick="togglePassword(this)" class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer p-1 rounded-lg hover:bg-surface-container-high" title="Lihat/Sembunyikan Password">
-                                                <span class="material-symbols-outlined text-[18px]">visibility</span>
-                                            </button>
-                                        </div>
-                                    </td>
+                                    <?php if (current_user_role() === 'superadmin'): ?>
+                                        <td class="py-2.5 pr-4 font-mono text-sm">
+                                            <div class="flex items-center gap-2">
+                                                <span class="password-text hidden bg-surface-container-high px-2 py-0.5 rounded text-xs text-primary font-bold select-all"><?php echo htmlspecialchars($user['password'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></span>
+                                                <span class="password-hidden text-xs text-on-surface-variant font-bold">••••••••</span>
+                                                <button type="button" onclick="togglePassword(this)" class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer p-1 rounded-lg hover:bg-surface-container-high" title="Lihat/Sembunyikan Password">
+                                                    <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    <?php endif; ?>
                                     <td class="py-2.5 pr-4 text-on-surface-variant">
                                         <span class="px-2.5 py-0.5 rounded-full text-xs font-bold <?php echo $user['role'] === 'superadmin' ? 'bg-purple-100 text-purple-700' : ($user['role'] === 'admin' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'); ?>">
                                             <?php echo strtoupper(htmlspecialchars($user['role'], ENT_QUOTES, 'UTF-8')); ?>

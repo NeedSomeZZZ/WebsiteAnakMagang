@@ -435,7 +435,7 @@ $events_list = get_all_events_history($conn, $events_json);
                                                 <span>Edit Event</span>
                                             </button>
 
-                                            <form method="POST" action="event_history.php" onsubmit="return confirm('Hapus event ini dari histori?');" class="inline">
+                                            <form method="POST" action="event_history.php" class="inline confirm-action-form" data-confirm-title="Hapus Event Histori" data-confirm-message="Apakah Anda yakin ingin menghapus event ini dari histori?">
                                                 <input type="hidden" name="action" value="delete_event"/>
                                                 <input type="hidden" name="id" value="<?php echo $id; ?>"/>
                                                 <button type="submit" class="px-3.5 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-bold transition-colors flex items-center gap-1">
@@ -600,6 +600,28 @@ $events_list = get_all_events_history($conn, $events_json);
                 noResult.classList.toggle('hidden', visible > 0 || cards.length === 0);
             }
         }
+
+        document.querySelectorAll('.confirm-action-form').forEach(form => {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const title = this.getAttribute('data-confirm-title') || 'Konfirmasi';
+                const message = this.getAttribute('data-confirm-message') || 'Apakah Anda yakin ingin melanjutkan tindakan ini?';
+                
+                const confirmed = await window.showConfirmModal({
+                    title: title,
+                    message: message,
+                    confirmText: 'Ya, Hapus',
+                    cancelText: 'Batal',
+                    type: 'danger'
+                });
+
+                if (confirmed) {
+                    this.submit();
+                }
+            });
+        });
     </script>
+
+    <?php include 'partials/confirm-modal.php'; ?>
 </body>
 </html>
