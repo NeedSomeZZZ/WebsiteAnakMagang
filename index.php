@@ -80,6 +80,89 @@ if (!is_array($positions) || empty($positions)) {
             </div>
         </section>
 
+        <!-- Benefits Section -->
+        <section class="w-full px-gutter py-2xl max-w-container-max mx-auto border-b border-outline-variant/50">
+            <div class="text-center max-w-2xl mx-auto mb-xl">
+                <span class="inline-block px-md py-xs rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm mb-sm border border-outline-variant font-semibold">
+                    Keunggulan Program
+                </span>
+                <h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs font-bold">
+                    Manfaat Mengikuti Program Magang
+                </h2>
+                <p class="font-body-md text-body-md text-on-surface-variant">
+                    Dapatkan pengalaman berharga yang siap mengakselerasi karir dan kemampuan teknis Anda di dunia industri.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+                <!-- Benefit 1 -->
+                <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg flex flex-col items-start hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-primary-container text-on-primary flex items-center justify-center mb-md">
+                        <span class="material-symbols-outlined text-[26px]">work_history</span>
+                    </div>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs font-bold">Pengalaman Proyek Nyata</h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                        Terlibat langsung dalam pengerjaan proyek skala industri yang digunakan oleh klien dan pengguna nyata.
+                    </p>
+                </div>
+
+                <!-- Benefit 2 -->
+                <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg flex flex-col items-start hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-secondary-container text-on-secondary-container flex items-center justify-center mb-md">
+                        <span class="material-symbols-outlined text-[26px]">supervisor_account</span>
+                    </div>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs font-bold">Mentorship Intensif</h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                        Bimbingan langsung dari mentor berpengalaman yang siap mengarahkan dan memandu perkembangan Anda.
+                    </p>
+                </div>
+
+                <!-- Benefit 3 -->
+                <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg flex flex-col items-start hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-surface-container-high text-primary flex items-center justify-center mb-md">
+                        <span class="material-symbols-outlined text-[26px]">workspace_premium</span>
+                    </div>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs font-bold">Sertifikat & Portofolio</h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                        Mendapatkan sertifikat magang resmi serta hasil karya nyata yang siap dipamerkan dalam portofolio profesional Anda.
+                    </p>
+                </div>
+
+                <!-- Benefit 4 -->
+                <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg flex flex-col items-start hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-surface-container-high text-primary flex items-center justify-center mb-md">
+                        <span class="material-symbols-outlined text-[26px]">hub</span>
+                    </div>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs font-bold">Jaringan & Networking</h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                        Perluas jaringan kerja bersama para profesional industri, sesama talenta muda, dan ekosistem digital Kedayweb.
+                    </p>
+                </div>
+
+                <!-- Benefit 5 -->
+                <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg flex flex-col items-start hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-primary-container text-on-primary flex items-center justify-center mb-md">
+                        <span class="material-symbols-outlined text-[26px]">rocket_launch</span>
+                    </div>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs font-bold">Peluang Karir Lanjutan</h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                        Peserta magang dengan performa dan kontribusi terbaik berkesempatan direkrut langsung menjadi tim tetap.
+                    </p>
+                </div>
+
+                <!-- Benefit 6 -->
+                <div class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg flex flex-col items-start hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-secondary-container text-on-secondary-container flex items-center justify-center mb-md">
+                        <span class="material-symbols-outlined text-[26px]">schedule</span>
+                    </div>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs font-bold">Sistem Kerja Modern</h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                        Didukung sistem manajemen kerja digital, absensi geotagging, serta jam kerja fleksibel yang terstruktur.
+                    </p>
+                </div>
+            </div>
+        </section>
+
         <!-- Available Positions Section -->
         <section class="w-full px-gutter py-2xl max-w-container-max mx-auto" id="positions">
             <div class="flex flex-col md:flex-row justify-between items-end mb-xl">
