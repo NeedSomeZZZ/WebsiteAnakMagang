@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 15, 2026 at 07:27 AM
+-- Generation Time: Sep 16, 2026 at 03:48 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.2.32
 
@@ -82,7 +82,9 @@ CREATE TABLE `attendance` (
   `lat_in` decimal(10,7) DEFAULT NULL,
   `lng_in` decimal(10,7) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `clock_out` varchar(5) DEFAULT NULL,
+  `reason` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -156,7 +158,10 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `role`, `username`, `password`) VALUES
 (1, 'intern', 'INT-2024-001', '12345678'),
 (2, 'superadmin', 'admin@internspace.com', 'admin123'),
-(3, 'superadmin', 'shaliza', 'mirza');
+(3, 'superadmin', 'shaliza', 'mirza'),
+(4, 'superadmin', 'fil', 'liem'),
+(5, 'intern', 'fil2', 'liem'),
+(6, 'admin', 'fil3', 'liem');
 
 --
 -- Indexes for dumped tables
@@ -240,7 +245,7 @@ ALTER TABLE `tasks`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables

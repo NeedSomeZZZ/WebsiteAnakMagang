@@ -43,6 +43,8 @@ if (!is_array($positions) || empty($positions)) {
     <link
         href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
         rel="stylesheet" />
+    <!-- Anime.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="shared-config.js"></script>
@@ -198,6 +200,65 @@ if (!is_array($positions) || empty($positions)) {
                         </div>
                     </div>
                 <?php endforeach; ?>
+            </div>
+        </section>
+
+        <!-- Partners Section -->
+        <section class="w-full px-gutter py-2xl max-w-container-max mx-auto border-t border-outline-variant/50" id="partners">
+            <div class="text-center max-w-2xl mx-auto mb-xl">
+                <span class="inline-block px-md py-xs rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm mb-sm border border-outline-variant font-semibold">
+                    Kemitraan
+                </span>
+                <h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs font-bold">
+                    Partner Kami
+                </h2>
+                <p class="font-body-md text-body-md text-on-surface-variant">
+                    Sekolah dan Perguruan Tinggi mitra yang telah menjalin kerja sama dengan program magang Kedayweb.
+                </p>
+            </div>
+            
+            <div class="py-4">
+                <div class="flex flex-wrap items-center justify-center gap-8 md:gap-14 lg:gap-16">
+                    <?php 
+                    $partnerDir = __DIR__ . '/uploads/PartnerIcon';
+                    $partnerLogos = [];
+                    $partnerWebsiteMap = [
+                        'Polinema' => 'https://www.polinema.ac.id/',
+                        'Poliwangi' => 'https://poliwangi.ac.id/',
+                        'SMKN 1 Banyuwangi' => 'https://smkn1banyuwangi.sch.id/',
+                        'SMKN 1 Tegalsari' => 'https://smkn1tegalsari.sch.id/',
+                        'SMK_Rogojampi' => 'https://www.smkpro.id/',
+                    ];
+                    if (is_dir($partnerDir)) {
+                        $files = scandir($partnerDir);
+                        foreach ($files as $file) {
+                            $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                            if (in_array($ext, ['png', 'jpg', 'jpeg', 'svg', 'webp'])) {
+                                $partnerLogos[] = $file;
+                            }
+                        }
+                    }
+                    if (!empty($partnerLogos)):
+                        foreach ($partnerLogos as $logo):
+                            $partnerName = pathinfo($logo, PATHINFO_FILENAME);
+                            $partnerUrl = $partnerWebsiteMap[$partnerName] ?? '#';
+                    ?>
+                        <a href="<?php echo htmlspecialchars($partnerUrl, ENT_QUOTES, 'UTF-8'); ?>" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           title="Kunjungi Website Resmi <?php echo htmlspecialchars($partnerName, ENT_QUOTES, 'UTF-8'); ?>"
+                           class="partner-logo-item flex items-center justify-center p-3 transition-all duration-300 group hover:-translate-y-1.5 opacity-0 cursor-pointer">
+                            <img src="uploads/PartnerIcon/<?php echo rawurlencode($logo); ?>" 
+                                 alt="<?php echo htmlspecialchars($partnerName, ENT_QUOTES, 'UTF-8'); ?>" 
+                                 class="max-h-16 md:max-h-20 w-auto max-w-[180px] object-contain opacity-80 group-hover:opacity-100 group-hover:scale-110 group-hover:saturate-125 transition-all duration-300 filter drop-shadow-sm group-hover:drop-shadow-lg">
+                        </a>
+                    <?php 
+                        endforeach; 
+                    else: 
+                    ?>
+                        <p class="text-on-surface-variant font-body-sm">Belum ada mitra yang ditampilkan.</p>
+                    <?php endif; ?>
+                </div>
             </div>
         </section>
 
@@ -542,6 +603,36 @@ if (!is_array($positions) || empty($positions)) {
             modal.classList.remove('flex');
             modal.classList.add('hidden');
         }
+
+        /* ─── Anime.js Scroll Animation for Partner Logos ─── */
+        document.addEventListener('DOMContentLoaded', () => {
+            const partnerSection = document.getElementById('partners');
+            if (partnerSection) {
+                let hasAnimated = false;
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && !hasAnimated) {
+                            hasAnimated = true;
+                            if (window.anime) {
+                                anime({
+                                    targets: '.partner-logo-item',
+                                    translateY: [45, 0],
+                                    scale: [0.7, 1],
+                                    opacity: [0, 1],
+                                    rotate: [-4, 0],
+                                    delay: anime.stagger(120, { start: 150 }),
+                                    duration: 1100,
+                                    easing: 'easeOutElastic(1, .65)'
+                                });
+                            } else {
+                                document.querySelectorAll('.partner-logo-item').forEach(el => el.classList.remove('opacity-0'));
+                            }
+                        }
+                    });
+                }, { threshold: 0.2 });
+                observer.observe(partnerSection);
+            }
+        });
     </script>
 </body>
 
