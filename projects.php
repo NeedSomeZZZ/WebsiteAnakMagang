@@ -6,16 +6,7 @@ $userName = current_user_name();
 // --------------------------------------------------------------------------
 // 1. KONEKSI DATABASE (mysqli)
 // --------------------------------------------------------------------------
-$host     = "localhost";
-$user     = "root";     
-$password = "";         
-$database = "db_internspace";
-
-$conn = mysqli_connect($host, $user, $password, $database);
-
-if (!$conn) {
-    die("Koneksi database gagal: " . mysqli_connect_error());
-}
+require_once __DIR__ . '/Login/koneksi.php';
 
 // --------------------------------------------------------------------------
 // 2. BACKEND API HANDLER (?action=api / ?action=tasks)

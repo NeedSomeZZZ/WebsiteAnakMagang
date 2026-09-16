@@ -665,18 +665,24 @@ require_login(); ?>
 
         async function fetchServerData() {
             try {
+                const endpoint = isAdminPreview ? 'attendance-api.php?action=all_summary' : 'attendance-api.php?action=history';
+                const res = await fetch(endpoint);
+                const text = await res.text();
+                let json;
+                try {
+                    json = JSON.parse(text);
+                } catch (parseErr) {
+                    console.error('Server returned non-JSON output:', text);
+                    throw new Error('Respon tidak valid: ' + text.substring(0, 50));
+                }
+
+                if (!res.ok) throw new Error((json && json.error) || 'Gagal memuat data (HTTP ' + res.status + ')');
+
                 if (isAdminPreview) {
-                    // Admin melihat punya intern lain -> ambil dari ringkasan semua intern
-                    const res = await fetch('attendance-api.php?action=all_summary');
-                    const json = await res.json();
-                    if (!res.ok) throw new Error(json.error || 'Gagal memuat data');
                     const map = (json.attendanceMap && json.attendanceMap[activeInternName]) || {};
                     attendanceData = Object.values(map);
                 } else {
-                    // Intern melihat riwayat miliknya sendiri
-                    const res = await fetch('attendance-api.php?action=history');
-                    const rows = await res.json();
-                    if (!res.ok) throw new Error((rows && rows.error) || 'Gagal memuat data');
+                    const rows = Array.isArray(json) ? json : [];
                     attendanceData = rows.map(r => ({
                         date: r.date,
                         status: r.status,
@@ -688,7 +694,7 @@ require_login(); ?>
             } catch (err) {
                 console.error(err);
                 attendanceData = [];
-                showToast('Gagal memuat data kehadiran dari server.', 'warning');
+                showToast('Error Server: ' + err.message, 'warning');
             }
         }
 

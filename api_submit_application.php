@@ -8,9 +8,16 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Database Connection
+// koneksi.php uses die() on failure which would kill this script and output
+// non-JSON text. We buffer the include so the JSON fallback below still works.
 $conn = null;
 if (file_exists(__DIR__ . '/Login/koneksi.php')) {
-    include_once __DIR__ . '/Login/koneksi.php';
+    ob_start();
+    @include_once __DIR__ . '/Login/koneksi.php';
+    $ob = ob_get_clean(); // discard any die()/echo output
+    if (!isset($conn) || !$conn) {
+        $conn = null; // ensure clean state for the check on line 53
+    }
 }
 
 $first_name = trim($_POST['first_name'] ?? '');

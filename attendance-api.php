@@ -25,19 +25,9 @@ if (!$username) {
 }
 
 // --------------------------------------------------------------
-// 2. KONEKSI DATABASE (samain kayak Login/koneksi.php)
+// 2. KONEKSI DATABASE
 // --------------------------------------------------------------
-$host     = "localhost";
-$user     = "root";
-$password = "";
-$database = "db_internspace";
-
-$conn = mysqli_connect($host, $user, $password, $database);
-if (!$conn) {
-    http_response_code(500);
-    echo json_encode(['error' => 'Koneksi database gagal: ' . mysqli_connect_error()]);
-    exit;
-}
+require_once __DIR__ . '/Login/koneksi.php';
 
 $action = $_GET['action'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];
