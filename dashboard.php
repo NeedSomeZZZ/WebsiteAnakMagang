@@ -61,7 +61,7 @@
         <!-- Top Stats Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
             <!-- Stat: Attendance -->
-            <a href="attendance.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 relative overflow-hidden group block">
+            <a href="attendance.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-5 flex flex-col justify-between min-h-[140px] relative overflow-hidden group block">
                 <div class="flex justify-between items-start">
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Attendance</span>
                     <div class="p-xs rounded-full bg-surface-container-high text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
@@ -69,7 +69,7 @@
                     </div>
                 </div>
                 <div>
-                    <div class="font-headline-xl text-headline-xl text-on-surface">95%</div>
+                    <div class="text-3xl font-extrabold font-geist text-on-surface">95%</div>
                     <div class="flex items-center gap-xs mt-1">
                         <span class="material-symbols-outlined text-[14px] text-green-600">trending_up</span>
                         <span class="font-body-sm text-body-sm text-on-surface-variant">+2% from last month</span>
@@ -77,7 +77,7 @@
                 </div>
             </a>
             <!-- Stat: Tasks Done -->
-            <a href="tasks.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block">
+            <a href="tasks.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-5 flex flex-col justify-between min-h-[140px] block">
                 <div class="flex justify-between items-start">
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" data-i18n="stat_tasks_done">Tasks Done</span>
                     <div class="p-xs rounded-full bg-surface-container-high text-primary">
@@ -85,12 +85,12 @@
                     </div>
                 </div>
                 <div>
-                    <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-tasks-done-val">24</div>
+                    <div class="text-3xl font-extrabold font-geist text-on-surface" id="stat-tasks-done-val">24</div>
                     <p class="font-body-sm text-body-sm text-on-surface-variant mt-1" data-i18n="stat_this_sprint">This sprint</p>
                 </div>
             </a>
             <!-- Stat: Active Projects -->
-            <a href="projects.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block">
+            <a href="projects.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-5 flex flex-col justify-between min-h-[140px] block">
                 <div class="flex justify-between items-start">
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" data-i18n="stat_active_proj">Active Projects</span>
                     <div class="p-xs rounded-full bg-surface-container-high text-primary">
@@ -98,12 +98,12 @@
                     </div>
                 </div>
                 <div>
-                    <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-active-proj-val">3</div>
+                    <div class="text-3xl font-extrabold font-geist text-on-surface" id="stat-active-proj-val">3</div>
                     <p class="font-body-sm text-body-sm text-on-surface-variant mt-1" data-i18n="stat_cross_func">Cross-functional</p>
                 </div>
             </a>
             <!-- Stat: Pending Tasks -->
-            <a href="tasks.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block" id="stat-tasks-pending-card">
+            <a href="tasks.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-5 flex flex-col justify-between min-h-[140px] block" id="stat-tasks-pending-card">
                 <div class="flex justify-between items-start">
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Pending Tasks</span>
                     <div class="p-xs rounded-full bg-surface-container-high text-primary">
@@ -111,11 +111,11 @@
                     </div>
                 </div>
                 <div>
-                    <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-tasks-pending-val">0</div>
+                    <div class="text-3xl font-extrabold font-geist text-on-surface" id="stat-tasks-pending-val">0</div>
                 </div>
             </a>
             <!-- Stat: Total Projects -->
-            <a href="projects.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block">
+            <a href="projects.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-5 flex flex-col justify-between min-h-[140px] block">
                 <div class="flex justify-between items-start">
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Total Proyek</span>
                     <div class="p-xs rounded-full bg-surface-container-high text-primary">
@@ -123,12 +123,12 @@
                     </div>
                 </div>
                 <div>
-                    <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-total-proj-val">0</div>
+                    <div class="text-3xl font-extrabold font-geist text-on-surface" id="stat-total-proj-val">0</div>
                     <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Proyek yang diikuti</p>
                 </div>
             </a>
             <!-- Stat: Completed Projects -->
-            <a href="projects.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-md flex flex-col justify-between h-32 block">
+            <a href="projects.php" class="glass-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-5 flex flex-col justify-between min-h-[140px] block">
                 <div class="flex justify-between items-start">
                     <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Proyek Selesai</span>
                     <div class="p-xs rounded-full bg-surface-container-high text-primary">
@@ -136,7 +136,7 @@
                     </div>
                 </div>
                 <div>
-                    <div class="font-headline-xl text-headline-xl text-on-surface" id="stat-completed-proj-val">0</div>
+                    <div class="text-3xl font-extrabold font-geist text-on-surface" id="stat-completed-proj-val">0</div>
                     <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Semua task rampung</p>
                 </div>
             </a>
