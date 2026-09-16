@@ -43,6 +43,63 @@ $action = $_GET['action'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];
 $today  = date('Y-m-d');
 
+// Pastikan kolom clock_out, reason, location_in, photo_in ada pada tabel attendance (aman jika sudah ada)
+try {
+    mysqli_query($conn, "ALTER TABLE attendance ADD COLUMN IF NOT EXISTS clock_out VARCHAR(5) DEFAULT NULL");
+    mysqli_query($conn, "ALTER TABLE attendance ADD COLUMN IF NOT EXISTS reason TEXT DEFAULT NULL");
+    mysqli_query($conn, "ALTER TABLE attendance ADD COLUMN IF NOT EXISTS location_in TEXT DEFAULT NULL");
+    mysqli_query($conn, "ALTER TABLE attendance ADD COLUMN IF NOT EXISTS photo_in VARCHAR(255) DEFAULT NULL");
+} catch (Exception $e) {
+    // Kolom sudah ada, lanjut saja
+}
+
+// --------------------------------------------------------------
+// GET RINGKASAN KEHADIRAN SEMUA INTERN PER TANGGAL (UNTUK KALENDER ADMIN)
+// (?action=all_summary, GET)
+// --------------------------------------------------------------
+if ($action === 'all_summary' && $method === 'GET') {
+    // 1. Ambil semua akun intern dari database
+    $interns = [];
+    $resUser = mysqli_query($conn, "SELECT id, username FROM users WHERE role = 'intern' ORDER BY id ASC");
+    if ($resUser) {
+        while ($u = mysqli_fetch_assoc($resUser)) {
+            $interns[] = [
+                'id' => $u['id'],
+                'name' => $u['username'],
+                'division' => 'Intern Kedayweb'
+            ];
+        }
+    }
+
+    // 2. Ambil semua data presensi di database
+    $attendanceMap = [];
+    $resAtt = mysqli_query($conn, "SELECT username, date, status, clock_in, clock_out, reason, location_in, photo_in FROM attendance");
+    if ($resAtt) {
+        while ($row = mysqli_fetch_assoc($resAtt)) {
+            $uName = $row['username'];
+            $dStr = $row['date'];
+            if (!isset($attendanceMap[$uName])) {
+                $attendanceMap[$uName] = [];
+            }
+            $attendanceMap[$uName][$dStr] = [
+                'date' => $dStr,
+                'status' => $row['status'],
+                'clockIn' => $row['clock_in'],
+                'clockOut' => $row['clock_out'],
+                'reason' => $row['reason'],
+                'location' => $row['location_in'],
+                'photo' => $row['photo_in']
+            ];
+        }
+    }
+
+    echo json_encode([
+        'interns' => $interns,
+        'attendanceMap' => $attendanceMap
+    ]);
+    exit;
+}
+
 // --------------------------------------------------------------
 // 3. GET STATUS ABSEN HARI INI (?action=today)
 // --------------------------------------------------------------
@@ -87,6 +144,32 @@ if ($action === 'save' && $method === 'POST') {
     if (empty($time)) {
         http_response_code(400);
         echo json_encode(['error' => 'Data tidak lengkap (time)']);
+        exit;
+    }
+
+    // -------- Aturan: lewat jam 14:00 dianggap tidak masuk --------
+    $nowHour = (int) date('H'); // Jam server saat ini
+    $CUTOFF_HOUR = 14;           // 14:00 = batas akhir absen
+
+    if ($nowHour >= $CUTOFF_HOUR) {
+        // Sudah lewat batas — catat sebagai absent otomatis (tanpa foto)
+        $status = 'absent';
+        // Cek apakah sudah ada record hari ini
+        $sqlChk = "SELECT id FROM attendance WHERE username = ? AND date = ? LIMIT 1";
+        $stmChk = mysqli_prepare($conn, $sqlChk);
+        mysqli_stmt_bind_param($stmChk, "ss", $username, $today);
+        mysqli_stmt_execute($stmChk);
+        $existRec = mysqli_fetch_assoc(mysqli_stmt_get_result($stmChk));
+
+        if (!$existRec) {
+            $sqlAbs = "INSERT INTO attendance (username, date, status, reason) VALUES (?, ?, 'absent', 'Tidak melakukan absensi sebelum pukul 14:00')";
+            $stmAbs = mysqli_prepare($conn, $sqlAbs);
+            mysqli_stmt_bind_param($stmAbs, "ss", $username, $today);
+            mysqli_stmt_execute($stmAbs);
+        }
+
+        http_response_code(403);
+        echo json_encode(['error' => 'Sudah melewati batas absen (14:00). Anda tercatat tidak masuk hari ini.', 'status' => 'absent']);
         exit;
     }
     if (empty($photoData)) {

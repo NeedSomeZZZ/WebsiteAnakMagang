@@ -580,8 +580,13 @@ include '../partials/sidebar-admin.php';
                 const tasks = window.ProjectStore ? ProjectStore.tasksByAssignee(intern.name) : [];
                 const completedTasks = tasks.filter(t => t.status === 'done').length;
                 const pendingTasks = tasks.filter(t => t.status !== 'done').length;
-                const attendance = InternStore.getAttendance(intern.name);
-                const presentCount = attendance.filter(r => r.status === 'present' || r.status === 'late').length;
+                
+                const dbUserAtt = dbAttendanceMap[intern.name] || {};
+                let presentCount = Object.values(dbUserAtt).filter(r => r.status === 'present' || r.status === 'late').length;
+                if (presentCount === 0) {
+                    const attendance = InternStore.getAttendance(intern.name);
+                    presentCount = attendance.filter(r => r.status === 'present' || r.status === 'late').length;
+                }
 
                 const card = document.createElement('div');
                 card.className = 'p-4 rounded-xl border border-outline-variant bg-surface-container-low flex flex-col justify-between hover:shadow-md transition-all';
@@ -627,6 +632,20 @@ include '../partials/sidebar-admin.php';
             });
         }
 
+        let dbAttendanceMap = {};
+
+        async function fetchDbAttendanceForDashboard() {
+            try {
+                const res = await fetch('../attendance-api.php?action=all_summary');
+                if (res.ok) {
+                    const data = await res.json();
+                    dbAttendanceMap = data.attendanceMap || {};
+                }
+            } catch (err) {
+                console.warn('Gagal memuat absensi DB:', err);
+            }
+        }
+
         /* ================= 1D. ATTENDANCE OVERVIEW ================= */
         function todayStr() {
             const d = new Date();
@@ -634,11 +653,23 @@ include '../partials/sidebar-admin.php';
         }
 
         function renderAttendanceOverview() {
-            const summary = InternStore.getDaySummary(todayStr());
+            const tDate = todayStr();
+            let totalPresentToday = 0;
+            let totalAbsentToday = 0;
+
+            // Hitung absensi hari ini dari data MySQL DB
+            Object.values(dbAttendanceMap).forEach(userAtt => {
+                const rec = userAtt[tDate];
+                if (rec) {
+                    if (rec.status === 'present' || rec.status === 'late') totalPresentToday++;
+                    else if (rec.status === 'absent') totalAbsentToday++;
+                }
+            });
+
             const presentTodayEl = document.getElementById('admin-attendance-today');
             const absentTodayEl = document.getElementById('admin-attendance-absent-today');
-            if (presentTodayEl) presentTodayEl.textContent = summary.present + summary.late;
-            if (absentTodayEl) absentTodayEl.textContent = summary.absent;
+            if (presentTodayEl) presentTodayEl.textContent = totalPresentToday;
+            if (absentTodayEl) absentTodayEl.textContent = totalAbsentToday;
 
             let totalCompleted = 0;
             ProjectStore.projects().forEach(p => (p.tasks || []).forEach(t => { if (t.status === 'done') totalCompleted++; }));
@@ -664,17 +695,33 @@ include '../partials/sidebar-admin.php';
         }
 
         function renderInternAttendanceCounts(name) {
-            const records = InternStore.getAttendance(name);
-            document.getElementById('admin-attendance-intern-present').textContent = records.filter(r => r.status === 'present').length;
-            document.getElementById('admin-attendance-intern-late').textContent = records.filter(r => r.status === 'late').length;
-            document.getElementById('admin-attendance-intern-absent').textContent = records.filter(r => r.status === 'absent').length;
+            const dbUserAtt = dbAttendanceMap[name] || {};
+            let present = 0, late = 0, absent = 0;
+            Object.values(dbUserAtt).forEach(r => {
+                if (r.status === 'present') present++;
+                else if (r.status === 'late') late++;
+                else if (r.status === 'absent') absent++;
+            });
+
+            // Fallback ke InternStore jika di DB map belum ada
+            if (present === 0 && late === 0 && absent === 0) {
+                const records = InternStore.getAttendance(name);
+                present = records.filter(r => r.status === 'present').length;
+                late = records.filter(r => r.status === 'late').length;
+                absent = records.filter(r => r.status === 'absent').length;
+            }
+
+            document.getElementById('admin-attendance-intern-present').textContent = present;
+            document.getElementById('admin-attendance-intern-late').textContent = late;
+            document.getElementById('admin-attendance-intern-absent').textContent = absent;
         }
 
         /* ================= INIT ================= */
-        function renderEverything() {
+        async function renderEverything() {
             if (window.InternStore && typeof InternStore.seedAllAttendance === 'function') {
                 InternStore.seedAllAttendance();
             }
+            await fetchDbAttendanceForDashboard();
             renderInternDashboardList();
             renderAdminProjects();
             renderAttendanceOverview();

@@ -1,4 +1,5 @@
-<?php require_once __DIR__ . '/session.php'; require_login(); ?>
+<?php require_once __DIR__ . '/session.php';
+require_login(); ?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -195,7 +196,8 @@
 <body class="bg-surface text-on-surface font-body-md min-h-screen flex">
 
     <!-- SideNavBar -->
-<?php $active = 'attendance'; include 'partials/sidebar-intern.php'; ?>
+    <?php $active = 'attendance';
+    include 'partials/sidebar-intern.php'; ?>
 
     <?php include 'partials/topnav-mobile.php'; ?>
 
@@ -215,7 +217,8 @@
             <div class="flex gap-2 w-full md:w-auto">
                 <button id="main-input-btn" onclick="attStartCapture()"
                     class="flex-1 md:flex-none flex items-center justify-center gap-2 bg-primary text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm active:scale-95">
-                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings:'FILL' 1;">photo_camera</span>
+                    <span class="material-symbols-outlined text-[18px]"
+                        style="font-variation-settings:'FILL' 1;">photo_camera</span>
                     Clock In
                 </button>
                 <button onclick="exportAttendanceCSV()"
@@ -395,7 +398,7 @@
                     <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Rab</div>
                     <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Kam</div>
                     <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Jum</div>
-                     <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Sab</div>
+                    <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Sab</div>
                 </div>
                 <!-- Calendar Grid -->
                 <div id="cal-grid" class="grid grid-cols-7 gap-1.5"></div>
@@ -600,25 +603,33 @@
      ============================================================ -->
     <div id="att-modal" class="hidden fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4">
         <div class="bg-surface-container-lowest rounded-2xl p-5 max-w-sm w-full shadow-2xl">
-            <h4 class="font-geist font-bold text-on-surface text-lg mb-4 text-center" id="att-modal-title">Clock In - Ambil Foto</h4>
-            
-            <div id="att-video-wrap" class="relative rounded-xl overflow-hidden border border-outline-variant mb-4 bg-black aspect-[3/4] flex items-center justify-center">
+            <h4 class="font-geist font-bold text-on-surface text-lg mb-4 text-center" id="att-modal-title">Clock In -
+                Ambil Foto</h4>
+
+            <div id="att-video-wrap"
+                class="relative rounded-xl overflow-hidden border border-outline-variant mb-4 bg-black aspect-[3/4] flex items-center justify-center">
                 <video id="att-video" autoplay playsinline class="w-full h-full object-cover"></video>
                 <canvas id="att-canvas" class="hidden w-full h-full object-cover"></canvas>
             </div>
 
-            <p class="font-body-sm text-body-sm text-on-surface-variant text-center mb-4" id="att-modal-status">Membuka kamera...</p>
-            
+            <p class="font-body-sm text-body-sm text-on-surface-variant text-center mb-4" id="att-modal-status">Membuka
+                kamera...</p>
+
             <div id="att-cam-actions" class="grid grid-cols-2 gap-3">
-                <button onclick="attCloseModal()" class="w-full bg-surface-container-high text-on-surface rounded-xl py-2.5 font-label-md text-label-md hover:bg-surface-container-highest">Batal</button>
-                <button id="att-capture-btn" onclick="attCapture()" class="w-full bg-primary text-on-primary rounded-xl py-2.5 font-label-md text-label-md flex items-center justify-center gap-2 hover:opacity-90">
+                <button onclick="attCloseModal()"
+                    class="w-full bg-surface-container-high text-on-surface rounded-xl py-2.5 font-label-md text-label-md hover:bg-surface-container-highest">Batal</button>
+                <button id="att-capture-btn" onclick="attCapture()"
+                    class="w-full bg-primary text-on-primary rounded-xl py-2.5 font-label-md text-label-md flex items-center justify-center gap-2 hover:opacity-90">
                     <span class="material-symbols-outlined text-[18px]">photo_camera</span>
                     Ambil Foto
                 </button>
             </div>
             <div id="att-confirm-actions" class="grid grid-cols-2 gap-3 hidden">
-                <button onclick="attRetake()" class="w-full bg-surface-container-high text-on-surface rounded-xl py-2.5 font-label-md text-label-md hover:bg-surface-container-highest">Ulangi</button>
-                <button id="att-confirm-btn" onclick="attConfirm()" class="w-full bg-primary text-on-primary rounded-xl py-2.5 font-label-md text-label-md disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90" disabled>Simpan</button>
+                <button onclick="attRetake()"
+                    class="w-full bg-surface-container-high text-on-surface rounded-xl py-2.5 font-label-md text-label-md hover:bg-surface-container-highest">Ulangi</button>
+                <button id="att-confirm-btn" onclick="attConfirm()"
+                    class="w-full bg-primary text-on-primary rounded-xl py-2.5 font-label-md text-label-md disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90"
+                    disabled>Simpan</button>
             </div>
         </div>
     </div>
@@ -644,34 +655,49 @@
         const isAdminPreview = !!attInternParam;
         const activeInternName = attInternParam || (window.InternStore ? InternStore.getCurrentUser() : 'Alex Doe');
 
-        function loadData() {
-            if (window.InternStore) return InternStore.getAttendance(activeInternName);
-            try { return JSON.parse(localStorage.getItem('internspace-attendance-v1') || '[]'); }
-            catch { return []; }
+        // Sumber data sebenarnya adalah tabel `attendance` di database (lewat
+        // attendance-api.php), BUKAN localStorage. Sebelumnya halaman ini membaca
+        // dari localStorage lewat InternStore, padahal tidak pernah diisi saat
+        // clock-in disimpan ke database -> makanya tanggal tampak "hilang" (kosong)
+        // terutama saat dibuka Admin (localStorage Admin memang tidak pernah punya
+        // data intern tsb, karena localStorage tidak dibagikan antar user/browser).
+        let attendanceData = [];
+
+        async function fetchServerData() {
+            try {
+                if (isAdminPreview) {
+                    // Admin melihat punya intern lain -> ambil dari ringkasan semua intern
+                    const res = await fetch('attendance-api.php?action=all_summary');
+                    const json = await res.json();
+                    if (!res.ok) throw new Error(json.error || 'Gagal memuat data');
+                    const map = (json.attendanceMap && json.attendanceMap[activeInternName]) || {};
+                    attendanceData = Object.values(map);
+                } else {
+                    // Intern melihat riwayat miliknya sendiri
+                    const res = await fetch('attendance-api.php?action=history');
+                    const rows = await res.json();
+                    if (!res.ok) throw new Error((rows && rows.error) || 'Gagal memuat data');
+                    attendanceData = rows.map(r => ({
+                        date: r.date,
+                        status: r.status,
+                        clockIn: r.clock_in || '',
+                        clockOut: r.clock_out || '',
+                        reason: r.reason || ''
+                    }));
+                }
+            } catch (err) {
+                console.error(err);
+                attendanceData = [];
+                showToast('Gagal memuat data kehadiran dari server.', 'warning');
+            }
         }
 
-        function saveData(data) {
-            if (window.InternStore) { InternStore.saveAttendance(activeInternName, data); return; }
-            localStorage.setItem('internspace-attendance-v1', JSON.stringify(data));
+        function loadData() {
+            return attendanceData;
         }
 
         function getRecord(dateStr) {
             return loadData().find(r => r.date === dateStr) || null;
-        }
-
-        function seedSampleData() {
-            if (window.InternStore) { InternStore.seedAttendanceFor(activeInternName); return; }
-            if (loadData().length > 0) return;
-            const samples = [
-                { date: '2026-09-01', status: 'present', clockIn: '08:45', clockOut: '17:00', reason: '' },
-                { date: '2026-09-02', status: 'present', clockIn: '08:30', clockOut: '17:05', reason: '' },
-                { date: '2026-09-03', status: 'late', clockIn: '09:22', clockOut: '17:00', reason: 'Bus kota terlambat datang' },
-                { date: '2026-09-04', status: 'present', clockIn: '08:50', clockOut: '17:00', reason: '' },
-                { date: '2026-09-05', status: 'present', clockIn: '08:55', clockOut: '17:10', reason: '' },
-                { date: '2026-09-08', status: 'absent', clockIn: '', clockOut: '', reason: 'Sakit demam, sudah izin ke mentor via WhatsApp' },
-                { date: '2026-09-09', status: 'late', clockIn: '09:45', clockOut: '17:00', reason: 'Kendaraan mogok di jalan, menunggu derek' },
-            ];
-            saveData(samples);
         }
 
         function applyAdminPreviewMode() {
@@ -744,7 +770,7 @@
                 const dateObj = new Date(calYear, calMonth, d);
                 const dateStr = formatDate(dateObj);
                 const dayOfWeek = dateObj.getDay(); // 0=Sun, 6=Sat
-                const isWeekend = dayOfWeek === 0 
+                const isWeekend = (dayOfWeek === 0);
                 const isFuture = dateObj > today && dateStr !== todayStr;
                 const isToday = dateStr === todayStr;
                 const rec = dataMap[dateStr];
@@ -752,12 +778,20 @@
                 const cell = document.createElement('div');
                 cell.classList.add('cal-cell');
 
+                const now = new Date();
+                const isTodayPastCutoff = isToday && (now.getHours() >= 14);
+                const isPastDay = !isFuture && !isToday;
+
                 if (isWeekend) {
                     cell.classList.add('weekend');
                 } else if (isFuture) {
                     cell.classList.add('future');
                 } else if (rec) {
                     cell.classList.add(`status-${rec.status}`);
+                    cell.addEventListener('click', () => openDetailModal(dateStr));
+                } else if (isPastDay || isTodayPastCutoff) {
+                    // Belum absen dan sudah lewat jam 14:00 atau hari lalu -> Merah (absent)
+                    cell.classList.add('status-absent');
                     cell.addEventListener('click', () => openDetailModal(dateStr));
                 } else {
                     cell.style.background = '#f8fafc';
@@ -768,10 +802,11 @@
                 if (isToday) cell.classList.add('today');
 
                 cell.innerHTML = `<span>${d}</span>`;
-                if (rec && !isWeekend) {
+                const currentStatus = rec ? rec.status : ((isPastDay || isTodayPastCutoff) ? 'absent' : null);
+                if (currentStatus && !isWeekend) {
                     const dot = document.createElement('div');
                     dot.className = 'status-dot';
-                    dot.style.background = rec.status === 'present' ? '#16a34a' : rec.status === 'late' ? '#d97706' : '#dc2626';
+                    dot.style.background = currentStatus === 'present' ? '#16a34a' : currentStatus === 'late' ? '#d97706' : '#dc2626';
                     cell.appendChild(dot);
                 }
                 grid.appendChild(cell);
@@ -819,7 +854,7 @@
                 const ds = formatDate(checkDate);
                 const dow = checkDate.getDay();
                 // Skip weekends
-                if (dow === 0 ) {
+                if (dow === 0) {
                     checkDate.setDate(checkDate.getDate() - 1);
                     continue;
                 }
@@ -996,8 +1031,9 @@
             });
         }
 
-        function saveAttendance(e) {
+        async function saveAttendance(e) {
             e.preventDefault();
+            if (isAdminPreview) { showToast('Mode Admin hanya untuk melihat.', 'warning'); return; }
             const date = document.getElementById('att-date').value;
             const clockIn = document.getElementById('att-clock-in').value;
             const clockOut = document.getElementById('att-clock-out').value;
@@ -1012,20 +1048,44 @@
                 return;
             }
 
-            const data = loadData().filter(r => r.date !== date); // remove existing
-            data.push({ date, status, clockIn: status === 'absent' ? '' : (clockIn || ''), clockOut: status === 'absent' ? '' : (clockOut || ''), reason });
-            saveData(data);
-            closeInputModal();
-            refreshAll();
-            showToast('Kehadiran berhasil disimpan!', 'success');
+            try {
+                const res = await fetch('attendance-api.php?action=upsert', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        date, status,
+                        clockIn: status === 'absent' ? '' : (clockIn || ''),
+                        clockOut: status === 'absent' ? '' : (clockOut || ''),
+                        reason
+                    })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error(data.error || 'Gagal menyimpan');
+                await fetchServerData();
+                closeInputModal();
+                refreshAll();
+                showToast('Kehadiran berhasil disimpan!', 'success');
+            } catch (err) {
+                showToast(err.message || 'Gagal menyimpan kehadiran.', 'warning');
+            }
         }
 
         // ============================================================
         // DETAIL MODAL
         // ============================================================
         function openDetailModal(dateStr) {
-            const rec = getRecord(dateStr);
-            if (!rec) return;
+            let rec = getRecord(dateStr);
+            if (!rec) {
+                const todayStr = formatDate(new Date());
+                const now = new Date();
+                const isTodayPastCutoff = (dateStr === todayStr) && (now.getHours() >= 14);
+                const isPastDay = dateStr < todayStr;
+                if (isPastDay || isTodayPastCutoff) {
+                    rec = { date: dateStr, status: 'absent', clockIn: '', clockOut: '', reason: 'Tidak melakukan absensi hingga batas waktu (14:00)' };
+                } else {
+                    return;
+                }
+            }
             detailDate = dateStr;
 
             const statusLabel = { present: 'Hadir', late: 'Terlambat', absent: 'Tidak Masuk' }[rec.status];
@@ -1070,32 +1130,56 @@
         }
 
         function editFromDetail() {
+            if (isAdminPreview) { showToast('Mode Admin hanya untuk melihat.', 'warning'); return; }
             const d = detailDate;
             closeDetailModal();
             openInputModal(d);
         }
 
-        function deleteFromDetail() {
+        async function deleteAttendanceOnServer(dateStr) {
+            const res = await fetch('attendance-api.php?action=delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ date: dateStr })
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || 'Gagal menghapus data');
+        }
+
+        async function deleteFromDetail() {
             if (!detailDate) return;
+            if (isAdminPreview) { showToast('Mode Admin hanya untuk melihat.', 'warning'); return; }
             if (!confirm(`Hapus catatan kehadiran tanggal ${formatDateDisplay(detailDate)}?`)) return;
-            const data = loadData().filter(r => r.date !== detailDate);
-            saveData(data);
-            closeDetailModal();
-            refreshAll();
-            showToast('Catatan berhasil dihapus.', 'success');
+            try {
+                await deleteAttendanceOnServer(detailDate);
+                await fetchServerData();
+                closeDetailModal();
+                refreshAll();
+                showToast('Catatan berhasil dihapus.', 'success');
+            } catch (err) {
+                showToast(err.message || 'Gagal menghapus catatan.', 'warning');
+            }
         }
 
         // ============================================================
         // TABLE ROW ACTIONS
         // ============================================================
-        function handleEditRow(dateStr) { openInputModal(dateStr); }
+        function handleEditRow(dateStr) {
+            if (isAdminPreview) { showToast('Mode Admin hanya untuk melihat.', 'warning'); return; }
+            openInputModal(dateStr);
+        }
 
-        function handleDeleteRow(dateStr) {
+        async function handleDeleteRow(dateStr) {
+            if (isAdminPreview) { showToast('Mode Admin hanya untuk melihat.', 'warning'); return; }
             if (!confirm(`Hapus catatan kehadiran tanggal ${formatDateDisplay(dateStr)}?`)) return;
-            const data = loadData().filter(r => r.date !== dateStr);
-            saveData(data);
-            refreshAll();
-            showToast('Catatan berhasil dihapus.', 'success');
+            try {
+                await deleteAttendanceOnServer(dateStr);
+                await fetchServerData();
+                refreshAll();
+                showToast('Catatan berhasil dihapus.', 'success');
+            } catch (err) {
+                showToast(err.message || 'Gagal menghapus catatan.', 'warning');
+            }
         }
 
         // ============================================================
@@ -1106,7 +1190,7 @@
             if (!data.length) { showToast('Belum ada data untuk diekspor.', 'warning'); return; }
 
             const statusLabel = { present: 'Hadir', late: 'Terlambat', absent: 'Tidak Masuk' };
-            
+
             // Format tanggal yang bersih tanpa koma di dalam teks (misal: "Selasa 01 Sep 2026")
             function cleanDateDisplay(ds) {
                 const [y, m, d] = ds.split('-');
@@ -1128,7 +1212,7 @@
             });
 
             // Pemisah koma dengan pembungkus tanda petik ganda (") untuk menjaga isi teks tetap rapi
-            const csvContent = rows.map(row => 
+            const csvContent = rows.map(row =>
                 row.map(val => {
                     const str = String(val || '').replace(/"/g, '""');
                     return `"${str}"`;
@@ -1215,6 +1299,12 @@
         async function attStartCapture() {
             if (isAdminPreview) {
                 showToast('Admin tidak bisa Clock In.', 'warning');
+                return;
+            }
+
+            const now = new Date();
+            if (now.getHours() >= 14) {
+                showToast('Batas waktu Clock In (14:00) telah lewat. Anda dianggap Tidak Masuk.', 'warning');
                 return;
             }
 
@@ -1310,7 +1400,7 @@
 
             const vW = video.videoWidth;
             const vH = video.videoHeight;
-            
+
             // Draw video frame to temp canvas
             const tempCanvas = document.createElement('canvas');
             tempCanvas.width = vW;
@@ -1489,22 +1579,23 @@
                     lng: attPendingLng
                 })
             })
-            .then(async r => {
-                const data = await r.json().catch(() => ({}));
-                if (!r.ok) throw new Error(data.error || 'Gagal menyimpan absensi');
-                return data;
-            })
-            .then(() => {
-                document.getElementById('att-modal')?.classList.add('hidden');
-                attPendingDataUrl = null;
-                const label = status === 'present' ? 'Hadir Tepat Waktu' : 'Terlambat';
-                showToast(`Clock In berhasil! ${timeStr} — ${label}`, 'success');
-                refreshAll();
-            })
-            .catch(err => {
-                if (statusEl) statusEl.textContent = err.message || 'Gagal menyimpan, coba lagi.';
-                if (confirmBtn) confirmBtn.disabled = false;
-            });
+                .then(async r => {
+                    const data = await r.json().catch(() => ({}));
+                    if (!r.ok) throw new Error(data.error || 'Gagal menyimpan absensi');
+                    return data;
+                })
+                .then(async () => {
+                    document.getElementById('att-modal')?.classList.add('hidden');
+                    attPendingDataUrl = null;
+                    const label = status === 'present' ? 'Hadir Tepat Waktu' : 'Terlambat';
+                    showToast(`Clock In berhasil! ${timeStr} — ${label}`, 'success');
+                    await fetchServerData();
+                    refreshAll();
+                })
+                .catch(err => {
+                    if (statusEl) statusEl.textContent = err.message || 'Gagal menyimpan, coba lagi.';
+                    if (confirmBtn) confirmBtn.disabled = false;
+                });
         }
 
         // ============================================================
@@ -1520,10 +1611,10 @@
         // ============================================================
         // INIT
         // ============================================================
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             applyAdminPreviewMode();
-            seedSampleData();
             initCalendar();
+            await fetchServerData();
             refreshAll();
         });
     </script>

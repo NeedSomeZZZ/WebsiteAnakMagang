@@ -1,4 +1,17 @@
-<?php require_once __DIR__ . '/../session.php'; require_login(); ?>
+<?php
+require_once __DIR__ . '/../session.php';
+require_admin();
+require_once __DIR__ . '/../Login/koneksi.php';
+
+// Ambil data intern dari database MySQL db_internspace
+$db_interns = [];
+$db_query = mysqli_query($conn, "SELECT id, username, role FROM users WHERE role = 'intern' ORDER BY id ASC");
+if ($db_query) {
+    while ($row = mysqli_fetch_assoc($db_query)) {
+        $db_interns[] = $row;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -6,6 +19,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <title>Kedayweb Admin - Kehadiran Semua Intern</title>
+    <!-- Inject DB Interns ke JS -->
+    <script>
+        window.DB_INTERNS = <?php echo json_encode($db_interns, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         rel="stylesheet" />
     <link href="https://fonts.googleapis.com" rel="preconnect" />
@@ -137,7 +154,8 @@
 
 <body class="bg-background text-on-surface font-body-md flex h-screen overflow-hidden">
     <!-- Sidebar -->
-<?php $active = 'attendance'; include '../partials/sidebar-admin.php'; ?>
+    <?php $active = 'attendance';
+    include '../partials/sidebar-admin.php'; ?>
 
     <!-- Main -->
     <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto p-5 md:p-10">
@@ -147,7 +165,8 @@
                 <h2 class="font-headline-lg">Kehadiran Semua Intern</h2>
             </div>
             <div class="flex items-center gap-3">
-                <button onclick="exportAllAdminAttendanceCSV()" class="px-3.5 py-1.5 bg-primary text-on-primary rounded-xl text-xs font-bold hover:opacity-90 flex items-center gap-1 shadow-sm">
+                <button onclick="exportAllAdminAttendanceCSV()"
+                    class="px-3.5 py-1.5 bg-primary text-on-primary rounded-xl text-xs font-bold hover:opacity-90 flex items-center gap-1 shadow-sm">
                     <span class="material-symbols-outlined text-[16px]">download</span>
                     <span>Export CSV</span>
                 </button>
@@ -155,11 +174,15 @@
                     <span class="material-symbols-outlined text-[18px]">arrow_back</span> Kembali ke Dashboard
                 </a>
                 <div class="flex items-center gap-2 ml-2">
-                    <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
-                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+                    <div
+                        class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+                        <span class="material-symbols-outlined"
+                            style="font-variation-settings: 'FILL' 1;">account_circle</span>
                     </div>
-                    <span class="hidden sm:inline-block font-label-md"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
-                    <a href="../Login/logout.php" class="text-error hover:text-red-700" title="Keluar" aria-label="Keluar"><span class="material-symbols-outlined">logout</span></a>
+                    <span
+                        class="hidden sm:inline-block font-label-md"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
+                    <a href="../Login/logout.php" class="text-error hover:text-red-700" title="Keluar"
+                        aria-label="Keluar"><span class="material-symbols-outlined">logout</span></a>
                 </div>
             </div>
         </header>
@@ -262,7 +285,7 @@
                     <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Rab</div>
                     <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Kam</div>
                     <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Jum</div>
-                    <div class="text-xs font-bold uppercase tracking-wider text-red-400">Sab</div>
+                    <div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Sab</div>
                 </div>
                 <div id="cal-grid" class="grid grid-cols-7 gap-1.5"></div>
             </div>
@@ -310,6 +333,8 @@
 
     <script>
         let calYear, calMonth;
+        let dbInternsList = [];
+        let dbAttendanceMap = {}; // { username: { date: record } }
 
         function fmt(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
 
@@ -322,7 +347,7 @@
         }
 
         function formatTime12(t) {
-            if (!t) return '--:--';
+            if (!t || t === '--:--') return '--:--';
             const [h, min] = t.split(':').map(Number);
             const ampm = h >= 12 ? 'PM' : 'AM';
             const h12 = h % 12 || 12;
@@ -333,6 +358,46 @@
             const now = new Date();
             calYear = now.getFullYear();
             calMonth = now.getMonth();
+        }
+
+        async function fetchDbAttendance() {
+            try {
+                // Ambil data langsung dari MySQL Database (db_internspace)
+                const res = await fetch('../attendance-api.php?action=all_summary');
+                if (res.ok) {
+                    const data = await res.json();
+                    dbInternsList = data.interns || [];
+                    dbAttendanceMap = data.attendanceMap || {};
+                }
+            } catch (err) {
+                console.warn('Gagal memuat data presensi dari MySQL:', err);
+            }
+        }
+
+        // Ambil ringkasan kehadiran per tanggal HANYA dari database
+        function getCombinedDaySummary(dateStr) {
+            // Gunakan HANYA data dari DB MySQL
+            let interns = dbInternsList;
+            if (!interns.length && window.DB_INTERNS && window.DB_INTERNS.length) {
+                interns = window.DB_INTERNS.map(u => ({ name: u.username, division: 'Intern Kedayweb' }));
+            }
+            if (!interns.length) return { entries: [], total: 0, present: 0, late: 0, absent: 0, unmarked: 0 };
+
+            const entries = interns.map(intern => {
+                let rec = null;
+                const dbUserAtt = dbAttendanceMap[intern.name];
+                if (dbUserAtt && dbUserAtt[dateStr]) {
+                    rec = dbUserAtt[dateStr];
+                }
+                return { intern, record: rec };
+            });
+
+            const present = entries.filter(e => e.record?.status === 'present').length;
+            const late = entries.filter(e => e.record?.status === 'late').length;
+            const absent = entries.filter(e => e.record?.status === 'absent').length;
+            const unmarked = entries.filter(e => !e.record).length;
+
+            return { entries, total: interns.length, present, late, absent, unmarked };
         }
 
         function changeMonth(dir) {
@@ -349,10 +414,20 @@
             renderAll();
         }
 
-        function dayClass(summary, isFuture) {
+        function dayClass(summary, isFuture, isToday = false, dateStr = '') {
             if (isFuture) return 'future';
             if (summary.total === 0) return 'pending';
-            if (summary.absent > 0) return 'absent';
+
+            // Pengecekan apakah hari ini sudah lewat jam 14:00
+            const now = new Date();
+            const isTodayPastCutoff = isToday && (now.getHours() >= 14);
+            const isPastDay = !isFuture && !isToday;
+
+            // Jika ada yang absen langsung MERAH, ATAU jika hari lalu / hari ini sudah lewat jam 14:00 dan masih ada yang belum absen (unmarked) -> MERAH
+            if (summary.absent > 0 || ((isPastDay || isTodayPastCutoff) && summary.unmarked > 0)) {
+                return 'absent';
+            }
+
             if (summary.late > 0) return 'late';
             if (summary.unmarked > 0) return 'pending';
             return 'complete';
@@ -382,36 +457,50 @@
                 const dateObj = new Date(calYear, calMonth, d);
                 const dateStr = fmt(dateObj);
                 const dow = dateObj.getDay();
-                const isWeekend = dow === 0 ;
+                const isWeekend = (dow === 0 || dow === 6);
                 const isFuture = dateObj > today && dateStr !== todayStr;
                 const isToday = dateStr === todayStr;
 
                 const cell = document.createElement('div');
                 cell.classList.add('cal-cell');
 
-                if (isWeekend) {
+                const summary = getCombinedDaySummary(dateStr);
+                const hasRecords = summary.entries.some(e => e.record !== null);
+
+                // Sabtu (6) dan Minggu (0) keduanya abu-abu (weekend)
+                const isSunday = (dow === 0);
+
+                if ((isSunday) && !hasRecords) {
                     cell.classList.add('weekend');
-                } else {
-                    const summary = InternStore.getDaySummary(dateStr);
-                    if (!isFuture) {
-                        if (summary.absent > 0) daysAbsent++;
-                        else if (summary.late > 0) daysLate++;
-                        else if (summary.unmarked === 0 && summary.total > 0) daysComplete++;
-                    }
-                    const cls = dayClass(summary, isFuture);
+                } else if ((isSunday) && hasRecords) {
+                    // Akhir pekan tapi ada data absensi (lembur/khusus)
+                    const cls = dayClass(summary, isFuture, isToday, dateStr);
                     cell.classList.add(`status-${cls}`);
+                    cell.addEventListener('click', () => openDetailModal(dateStr));
+                } else {
+                    const cls = dayClass(summary, isFuture, isToday, dateStr);
+                    if (!isFuture) {
+                        if (cls === 'absent') daysAbsent++;
+                        else if (summary.late > 0) daysLate++;
+                        else if (summary.unmarked === 0 && summary.present > 0) daysComplete++;
+                    }
+                    cell.classList.add(`status-${cls}`);
+
                     if (!isFuture && summary.total > 0) {
                         cell.addEventListener('click', () => openDetailModal(dateStr));
                     } else if (isFuture) {
                         cell.classList.add('future');
                     }
-                    if (!isFuture && cls !== 'pending' && summary.total > 0) {
+
+                    // Tampilkan dot status (hanya jika ada record yang tercatat)
+                    if (!isFuture && hasRecords && cls !== 'pending') {
                         const dot = document.createElement('div');
                         dot.className = 'status-dot';
                         dot.style.background = cls === 'complete' ? '#16a34a' : cls === 'late' ? '#d97706' : '#dc2626';
                         cell.appendChild(dot);
                     }
                 }
+
                 if (isToday) cell.classList.add('today');
                 const span = document.createElement('span');
                 span.textContent = d;
@@ -425,7 +514,7 @@
         }
 
         function openDetailModal(dateStr) {
-            const summary = InternStore.getDaySummary(dateStr);
+            const summary = getCombinedDaySummary(dateStr);
             document.getElementById('detail-date-label').textContent = formatDateDisplay(dateStr);
             const list = document.getElementById('detail-list');
             list.innerHTML = '';
@@ -433,46 +522,68 @@
             if (summary.entries.length === 0) {
                 list.innerHTML = '<p class="text-sm text-on-surface-variant italic">Belum ada intern terdaftar.</p>';
             } else {
+                const todayStr = fmt(new Date());
+                const now = new Date();
+                const isTodayPastCutoff = (dateStr === todayStr) && (now.getHours() >= 14);
+                const isPastDay = dateStr < todayStr;
+
                 summary.entries.forEach(({ intern, record }) => {
-                    const status = record ? record.status : 'pending';
-                    const label = { present: 'Hadir', late: 'Terlambat', absent: 'Tidak Masuk', pending: 'Belum Absen' }[status];
-                    const badgeClass = { present: 'badge-present', late: 'badge-late', absent: 'badge-absent', pending: 'badge-pending' }[status];
-                    const icon = { present: 'check_circle', late: 'schedule', absent: 'cancel', pending: 'help' }[status];
+                    let status = record ? record.status : 'pending';
+                    if (!record && (isPastDay || isTodayPastCutoff)) {
+                        status = 'absent';
+                    }
+
+                    const label = { present: 'Hadir Tepat Waktu', late: 'Terlambat', absent: 'Tidak Masuk', pending: 'Belum Absen' }[status] || 'Belum Absen';
+                    const badgeClass = { present: 'badge-present', late: 'badge-late', absent: 'badge-absent', pending: 'badge-pending' }[status] || 'badge-pending';
+                    const icon = { present: 'check_circle', late: 'schedule', absent: 'cancel', pending: 'help' }[status] || 'help';
 
                     const row = document.createElement('div');
-                    row.className = 'border border-outline-variant rounded-xl p-3';
+                    row.className = 'border border-outline-variant rounded-xl p-3.5 bg-surface-container-lowest shadow-xs';
                     row.innerHTML = `
-                        <div class="flex items-center justify-between gap-2 mb-1.5">
-                            <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
-                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings:'FILL' 1;">account_circle</span>
+                            <div class="flex items-center justify-between gap-2 mb-2">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-9 h-9 rounded-full bg-primary-container text-on-primary-container font-bold flex items-center justify-center text-sm">
+                                        ${escHtml(intern.name.charAt(0).toUpperCase())}
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-bold text-on-surface">${escHtml(intern.name)}</div>
+                                        <div class="text-xs text-on-surface-variant">${escHtml(intern.division || 'Intern Kedayweb')}</div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div class="text-sm font-semibold text-on-surface">${escHtml(intern.name)}</div>
-                                    <div class="text-xs text-on-surface-variant">${escHtml(intern.division || '')}</div>
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${badgeClass}">
+                                    <span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'FILL' 1;">${icon}</span>${label}
+                                </span>
+                            </div>
+
+                            ${record && status !== 'absent' ? `
+                            <div class="grid grid-cols-2 gap-2 mt-2 text-xs">
+                                <div class="bg-surface-container-low rounded-lg p-2 text-center">
+                                    <div class="text-on-surface-variant text-[11px]">Jam Masuk</div>
+                                    <div class="font-bold text-slate-900">${formatTime12(record.clockIn)}</div>
                                 </div>
+                                <div class="bg-surface-container-low rounded-lg p-2 text-center">
+                                    <div class="text-on-surface-variant text-[11px]">Jam Keluar</div>
+                                    <div class="font-bold text-slate-900">${formatTime12(record.clockOut)}</div>
+                                </div>
+                            </div>` : ''}
+
+                            ${record && record.photo ? `
+                            <div class="mt-2 rounded-lg overflow-hidden border border-outline-variant/60">
+                                <img src="../${escHtml(record.photo)}" class="w-full h-32 object-cover" alt="Foto Absen">
+                            </div>` : ''}
+
+                            ${record && record.location ? `
+                            <div class="mt-2 text-xs text-slate-600 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[14px] text-primary">location_on</span>
+                                <span class="truncate">${escHtml(record.location)}</span>
+                            </div>` : ''}
+
+                            ${record && record.reason ? `<div class="mt-2 bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-xs text-amber-900"><strong>Alasan / Keterangan:</strong> ${escHtml(record.reason)}</div>` : ''}
+                            ${!record ? '<p class="text-xs text-on-surface-variant italic mt-1.5">Intern ini belum melakukan absensi pada hari tersebut.</p>' : ''}
+                            <div class="mt-2 text-right border-t border-outline-variant/40 pt-2">
+                                <a href="../attendance.php?intern=${encodeURIComponent(intern.name)}" class="text-xs text-primary font-bold hover:underline">Lihat kalender intern &rarr;</a>
                             </div>
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${badgeClass}">
-                                <span class="material-symbols-outlined text-[13px]" style="font-variation-settings:'FILL' 1;">${icon}</span>${label}
-                            </span>
-                        </div>
-                        ${record && status !== 'absent' ? `
-                        <div class="grid grid-cols-2 gap-2 mt-2 text-xs">
-                            <div class="bg-surface-container-low rounded-lg p-2 text-center">
-                                <div class="text-on-surface-variant">Jam Masuk</div>
-                                <div class="font-bold text-on-surface">${formatTime12(record.clockIn)}</div>
-                            </div>
-                            <div class="bg-surface-container-low rounded-lg p-2 text-center">
-                                <div class="text-on-surface-variant">Jam Keluar</div>
-                                <div class="font-bold text-on-surface">${formatTime12(record.clockOut)}</div>
-                            </div>
-                        </div>` : ''}
-                        ${record && record.reason ? `<div class="mt-2 bg-amber-50 border border-amber-200 rounded-lg p-2 text-xs text-amber-900"><strong>Keterangan:</strong> ${escHtml(record.reason)}</div>` : ''}
-                        ${!record ? '<p class="text-xs text-on-surface-variant italic mt-1">Intern ini belum mencatat kehadiran pada tanggal ini.</p>' : ''}
-                        <div class="mt-2 text-right">
-                            <a href="../attendance.php?intern=${encodeURIComponent(intern.name)}" class="text-xs text-primary hover:underline">Lihat kalender lengkap &rarr;</a>
-                        </div>
-                    `;
+                        `;
                     list.appendChild(row);
                 });
             }
@@ -496,19 +607,36 @@
         }
 
         function renderRoster() {
-            const interns = InternStore.list();
+            // Gunakan HANYA data intern dari database MySQL
+            let interns = dbInternsList;
+            if (!interns.length && window.DB_INTERNS && window.DB_INTERNS.length) {
+                interns = window.DB_INTERNS.map(u => ({ name: u.username, division: 'Intern Kedayweb' }));
+            }
+
             document.getElementById('stat-total-interns').textContent = interns.length;
             const tbody = document.getElementById('intern-roster-body');
             tbody.innerHTML = '';
+
+            if (!interns.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="px-3 py-6 text-center text-on-surface-variant text-sm italic">Belum ada intern terdaftar di database.</td></tr>';
+                return;
+            }
+
             interns.forEach(i => {
-                const records = InternStore.getAttendance(i.name);
-                const present = records.filter(r => r.status === 'present').length;
-                const late = records.filter(r => r.status === 'late').length;
-                const absent = records.filter(r => r.status === 'absent').length;
+                // Hitung HANYA dari DB map
+                const dbUserAtt = dbAttendanceMap[i.name] || {};
+                let present = 0, late = 0, absent = 0;
+
+                Object.values(dbUserAtt).forEach(r => {
+                    if (r.status === 'present') present++;
+                    else if (r.status === 'late') late++;
+                    else if (r.status === 'absent') absent++;
+                });
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="px-3 py-2 font-semibold">${escHtml(i.name)}</td>
-                    <td class="px-3 py-2 text-on-surface-variant">${escHtml(i.division || '-')}</td>
+                    <td class="px-3 py-2 text-on-surface-variant">${escHtml(i.division || 'Intern Kedayweb')}</td>
                     <td class="px-3 py-2 text-center text-green-700 font-bold">${present}</td>
                     <td class="px-3 py-2 text-center text-amber-700 font-bold">${late}</td>
                     <td class="px-3 py-2 text-center text-red-700 font-bold">${absent}</td>
@@ -526,7 +654,9 @@
         }
 
         function exportAllAdminAttendanceCSV() {
-            const interns = InternStore.list();
+            // Gunakan HANYA data dari database MySQL
+            const interns = dbInternsList;
+
             if (!interns.length) {
                 alert('Tidak ada data intern.');
                 return;
@@ -535,13 +665,13 @@
             const statusLabel = { present: 'Hadir', late: 'Terlambat', absent: 'Tidak Masuk' };
             const allRecords = [];
 
-            // Kumpulkan semua data kehadiran dari seluruh intern
+            // Kumpulkan data dari DB MySQL dan Store
             interns.forEach(intern => {
-                const records = InternStore.getAttendance(intern.name);
-                records.forEach(r => {
+                const dbUserAtt = dbAttendanceMap[intern.name] || {};
+                Object.values(dbUserAtt).forEach(r => {
                     allRecords.push({
                         internName: intern.name,
-                        division: intern.division || '-',
+                        division: intern.division || 'Intern Kedayweb',
                         date: r.date,
                         clockIn: r.clockIn || '--:--',
                         clockOut: r.clockOut || '--:--',
@@ -556,7 +686,6 @@
                 return;
             }
 
-            // Urutkan berdasarkan Tanggal & Jam (DateTime) secara menurun / terbaru dulu (terbaru ke terlama)
             allRecords.sort((a, b) => {
                 const dtA = `${a.date} ${a.clockIn !== '--:--' ? a.clockIn : '00:00'}`;
                 const dtB = `${b.date} ${b.clockIn !== '--:--' ? b.clockIn : '00:00'}`;
@@ -583,8 +712,7 @@
                 ]);
             });
 
-            // "sep=;" memberitahu Microsoft Excel untuk otomatis membagi data ke dalam KOTAK-KOTAK / GRID CELL yang rapi saat dibuka
-            const csvRows = rows.map(row => 
+            const csvRows = rows.map(row =>
                 row.map(val => {
                     const str = String(val || '').replace(/"/g, '""');
                     return `"${str}"`;
@@ -604,11 +732,13 @@
             URL.revokeObjectURL(url);
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             if (window.ProjectStore) ProjectStore.setRole('admin');
-            InternStore.seedAllAttendance();
             initCalendar();
+            // Render dulu kalender kosong, lalu setelah DB data masuk re-render
             renderAll();
+            await fetchDbAttendance();
+            renderAll(); // re-render setelah data DB tersedia
         });
     </script>
 </body>
