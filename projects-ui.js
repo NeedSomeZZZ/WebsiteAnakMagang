@@ -168,7 +168,20 @@ function editProject(id) {
 }
 
 async function removeProject(id) {
-  if (confirm('Hapus project ini dari database?')) {
+  let confirmed = false;
+  if (typeof window.showConfirmModal === 'function') {
+    confirmed = await window.showConfirmModal({
+      title: 'Hapus Project',
+      message: 'Apakah Anda yakin ingin menghapus project ini dari database?',
+      confirmText: 'Ya, Hapus',
+      cancelText: 'Batal',
+      type: 'danger'
+    });
+  } else {
+    confirmed = confirm('Hapus project ini dari database?');
+  }
+
+  if (confirmed) {
     await ProjectStore.deleteProject(id);
     render();
     notify('Project berhasil dihapus.');

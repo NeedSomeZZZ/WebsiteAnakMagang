@@ -386,7 +386,7 @@ $gallery_list = get_all_gallery_items($conn, $json_file);
                                             <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($item), ENT_QUOTES, 'UTF-8'); ?>)" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit Kegiatan">
                                                 <span class="material-symbols-outlined text-[18px]">edit</span>
                                             </button>
-                                            <form method="POST" action="galeryanakmagang.php" onsubmit="return confirm('Apakah Anda yakin ingin menghapus foto kegiatan ini?');" class="inline">
+                                            <form method="POST" action="galeryanakmagang.php" class="inline confirm-action-form" data-confirm-title="Hapus Foto Kegiatan" data-confirm-message="Apakah Anda yakin ingin menghapus foto kegiatan magang ini?">
                                                 <input type="hidden" name="action" value="delete_gallery"/>
                                                 <input type="hidden" name="id" value="<?php echo $id; ?>"/>
                                                 <button type="submit" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors" title="Hapus">
@@ -536,6 +536,28 @@ $gallery_list = get_all_gallery_items($conn, $json_file);
                 noResult.classList.toggle('hidden', visible > 0 || cards.length === 0);
             }
         }
+
+        document.querySelectorAll('.confirm-action-form').forEach(form => {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const title = this.getAttribute('data-confirm-title') || 'Konfirmasi';
+                const message = this.getAttribute('data-confirm-message') || 'Apakah Anda yakin ingin melanjutkan tindakan ini?';
+                
+                const confirmed = await window.showConfirmModal({
+                    title: title,
+                    message: message,
+                    confirmText: 'Ya, Hapus',
+                    cancelText: 'Batal',
+                    type: 'danger'
+                });
+
+                if (confirmed) {
+                    this.submit();
+                }
+            });
+        });
     </script>
+
+    <?php include 'partials/confirm-modal.php'; ?>
 </body>
 </html>

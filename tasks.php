@@ -511,7 +511,13 @@ if (is_admin()) {
 
         async function quickDeleteTask(taskId) {
             if (!taskId || !window.ProjectStore) return;
-            if (confirm('Hapus task ini?')) {
+            const confirmed = await showConfirmModal({
+                title: 'Hapus Task',
+                message: 'Apakah Anda yakin ingin menghapus tugas ini dari papan Kanban?',
+                confirmText: 'Ya, Hapus',
+                type: 'danger'
+            });
+            if (confirmed) {
                 await ProjectStore.deleteTask(currentProjectId, taskId);
                 renderKanban();
             }
@@ -706,7 +712,14 @@ if (is_admin()) {
             const id = document.getElementById('modal-task-id').value;
             if (!id || !window.ProjectStore) return;
 
-            if (confirm('Hapus task ini?')) {
+            const confirmed = await showConfirmModal({
+                title: 'Hapus Task',
+                message: 'Apakah Anda yakin ingin menghapus tugas ini dari papan Kanban?',
+                confirmText: 'Ya, Hapus',
+                type: 'danger'
+            });
+
+            if (confirmed) {
                 await ProjectStore.deleteTask(currentProjectId, id);
                 closeTaskModal();
                 renderKanban();
@@ -745,6 +758,7 @@ if (is_admin()) {
             renderKanban();
         });
     </script>
+    <?php include 'partials/confirm-modal.php'; ?>
 </body>
 
 </html>

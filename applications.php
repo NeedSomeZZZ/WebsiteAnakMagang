@@ -269,7 +269,7 @@ $count_offer = count(array_filter($applications, fn($a) => ($a['status'] ?? '') 
                     </select>
                   </form>
 
-                  <form method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pendaftaran ini?');" class="inline">
+                  <form method="POST" class="inline confirm-action-form" data-confirm-title="Hapus Pendaftaran Magang" data-confirm-message="Apakah Anda yakin ingin menghapus pendaftaran magang ini?">
                     <input type="hidden" name="app_id" value="<?php echo $id; ?>">
                     <input type="hidden" name="action" value="delete">
                     <button type="submit" class="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-400 hover:border-red-200 hover:bg-red-50 hover:text-red-600 transition-colors" title="Hapus">
@@ -285,6 +285,8 @@ $count_offer = count(array_filter($applications, fn($a) => ($a['status'] ?? '') 
       </section>
     </div>
   </main>
+
+  <?php include 'partials/confirm-modal.php'; ?>
 
   <script>
     let activeFilter = 'all';
@@ -325,6 +327,26 @@ $count_offer = count(array_filter($applications, fn($a) => ($a['status'] ?? '') 
         emptyEl.classList.toggle('hidden', visibleCount > 0 || items.length === 0);
       }
     }
+
+    document.querySelectorAll('.confirm-action-form').forEach(form => {
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const title = this.getAttribute('data-confirm-title') || 'Konfirmasi';
+        const message = this.getAttribute('data-confirm-message') || 'Apakah Anda yakin ingin melanjutkan tindakan ini?';
+        
+        const confirmed = await window.showConfirmModal({
+          title: title,
+          message: message,
+          confirmText: 'Ya, Hapus',
+          cancelText: 'Batal',
+          type: 'danger'
+        });
+
+        if (confirmed) {
+          this.submit();
+        }
+      });
+    });
   </script>
 </body>
 </html>
