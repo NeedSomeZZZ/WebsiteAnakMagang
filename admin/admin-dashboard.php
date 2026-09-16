@@ -80,7 +80,50 @@ include '../partials/sidebar-admin.php';
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="admin-intern-cards-list">
-                    <!-- Dynamic Intern Cards -->
+                    <?php if (empty($db_interns)): ?>
+                        <!-- Fallback jika belum ada intern di DB MySQL, render via JS default -->
+                    <?php else: ?>
+                        <?php foreach ($db_interns as $intern): ?>
+                            <div class="p-4 rounded-xl border border-outline-variant bg-surface-container-low flex flex-col justify-between hover:shadow-md transition-all">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-lg">
+                                            <?php echo strtoupper(substr($intern['username'], 0, 1)); ?>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-on-surface text-base line-clamp-1"><?php echo htmlspecialchars($intern['username'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                                            <p class="text-xs text-on-surface-variant">Intern Kedayweb</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-3 gap-2 my-3 text-center text-xs">
+                                        <div class="p-2 bg-white/60 rounded border border-outline-variant/40">
+                                            <span class="block font-bold text-primary">0</span>
+                                            <span class="text-[10px] text-on-surface-variant">Selesai</span>
+                                        </div>
+                                        <div class="p-2 bg-white/60 rounded border border-outline-variant/40">
+                                            <span class="block font-bold text-amber-700">0</span>
+                                            <span class="text-[10px] text-on-surface-variant">Pending</span>
+                                        </div>
+                                        <div class="p-2 bg-white/60 rounded border border-outline-variant/40">
+                                            <span class="block font-bold text-green-700">0</span>
+                                            <span class="text-[10px] text-on-surface-variant">Hadir</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="pt-3 border-t border-outline-variant/60 flex items-center gap-2">
+                                    <a href="../dashboard.php?intern=<?php echo urlencode($intern['username']); ?>" target="_blank" class="flex-1 px-3 py-1.5 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary-container text-center flex items-center justify-center gap-1 shadow-xs transition-colors">
+                                        <span class="material-symbols-outlined text-[16px]">visibility</span>
+                                        <span>Lihat Dashboard</span>
+                                    </a>
+                                    <a href="admin-attendance.php?intern=<?php echo urlencode($intern['username']); ?>" class="px-2.5 py-1.5 border border-outline-variant text-on-surface hover:bg-surface-container-high rounded-lg text-xs font-semibold text-center flex items-center justify-center" title="Absensi Intern">
+                                        <span class="material-symbols-outlined text-[16px]">calendar_month</span>
+                                    </a>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -503,11 +546,10 @@ include '../partials/sidebar-admin.php';
 
         /* ================= INTERN DASHBOARD VIEWER ================= */
         function renderInternDashboardList() {
-            if (!window.InternStore) return;
             const container = document.getElementById('admin-intern-cards-list');
             if (!container) return;
             
-            let interns = InternStore.list();
+            let interns = window.InternStore ? InternStore.list() : [];
             
             // Gabungkan akun intern dari Database MySQL (db_internspace.users) jika belum ada di InternStore
             if (window.DB_INTERNS && Array.isArray(window.DB_INTERNS)) {
@@ -630,7 +672,9 @@ include '../partials/sidebar-admin.php';
 
         /* ================= INIT ================= */
         function renderEverything() {
-            InternStore.seedAllAttendance();
+            if (window.InternStore && typeof InternStore.seedAllAttendance === 'function') {
+                InternStore.seedAllAttendance();
+            }
             renderInternDashboardList();
             renderAdminProjects();
             renderAttendanceOverview();
@@ -643,16 +687,13 @@ include '../partials/sidebar-admin.php';
             }
             renderEverything();
 
-            // Jika dibuka lewat link "Pilih Intern" (dashboard.php?intern=Nama), pre-select di kedua dropdown terkait
+            // Jika dibuka lewat link "Pilih Intern" (dashboard.php?intern=Nama), pre-select di dropdown terkait
             if (internParam) {
                 const decoded = decodeURIComponent(internParam);
-                const gradeSelect = document.getElementById('grade-intern-select');
-                if (gradeSelect) { gradeSelect.value = decoded; renderInternTasksForGrading(); }
                 const attSelect = document.getElementById('admin-attendance-intern-select');
                 if (attSelect) { attSelect.value = decoded; renderInternAttendanceCounts(decoded); }
             }
 
-            document.getElementById('grade-intern-select')?.addEventListener('change', renderInternTasksForGrading);
             document.getElementById('admin-attendance-intern-select')?.addEventListener('change', e => renderInternAttendanceCounts(e.target.value));
         });
     </script>
