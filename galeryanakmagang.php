@@ -273,8 +273,13 @@ $gallery_list = get_all_gallery_items($conn, $json_file);
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
     <?php 
     if ($is_logged_in) {
-        $active = 'gallery';
-        include 'partials/sidebar-intern.php';
+        $active = 'galeri';
+        $user_role = current_user_role();
+        if ($user_role === 'admin' || $user_role === 'superadmin') {
+            include 'partials/sidebar-admin.php';
+        } else {
+            include 'partials/sidebar-intern.php';
+        }
     } else {
         $nav_icon = 'collections';
         $nav_cta_label = 'Masuk Portal';

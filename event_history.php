@@ -292,8 +292,13 @@ $events_list = get_all_events_history($conn, $events_json);
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
     <?php 
     if ($is_logged_in) {
-        $active = 'events_history';
-        include 'partials/sidebar-intern.php';
+        $active = 'events';
+        $user_role = current_user_role();
+        if ($user_role === 'admin' || $user_role === 'superadmin') {
+            include 'partials/sidebar-admin.php';
+        } else {
+            include 'partials/sidebar-intern.php';
+        }
     } else {
         $nav_icon = 'stars';
         $nav_cta_label = 'Masuk Portal';

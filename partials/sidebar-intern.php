@@ -48,7 +48,7 @@ if (current_user_role() === 'admin' || current_user_role() === 'superadmin') {
     </a>
     <nav class="flex-1 space-y-sm overflow-y-auto pr-1">
         <?php foreach ($intern_nav_items as $key => $item): ?>
-            <?php $is_active = ($active === $key); ?>
+            <?php $is_active = ($active === $key) || ($key === 'galeri' && $active === 'gallery') || ($key === 'events' && $active === 'events_history'); ?>
             <a class="flex items-center gap-md px-md py-sm rounded-lg font-label-md text-label-md transition-all duration-200 <?php echo $is_active ? 'bg-primary-container text-on-primary-container active:scale-[0.98] transition-transform' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-high'; ?>" href="<?php echo $item['href']; ?>">
                 <span class="material-symbols-outlined"<?php echo $is_active ? ' style="font-variation-settings: \'FILL\' 1;"' : ''; ?>><?php echo $item['icon']; ?></span>
                 <span data-i18n="<?php echo $item['i18n']; ?>"><?php echo $item['label']; ?></span>
