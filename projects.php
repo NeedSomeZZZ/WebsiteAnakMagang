@@ -26,6 +26,24 @@ if (isset($_GET['action'])) {
     $userId = $_SESSION['user_id'] ?? 1;
 
     // =========================================================================
+    // API FOR USERS / ASSIGNEES (?action=users)
+    // =========================================================================
+    if ($_GET['action'] === 'users' || $_GET['action'] === 'assignees') {
+        if ($method === 'GET') {
+            $sql = "SELECT id, username, role FROM users WHERE role NOT IN ('superadmin', 'super_admin') ORDER BY username ASC";
+            $result = mysqli_query($conn, $sql);
+            $users = [];
+            if ($result) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $users[] = $row;
+                }
+            }
+            echo json_encode($users);
+            exit;
+        }
+    }
+
+    // =========================================================================
     // API FOR PROJECTS (?action=api)
     // =========================================================================
     if ($_GET['action'] === 'api') {

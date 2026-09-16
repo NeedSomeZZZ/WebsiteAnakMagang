@@ -19,6 +19,7 @@ require_login();
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="shared-config.js"></script>
     <script src="project-store.js"></script>
+    <script src="intern-store.js"></script>
     <style>
         .kanban-scroll::-webkit-scrollbar {
             height: 8px;
@@ -240,7 +241,9 @@ if (is_admin()) {
                 <div class="grid grid-cols-2 gap-md">
                     <div>
                         <label for="modal-task-assignee" class="block font-label-md text-label-md text-on-surface mb-xs">Assignee</label>
-                        <input id="modal-task-assignee" type="text" class="w-full bg-surface-bright border border-outline-variant rounded-lg px-md py-sm font-body-sm text-body-sm focus:ring-2 focus:ring-primary focus:outline-none" placeholder="Alex Doe" />
+                        <select id="modal-task-assignee" class="w-full bg-surface-bright border border-outline-variant rounded-lg px-md py-sm font-body-sm text-body-sm focus:ring-2 focus:ring-primary focus:outline-none cursor-pointer">
+                            <option value="">-- Pilih Assignee --</option>
+                        </select>
                     </div>
                     <div>
                         <label for="modal-task-due-date" class="block font-label-md text-label-md text-on-surface mb-xs">Due Date</label>
@@ -543,6 +546,66 @@ if (is_admin()) {
             filterKanban();
         }
 
+        let registeredUsersList = [];
+
+        async function loadRegisteredUsers() {
+            try {
+                const res = await fetch('projects.php?action=users');
+                if (res.ok) {
+                    registeredUsersList = await res.json();
+                }
+            } catch (e) {
+                console.warn('Gagal memuat list user:', e);
+            }
+        }
+
+        function renderAssigneeOptions(selectedAssignee = '') {
+            const assigneeSelect = document.getElementById('modal-task-assignee');
+            if (!assigneeSelect) return;
+
+            const namesSet = new Set();
+            const options = [];
+
+            // 1. From database users (excluding superadmin)
+            if (Array.isArray(registeredUsersList)) {
+                registeredUsersList.forEach(u => {
+                    if (u.username && !namesSet.has(u.username)) {
+                        namesSet.add(u.username);
+                        const roleLabel = u.role ? ` (${u.role})` : '';
+                        options.push({ value: u.username, label: `${u.username}${roleLabel}` });
+                    }
+                });
+            }
+
+            // 2. From InternStore if available
+            if (window.InternStore && typeof InternStore.list === 'function') {
+                const interns = InternStore.list();
+                interns.forEach(i => {
+                    if (i.name && !namesSet.has(i.name)) {
+                        namesSet.add(i.name);
+                        options.push({ value: i.name, label: `${i.name} (Intern)` });
+                    }
+                });
+            }
+
+            // 3. Preserve current selected assignee if not listed yet
+            if (selectedAssignee && !namesSet.has(selectedAssignee)) {
+                namesSet.add(selectedAssignee);
+                options.push({ value: selectedAssignee, label: `${selectedAssignee}` });
+            }
+
+            let html = '<option value="">-- Pilih Assignee --</option>';
+            options.forEach(opt => {
+                const isSelected = String(opt.value) === String(selectedAssignee) ? 'selected' : '';
+                html += `<option value="${escapeHtml(opt.value)}" ${isSelected}>${escapeHtml(opt.label)}</option>`;
+            });
+
+            assigneeSelect.innerHTML = html;
+            if (selectedAssignee) {
+                assigneeSelect.value = selectedAssignee;
+            }
+        }
+
         function openTaskModal(taskId = null, defaultStatus = 'todo') {
             const modal = document.getElementById('modal');
             if (!modal) return;
@@ -555,11 +618,12 @@ if (is_admin()) {
             const descInput = document.getElementById('modal-task-desc');
             const priorityInput = document.getElementById('modal-task-priority');
             const statusInput = document.getElementById('modal-task-status');
-            const assigneeInput = document.getElementById('modal-task-assignee');
             const dueDateInput = document.getElementById('modal-task-due-date');
             const idInput = document.getElementById('modal-task-id');
             const modalTitle = document.getElementById('modal-title');
             const deleteBtn = document.getElementById('modal-delete-btn');
+
+            let currentAssignee = '';
 
             if (taskId) {
                 const project = window.ProjectStore ? ProjectStore.get(currentProjectId) : null;
@@ -572,7 +636,7 @@ if (is_admin()) {
                 descInput.value = task.description || '';
                 priorityInput.value = task.priority || 'Medium';
                 statusInput.value = ProjectStore.normalizeStatus ? ProjectStore.normalizeStatus(task.status) : task.status;
-                assigneeInput.value = task.assignee || 'Alex Doe';
+                currentAssignee = task.assignee || '';
                 dueDateInput.value = task.due_date || '';
                 if (deleteBtn) deleteBtn.classList.remove('hidden');
             } else {
@@ -582,10 +646,12 @@ if (is_admin()) {
                 descInput.value = '';
                 priorityInput.value = 'Medium';
                 statusInput.value = defaultStatus || 'todo';
-                assigneeInput.value = 'Alex Doe';
+                currentAssignee = '';
                 dueDateInput.value = '';
                 if (deleteBtn) deleteBtn.classList.add('hidden');
             }
+
+            renderAssigneeOptions(currentAssignee);
 
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -616,7 +682,7 @@ if (is_admin()) {
             const desc = document.getElementById('modal-task-desc').value.trim();
             const priority = document.getElementById('modal-task-priority').value;
             const status = document.getElementById('modal-task-status').value;
-            const assignee = document.getElementById('modal-task-assignee').value.trim() || 'Alex Doe';
+            const assignee = document.getElementById('modal-task-assignee').value.trim() || '';
             const due_date = document.getElementById('modal-task-due-date').value;
 
             if (!title) {
@@ -652,6 +718,8 @@ if (is_admin()) {
         });
 
         document.addEventListener('DOMContentLoaded', async () => {
+            await loadRegisteredUsers();
+
             if (window.ProjectStore) {
                 await ProjectStore.init();
             }

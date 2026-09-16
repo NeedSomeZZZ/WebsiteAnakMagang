@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-background text-on-surface font-body-md flex h-screen overflow-hidden">
-<?php $active = 'sop'; $show_admin_link = true; include 'partials/sidebar-intern.php'; ?>
+<?php $active = 'sop'; include 'partials/sidebar-intern.php'; ?>
 
 <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto relative">
     <!-- TopNavBar -->
