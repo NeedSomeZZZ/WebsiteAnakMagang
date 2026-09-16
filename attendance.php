@@ -603,8 +603,14 @@ require_login(); ?>
      ============================================================ -->
     <div id="att-modal" class="hidden fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4">
         <div class="bg-surface-container-lowest rounded-2xl p-5 max-w-sm w-full shadow-2xl">
-            <h4 class="font-geist font-bold text-on-surface text-lg mb-4 text-center" id="att-modal-title">Clock In -
+            <h4 class="font-geist font-bold text-on-surface text-lg mb-3 text-center" id="att-modal-title">Clock In -
                 Ambil Foto</h4>
+
+            <!-- Geofence Status Badge -->
+            <div id="att-geofence-badge" class="mb-3 px-3 py-2 rounded-xl text-xs flex items-center gap-2 border hidden">
+                <span id="att-geofence-icon" class="material-symbols-outlined text-sm">near_me</span>
+                <span id="att-geofence-text" class="font-medium">Memeriksa zona lokasi kantor...</span>
+            </div>
 
             <div id="att-video-wrap"
                 class="relative rounded-xl overflow-hidden border border-outline-variant mb-4 bg-black aspect-[3/4] flex items-center justify-center">
@@ -1299,6 +1305,32 @@ require_login(); ?>
         let attPendingAddress = '';
         let attPendingLat = null;
         let attPendingLng = null;
+        let officeGeofenceConfig = null;
+
+        function attCalculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371000; // Radius bumi dalam meter
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return Math.round(R * c);
+        }
+
+        async function fetchGeofenceConfig() {
+            try {
+                const res = await fetch('attendance-api.php?action=get_location_config');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.config) {
+                        officeGeofenceConfig = data.config;
+                    }
+                }
+            } catch (e) {
+                console.warn('Gagal memuat konfigurasi zona geofence:', e);
+            }
+        }
 
         function attPad(n) { return String(n).padStart(2, '0'); }
 
@@ -1321,9 +1353,19 @@ require_login(); ?>
             const titleEl = document.getElementById('att-modal-title');
             const camActions = document.getElementById('att-cam-actions');
             const confirmActions = document.getElementById('att-confirm-actions');
+            const geofenceBadge = document.getElementById('att-geofence-badge');
+            const geofenceText = document.getElementById('att-geofence-text');
+            const geofenceIcon = document.getElementById('att-geofence-icon');
 
             // Check navigator.mediaDevices support
             if (!modal || !video) return;
+
+            if (geofenceBadge) {
+                geofenceBadge.className = 'mb-3 px-3 py-2 rounded-xl text-xs flex items-center gap-2 border bg-blue-50 text-blue-800 border-blue-200';
+                if (geofenceIcon) geofenceIcon.textContent = 'radar';
+                if (geofenceText) geofenceText.textContent = officeGeofenceConfig ? `Target: ${officeGeofenceConfig.office_name} (Radius: ${officeGeofenceConfig.radius_meters}m)` : 'Memeriksa zona lokasi kantor...';
+                geofenceBadge.classList.remove('hidden');
+            }
 
             titleEl.textContent = 'Clock In - Ambil Foto';
             statusEl.textContent = 'Membuka kamera...';
@@ -1433,17 +1475,69 @@ require_login(); ?>
             const dateStr = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
             const dayStr = days[now.getDay()];
 
-            function draw(addressLines) {
+            function checkGeofenceStatus() {
+                const badge = document.getElementById('att-geofence-badge');
+                const badgeIcon = document.getElementById('att-geofence-icon');
+                const badgeText = document.getElementById('att-geofence-text');
+                if (badge) badge.classList.remove('hidden');
+
+                if (!attPendingLat || !attPendingLng) {
+                    if (badge) {
+                        badge.className = 'mb-3 px-3 py-2 rounded-xl text-xs flex items-center gap-2 border bg-amber-50 text-amber-800 border-amber-200';
+                        if (badgeIcon) badgeIcon.textContent = 'location_off';
+                        if (badgeText) badgeText.textContent = 'Lokasi GPS tidak terdeteksi.';
+                    }
+                    if (officeGeofenceConfig && officeGeofenceConfig.is_strict) {
+                        if (confirmBtn) confirmBtn.disabled = true;
+                        if (statusEl) statusEl.textContent = 'Izin lokasi wajib diaktifkan untuk absensi.';
+                    }
+                    return;
+                }
+
+                if (officeGeofenceConfig) {
+                    const dist = attCalculateDistance(
+                        attPendingLat, attPendingLng,
+                        officeGeofenceConfig.latitude, officeGeofenceConfig.longitude
+                    );
+                    const isInside = dist <= officeGeofenceConfig.radius_meters;
+
+                    if (isInside) {
+                        if (badge) {
+                            badge.className = 'mb-3 px-3 py-2 rounded-xl text-xs flex items-center gap-2 border bg-emerald-50 text-emerald-800 border-emerald-200';
+                            if (badgeIcon) badgeIcon.textContent = 'verified';
+                            if (badgeText) badgeText.textContent = `Dalam Zona Kantor (${dist}m dari kantor | Batas: ${officeGeofenceConfig.radius_meters}m)`;
+                        }
+                        if (confirmBtn) confirmBtn.disabled = false;
+                        if (statusEl) statusEl.textContent = 'Foto siap — Anda berada di dalam zona kantor.';
+                    } else {
+                        if (badge) {
+                            badge.className = 'mb-3 px-3 py-2 rounded-xl text-xs flex items-center gap-2 border bg-red-50 text-red-800 border-red-200';
+                            if (badgeIcon) badgeIcon.textContent = 'gpp_bad';
+                            if (badgeText) badgeText.textContent = `Di Luar Zona Kantor (${dist}m | Maks: ${officeGeofenceConfig.radius_meters}m)`;
+                        }
+                        if (officeGeofenceConfig.is_strict) {
+                            if (confirmBtn) confirmBtn.disabled = true;
+                            if (statusEl) statusEl.textContent = `Absensi ditolak: Anda berada di luar radius kantor (${dist}m > ${officeGeofenceConfig.radius_meters}m).`;
+                        } else {
+                            if (confirmBtn) confirmBtn.disabled = false;
+                            if (statusEl) statusEl.textContent = `Peringatan: Berada ${dist}m di luar radius kantor.`;
+                        }
+                    }
+                }
+            }
+
+            function draw(addressLines, coordStr) {
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
+                const extraLines = (coordStr ? 1 : 0) + addressLines.length;
                 const padX = Math.round(canvas.width * 0.05);
                 const lineH = Math.round(canvas.height * 0.035);
-                const boxH = Math.round(canvas.height * 0.24 + (addressLines.length * lineH));
+                const boxH = Math.round(canvas.height * 0.25 + (extraLines * lineH));
 
                 const grad = ctx.createLinearGradient(0, canvas.height - boxH, 0, canvas.height);
                 grad.addColorStop(0, 'rgba(0,0,0,0)');
-                grad.addColorStop(0.35, 'rgba(0,0,0,0.55)');
-                grad.addColorStop(1, 'rgba(0,0,0,0.88)');
+                grad.addColorStop(0.35, 'rgba(0,0,0,0.60)');
+                grad.addColorStop(1, 'rgba(0,0,0,0.92)');
                 ctx.fillStyle = grad;
                 ctx.fillRect(0, canvas.height - boxH, canvas.width, boxH);
 
@@ -1453,7 +1547,7 @@ require_login(); ?>
                 const timeFontSize = Math.round(canvas.width * 0.065);
                 ctx.font = `800 ${timeFontSize}px sans-serif`;
 
-                const yBase = canvas.height - (addressLines.length * lineH) - Math.round(canvas.height * 0.04);
+                const yBase = canvas.height - (extraLines * lineH) - Math.round(canvas.height * 0.04);
                 ctx.fillText(timeStr, padX, yBase);
                 const timeWidth = ctx.measureText(timeStr).width;
 
@@ -1477,9 +1571,15 @@ require_login(); ?>
                     ay += lineH;
                 });
 
+                if (coordStr) {
+                    const coordFontSize = Math.round(canvas.width * 0.026);
+                    ctx.font = `600 ${coordFontSize}px monospace`;
+                    ctx.fillStyle = '#93c5fd'; // Warna aksen biru muda untuk koordinat
+                    ctx.fillText(coordStr, padX, ay);
+                }
+
                 attPendingDataUrl = canvas.toDataURL('image/jpeg', 0.85);
-                if (confirmBtn) confirmBtn.disabled = false;
-                if (statusEl) statusEl.textContent = 'Foto siap — cek dulu sebelum disimpan.';
+                checkGeofenceStatus();
             }
 
             attPendingAddress = '';
@@ -1488,7 +1588,7 @@ require_login(); ?>
 
             if (!navigator.geolocation) {
                 if (statusEl) statusEl.textContent = 'Lokasi tidak tersedia di perangkat ini.';
-                draw(['Lokasi tidak tersedia']);
+                draw(['Lokasi tidak tersedia'], null);
                 return;
             }
 
@@ -1497,24 +1597,26 @@ require_login(); ?>
                     const { latitude, longitude } = pos.coords;
                     attPendingLat = latitude;
                     attPendingLng = longitude;
+                    let coordStr = `📍 ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+
                     fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
                         .then(r => r.json())
                         .then(data => {
                             const addr = data && data.display_name ? data.display_name : `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
                             attPendingAddress = addr;
-                            draw(attWrapAddress(addr));
+                            draw(attWrapAddress(addr), coordStr);
                         })
                         .catch(() => {
                             attPendingAddress = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-                            draw([attPendingAddress]);
+                            draw([attPendingAddress], coordStr);
                         });
                 },
                 () => {
                     if (statusEl) statusEl.textContent = 'Izin lokasi ditolak — foto disimpan tanpa lokasi.';
                     attPendingAddress = 'Lokasi tidak diizinkan';
-                    draw(['Lokasi tidak diizinkan']);
+                    draw(['Lokasi tidak diizinkan'], null);
                 },
-                { timeout: 8000 }
+                { enableHighAccuracy: true, timeout: 8000 }
             );
         }
 
@@ -1582,6 +1684,7 @@ require_login(); ?>
         document.addEventListener('DOMContentLoaded', async () => {
             applyAdminPreviewMode();
             initCalendar();
+            await fetchGeofenceConfig();
             await fetchServerData();
             refreshAll();
         });

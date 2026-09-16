@@ -33,14 +33,70 @@ $action = $_GET['action'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];
 $today  = date('Y-m-d');
 
-// Pastikan kolom clock_out, reason, location_in, photo_in ada pada tabel attendance (aman jika sudah ada)
-try {
-    mysqli_query($conn, "ALTER TABLE attendance ADD COLUMN IF NOT EXISTS clock_out VARCHAR(5) DEFAULT NULL");
-    mysqli_query($conn, "ALTER TABLE attendance ADD COLUMN IF NOT EXISTS reason TEXT DEFAULT NULL");
-    mysqli_query($conn, "ALTER TABLE attendance ADD COLUMN IF NOT EXISTS location_in TEXT DEFAULT NULL");
-    mysqli_query($conn, "ALTER TABLE attendance ADD COLUMN IF NOT EXISTS photo_in VARCHAR(255) DEFAULT NULL");
-} catch (Exception $e) {
-    // Kolom sudah ada, lanjut saja
+// Helper: Pastikan kolom ada di tabel attendance secara aman untuk semua versi MySQL
+if (!function_exists('ensure_attendance_column')) {
+    function ensure_attendance_column($conn, $col, $def) {
+        if (!$conn) return;
+        $check = @mysqli_query($conn, "SHOW COLUMNS FROM `attendance` LIKE '{$col}'");
+        if ($check && mysqli_num_rows($check) === 0) {
+            @mysqli_query($conn, "ALTER TABLE `attendance` ADD COLUMN `{$col}` {$def}");
+        }
+    }
+}
+ensure_attendance_column($conn, 'reason', 'TEXT DEFAULT NULL');
+ensure_attendance_column($conn, 'clock_out', 'VARCHAR(5) DEFAULT NULL');
+ensure_attendance_column($conn, 'location_in', 'TEXT DEFAULT NULL');
+ensure_attendance_column($conn, 'photo_in', 'VARCHAR(255) DEFAULT NULL');
+ensure_attendance_column($conn, 'lat_in', 'DECIMAL(11,8) DEFAULT NULL');
+ensure_attendance_column($conn, 'lng_in', 'DECIMAL(11,8) DEFAULT NULL');
+
+// Helper: Hitung jarak GPS (Haversine formula dalam meter)
+function calculate_haversine_distance($lat1, $lon1, $lat2, $lon2) {
+    $earthRadius = 6371000; // Radius bumi dalam meter
+    $dLat = deg2rad($lat2 - $lat1);
+    $dLon = deg2rad($lon2 - $lon1);
+    $a = sin($dLat / 2) * sin($dLat / 2) +
+         cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+         sin($dLon / 2) * sin($dLon / 2);
+    $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+    return round($earthRadius * $c, 1);
+}
+
+// Helper: Ambil konfigurasi titik zona absensi
+function get_attendance_settings($conn) {
+    $defaults = [
+        'office_name'   => 'Kantor Kedayweb Banyuwangi',
+        'address'       => 'Jl. Tamansari, Tukangkayu, Banyuwangi, Jawa Timur',
+        'latitude'      => -8.21932100,
+        'longitude'     => 114.36945800,
+        'radius_meters' => 100,
+        'is_strict'     => 1
+    ];
+    if (!$conn) return $defaults;
+    $res = @mysqli_query($conn, "SELECT * FROM attendance_settings WHERE id = 1 LIMIT 1");
+    if ($res && $row = mysqli_fetch_assoc($res)) {
+        return [
+            'office_name'   => $row['office_name'] ?? $defaults['office_name'],
+            'address'       => $row['address'] ?? $defaults['address'],
+            'latitude'      => (float) ($row['latitude'] ?? $defaults['latitude']),
+            'longitude'     => (float) ($row['longitude'] ?? $defaults['longitude']),
+            'radius_meters' => (int) ($row['radius_meters'] ?? $defaults['radius_meters']),
+            'is_strict'     => (int) ($row['is_strict'] ?? $defaults['is_strict'])
+        ];
+    }
+    return $defaults;
+}
+
+// --------------------------------------------------------------
+// GET KONFIGURASI TITIK ZONA ABSENSI (?action=get_location_config, GET)
+// --------------------------------------------------------------
+if ($action === 'get_location_config' && $method === 'GET') {
+    $settings = get_attendance_settings($conn);
+    echo json_encode([
+        'success' => true,
+        'config'  => $settings
+    ]);
+    exit;
 }
 
 // --------------------------------------------------------------
@@ -63,7 +119,7 @@ if ($action === 'all_summary' && $method === 'GET') {
 
     // 2. Ambil semua data presensi di database
     $attendanceMap = [];
-    $resAtt = mysqli_query($conn, "SELECT username, date, status, clock_in, clock_out, reason, location_in, photo_in FROM attendance");
+    $resAtt = mysqli_query($conn, "SELECT username, date, status, clock_in, clock_out, reason, location_in, photo_in, lat_in, lng_in FROM attendance");
     if ($resAtt) {
         while ($row = mysqli_fetch_assoc($resAtt)) {
             $uName = $row['username'];
@@ -78,7 +134,9 @@ if ($action === 'all_summary' && $method === 'GET') {
                 'clockOut' => $row['clock_out'],
                 'reason' => $row['reason'],
                 'location' => $row['location_in'],
-                'photo' => $row['photo_in']
+                'photo' => $row['photo_in'],
+                'lat' => isset($row['lat_in']) ? (float) $row['lat_in'] : null,
+                'lng' => isset($row['lng_in']) ? (float) $row['lng_in'] : null,
             ];
         }
     }
@@ -168,6 +226,32 @@ if ($action === 'save' && $method === 'POST') {
         exit;
     }
 
+    // -------- Geofence Check (Validasi Titik Zona Koordinat Kantor) --------
+    $zoneSettings = get_attendance_settings($conn);
+    $internDist = null;
+
+    if ($lat !== null && $lng !== null) {
+        $internDist = calculate_haversine_distance($lat, $lng, $zoneSettings['latitude'], $zoneSettings['longitude']);
+    }
+
+    if ($zoneSettings['is_strict'] == 1) {
+        if ($lat === null || $lng === null) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Izin lokasi GPS wajib diaktifkan untuk melakukan absensi kantor!']);
+            exit;
+        }
+
+        if ($internDist !== null && $internDist > $zoneSettings['radius_meters']) {
+            http_response_code(403);
+            echo json_encode([
+                'error' => "Anda berada di luar zona absensi kantor! Jarak Anda: {$internDist} m (Batas toleransi: {$zoneSettings['radius_meters']} m). Silakan mendekat ke lokasi kantor.",
+                'distance' => $internDist,
+                'radius' => $zoneSettings['radius_meters']
+            ]);
+            exit;
+        }
+    }
+
     // -------- Simpan foto base64 ke file --------
     if (!preg_match('/^data:image\/(\w+);base64,/', $photoData, $m)) {
         http_response_code(400);
@@ -222,12 +306,14 @@ if ($action === 'save' && $method === 'POST') {
     }
 
     echo json_encode([
-        'message'  => 'Clock In berhasil disimpan',
-        'photo'    => $relativePath,
-        'time'     => $time,
-        'location' => $location,
-        'lat'      => $lat,
-        'lng'      => $lng,
+        'message'   => 'Clock In berhasil disimpan',
+        'photo'     => $relativePath,
+        'time'      => $time,
+        'location'  => $location,
+        'lat'       => $lat,
+        'lng'       => $lng,
+        'distance'  => $internDist,
+        'in_radius' => ($internDist === null || $internDist <= $zoneSettings['radius_meters']),
     ]);
     exit;
 }
@@ -240,6 +326,11 @@ if ($action === 'history' && $method === 'GET') {
     $sql = "SELECT date, status, clock_in, clock_out, reason, location_in, lat_in, lng_in
             FROM attendance WHERE username = ? ORDER BY date DESC";
     $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Gagal menyiapkan query: ' . mysqli_error($conn)]);
+        exit;
+    }
     mysqli_stmt_bind_param($stmt, "s", $username);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);

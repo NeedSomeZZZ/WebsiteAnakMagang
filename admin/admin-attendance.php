@@ -578,6 +578,12 @@ if ($db_query) {
                                 <span class="truncate">${escHtml(record.location)}</span>
                             </div>` : ''}
 
+                            ${record && record.lat && record.lng ? `
+                            <div class="mt-1 text-[11px] text-indigo-700 font-mono flex items-center gap-1 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100 w-fit">
+                                <span class="material-symbols-outlined text-[13px]">pin_drop</span>
+                                <span>📍 ${record.lat.toFixed(6)}, ${record.lng.toFixed(6)}</span>
+                            </div>` : ''}
+
                             ${record && record.reason ? `<div class="mt-2 bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-xs text-amber-900"><strong>Alasan / Keterangan:</strong> ${escHtml(record.reason)}</div>` : ''}
                             ${!record ? '<p class="text-xs text-on-surface-variant italic mt-1.5">Intern ini belum melakukan absensi pada hari tersebut.</p>' : ''}
                             <div class="mt-2 text-right border-t border-outline-variant/40 pt-2">

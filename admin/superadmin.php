@@ -158,6 +158,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         save_index_positions($positions_file, $positions);
         $msg = "Posisi berhasil dihapus dari index.php.";
         $msg_type = "danger";
+    } elseif ($action === 'save_attendance_zone') {
+        $office_name   = trim($_POST['office_name'] ?? 'Kantor Kedayweb');
+        $address       = trim($_POST['address'] ?? '');
+        $latitude      = (float) ($_POST['latitude'] ?? -8.219321);
+        $longitude     = (float) ($_POST['longitude'] ?? 114.369458);
+        $radius_meters = max(10, intval($_POST['radius_meters'] ?? 100));
+        $is_strict     = isset($_POST['is_strict']) && $_POST['is_strict'] == '1' ? 1 : 0;
+
+        if ($conn) {
+            $chk = mysqli_query($conn, "SELECT id FROM attendance_settings WHERE id = 1 LIMIT 1");
+            if ($chk && mysqli_num_rows($chk) > 0) {
+                $stmt = mysqli_prepare($conn, "UPDATE attendance_settings SET office_name=?, address=?, latitude=?, longitude=?, radius_meters=?, is_strict=? WHERE id = 1");
+                mysqli_stmt_bind_param($stmt, "ssddii", $office_name, $address, $latitude, $longitude, $radius_meters, $is_strict);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+            } else {
+                $stmt = mysqli_prepare($conn, "INSERT INTO attendance_settings (id, office_name, address, latitude, longitude, radius_meters, is_strict) VALUES (1, ?, ?, ?, ?, ?, ?)");
+                mysqli_stmt_bind_param($stmt, "ssddii", $office_name, $address, $latitude, $longitude, $radius_meters, $is_strict);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+            }
+            $msg = "Pengaturan titik zona koordinat absensi berhasil disimpan!";
+            $msg_type = "success";
+        }
     }
 }
 
@@ -169,6 +193,27 @@ if ($conn) {
         while ($row = mysqli_fetch_assoc($res)) {
             $users[] = $row;
         }
+    }
+}
+
+// Fetch Attendance Zone Settings
+$att_settings = [
+    'office_name'   => 'Kantor Kedayweb Banyuwangi',
+    'address'       => 'Jl. Tamansari, Tukangkayu, Banyuwangi, Jawa Timur',
+    'latitude'      => -8.21932100,
+    'longitude'     => 114.36945800,
+    'radius_meters' => 100,
+    'is_strict'     => 1
+];
+if ($conn) {
+    $resAtt = @mysqli_query($conn, "SELECT * FROM attendance_settings WHERE id = 1 LIMIT 1");
+    if ($resAtt && $rAtt = mysqli_fetch_assoc($resAtt)) {
+        $att_settings['office_name']   = $rAtt['office_name'] ?? $att_settings['office_name'];
+        $att_settings['address']       = $rAtt['address'] ?? $att_settings['address'];
+        $att_settings['latitude']      = (float) ($rAtt['latitude'] ?? $att_settings['latitude']);
+        $att_settings['longitude']     = (float) ($rAtt['longitude'] ?? $att_settings['longitude']);
+        $att_settings['radius_meters'] = (int) ($rAtt['radius_meters'] ?? $att_settings['radius_meters']);
+        $att_settings['is_strict']     = (int) ($rAtt['is_strict'] ?? $att_settings['is_strict']);
     }
 }
 
@@ -191,8 +236,14 @@ $current_active_role = current_user_role();
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="../shared-config.js"></script>
     <link rel="stylesheet" href="../style.css"/>
+    <!-- Leaflet Map CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         .glass-card { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); }
+        #geofence-map { height: 380px; width: 100%; border-radius: 1rem; z-index: 1; }
+        .leaflet-pane { z-index: 10 !important; }
+        .leaflet-top, .leaflet-bottom { z-index: 11 !important; }
     </style>
 </head>
 <body class="bg-background text-on-surface font-body-md flex h-screen overflow-hidden">
@@ -232,6 +283,134 @@ $current_active_role = current_user_role();
                     </button>
                 </div>
             <?php endif; ?>
+
+            <!-- Section 1: Pengaturan Titik Zona Koordinat Absensi (Geofencing) -->
+            <div class="glass-card rounded-2xl border border-outline-variant p-6 shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-outline-variant mb-6">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">near_me</span>
+                            <h3 class="font-headline-md font-bold text-on-surface">Titik Zona Koordinat Absensi (Geofencing)</h3>
+                        </div>
+                        <p class="text-sm text-on-surface-variant mt-1">Tentukan titik koordinat kantor dan radius toleransi jarak absensi untuk anak magang.</p>
+                    </div>
+                    <!-- Status Badges -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm text-blue-600">business</span>
+                            <span id="badge-office-name"><?php echo htmlspecialchars($att_settings['office_name'], ENT_QUOTES, 'UTF-8'); ?></span>
+                        </span>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-800 border border-indigo-200 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm text-indigo-600">radar</span>
+                            Radius: <span id="badge-radius"><?php echo (int) $att_settings['radius_meters']; ?></span> m
+                        </span>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold <?php echo $att_settings['is_strict'] ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-amber-50 text-amber-800 border border-amber-200'; ?> flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm <?php echo $att_settings['is_strict'] ? 'text-emerald-600' : 'text-amber-600'; ?>">
+                                <?php echo $att_settings['is_strict'] ? 'lock' : 'lock_open'; ?>
+                            </span>
+                            <span id="badge-strict-mode"><?php echo $att_settings['is_strict'] ? 'Wajib di Kantor (Ketat)' : 'Fleksibel'; ?></span>
+                        </span>
+                    </div>
+                </div>
+
+                <form action="superadmin.php" method="POST" id="form-attendance-zone" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <input type="hidden" name="action" value="save_attendance_zone"/>
+                    
+                    <!-- Left: Form inputs (5 cols on lg) -->
+                    <div class="lg:col-span-5 flex flex-col gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1.5">Nama Lokasi / Kantor</label>
+                            <input type="text" name="office_name" id="zone-office-name" required value="<?php echo htmlspecialchars($att_settings['office_name'], ENT_QUOTES, 'UTF-8'); ?>" class="w-full px-3.5 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary focus:outline-none"/>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1.5">Alamat Patokan</label>
+                            <textarea name="address" id="zone-address" rows="2" placeholder="Contoh: Jl. Tamansari, Tukangkayu, Banyuwangi..." class="w-full px-3.5 py-2 bg-surface-container-lowest border border-outline-variant rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary focus:outline-none"><?php echo htmlspecialchars($att_settings['address'], ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1.5">Latitude (Lintang)</label>
+                                <input type="number" step="any" name="latitude" id="zone-lat" required value="<?php echo htmlspecialchars($att_settings['latitude'], ENT_QUOTES, 'UTF-8'); ?>" class="w-full px-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-xl text-sm font-mono font-medium focus:ring-2 focus:ring-primary focus:outline-none"/>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1.5">Longitude (Bujur)</label>
+                                <input type="number" step="any" name="longitude" id="zone-lng" required value="<?php echo htmlspecialchars($att_settings['longitude'], ENT_QUOTES, 'UTF-8'); ?>" class="w-full px-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-xl text-sm font-mono font-medium focus:ring-2 focus:ring-primary focus:outline-none"/>
+                            </div>
+                        </div>
+
+                        <!-- GPS Current Location Button -->
+                        <div>
+                            <button type="button" id="btn-detect-my-location" onclick="detectAdminCurrentLocation()" class="w-full py-2.5 px-4 bg-surface-container-low hover:bg-surface-container-high text-primary border border-outline-variant rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs">
+                                <span class="material-symbols-outlined text-sm">my_location</span>
+                                <span>📍 Ambil Titik Lokasi Saya Sekarang (GPS)</span>
+                            </button>
+                            <p id="geo-status-msg" class="text-[11px] text-slate-500 mt-1 hidden"></p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1.5">Radius Toleransi (Meter)</label>
+                            <div class="flex items-center gap-2 mb-2">
+                                <input type="number" min="10" max="5000" name="radius_meters" id="zone-radius" required value="<?php echo (int) $att_settings['radius_meters']; ?>" class="w-28 px-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-xl text-sm font-bold focus:ring-2 focus:ring-primary focus:outline-none"/>
+                                <span class="text-xs text-on-surface-variant font-semibold">meter</span>
+                            </div>
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="text-[11px] text-slate-400 font-semibold mr-1">Cepat:</span>
+                                <button type="button" onclick="setQuickRadius(50)" class="px-2.5 py-1 text-xs rounded-lg border border-outline-variant hover:bg-slate-100 font-medium cursor-pointer">50m</button>
+                                <button type="button" onclick="setQuickRadius(100)" class="px-2.5 py-1 text-xs rounded-lg border border-outline-variant hover:bg-slate-100 font-medium cursor-pointer">100m</button>
+                                <button type="button" onclick="setQuickRadius(200)" class="px-2.5 py-1 text-xs rounded-lg border border-outline-variant hover:bg-slate-100 font-medium cursor-pointer">200m</button>
+                                <button type="button" onclick="setQuickRadius(500)" class="px-2.5 py-1 text-xs rounded-lg border border-outline-variant hover:bg-slate-100 font-medium cursor-pointer">500m</button>
+                                <button type="button" onclick="setQuickRadius(1000)" class="px-2.5 py-1 text-xs rounded-lg border border-outline-variant hover:bg-slate-100 font-medium cursor-pointer">1 km</button>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 bg-surface-container-low rounded-xl border border-outline-variant">
+                            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Aturan Validasi Geofence</label>
+                            <div class="space-y-2 text-xs">
+                                <label class="flex items-start gap-2.5 cursor-pointer">
+                                    <input type="radio" name="is_strict" value="1" <?php echo $att_settings['is_strict'] ? 'checked' : ''; ?> class="mt-0.5 text-primary focus:ring-primary"/>
+                                    <div>
+                                        <span class="font-bold text-on-surface">Validasi Ketat (Wajib di Kantor)</span>
+                                        <p class="text-slate-500 text-[11px] mt-0.5">Anak magang hanya bisa clock in jika posisi GPS berada di dalam radius kantor. Absensi ditolak jika di luar radius.</p>
+                                    </div>
+                                </label>
+                                <label class="flex items-start gap-2.5 cursor-pointer">
+                                    <input type="radio" name="is_strict" value="0" <?php echo !$att_settings['is_strict'] ? 'checked' : ''; ?> class="mt-0.5 text-primary focus:ring-primary"/>
+                                    <div>
+                                        <span class="font-bold text-on-surface">Fleksibel (Peringatan Saja)</span>
+                                        <p class="text-slate-500 text-[11px] mt-0.5">Anak magang tetap bisa clock in jika di luar kantor, namun sistem mencatat status jarak dari kantor.</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="pt-2">
+                            <button type="submit" class="w-full py-3 px-5 bg-primary text-on-primary rounded-xl font-bold hover:bg-primary-container transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer">
+                                <span class="material-symbols-outlined">save</span>
+                                <span>Simpan Pengaturan Titik Zona</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right: Interactive Leaflet Map (7 cols on lg) -->
+                    <div class="lg:col-span-7 flex flex-col">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-sm text-primary">map</span>
+                                <span>Peta Interaktif Lokasi Kantor</span>
+                            </label>
+                            <span class="text-[11px] text-slate-500">Klik peta atau geser pin merah</span>
+                        </div>
+                        <div class="relative w-full rounded-2xl overflow-hidden border border-outline-variant shadow-inner">
+                            <div id="geofence-map"></div>
+                        </div>
+                        <div class="mt-2.5 flex items-start gap-2 text-xs text-slate-500 bg-surface-container-low p-2.5 rounded-xl border border-outline-variant">
+                            <span class="material-symbols-outlined text-sm text-primary flex-shrink-0 mt-0.5">info</span>
+                            <span>Lingkaran biru menunjukkan area zona toleransi absensi (<strong id="map-radius-label"><?php echo (int) $att_settings['radius_meters']; ?> meter</strong>). Anda dapat menggeser marker pin untuk menyesuaikan titik pusat lokasi kantor.</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
             <!-- Section 2: Manage Positions on index.php -->
             <div class="glass-card rounded-2xl border border-outline-variant p-6 shadow-sm">
@@ -481,6 +660,173 @@ $current_active_role = current_user_role();
                     this.submit();
                 }
             });
+        });
+
+        // ============================================================
+        // GEOFENCE MAP SCRIPT (LEAFLET.JS)
+        // ============================================================
+        let geofenceMap = null;
+        let geofenceMarker = null;
+        let geofenceCircle = null;
+
+        function initGeofenceMap() {
+            const latInput = document.getElementById('zone-lat');
+            const lngInput = document.getElementById('zone-lng');
+            const radiusInput = document.getElementById('zone-radius');
+            const mapEl = document.getElementById('geofence-map');
+            if (!mapEl || !latInput || !lngInput) return;
+
+            let initialLat = parseFloat(latInput.value) || -8.219321;
+            let initialLng = parseFloat(lngInput.value) || 114.369458;
+            let initialRadius = parseInt(radiusInput.value) || 100;
+
+            geofenceMap = L.map('geofence-map', {
+                center: [initialLat, initialLng],
+                zoom: 16,
+                scrollWheelZoom: true
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19
+            }).addTo(geofenceMap);
+
+            // Draggable Marker
+            geofenceMarker = L.marker([initialLat, initialLng], {
+                draggable: true,
+                title: 'Titik Kantor Kedayweb'
+            }).addTo(geofenceMap);
+
+            // Geofence Circle
+            geofenceCircle = L.circle([initialLat, initialLng], {
+                radius: initialRadius,
+                color: '#2563eb',
+                fillColor: '#3b82f6',
+                fillOpacity: 0.22,
+                weight: 2
+            }).addTo(geofenceMap);
+
+            // Marker Drag events
+            geofenceMarker.on('drag', function(e) {
+                const pos = e.target.getLatLng();
+                geofenceCircle.setLatLng(pos);
+                latInput.value = pos.lat.toFixed(7);
+                lngInput.value = pos.lng.toFixed(7);
+            });
+
+            geofenceMarker.on('dragend', function(e) {
+                const pos = e.target.getLatLng();
+                reverseGeocode(pos.lat, pos.lng);
+            });
+
+            // Map Click event
+            geofenceMap.on('click', function(e) {
+                geofenceMarker.setLatLng(e.latlng);
+                geofenceCircle.setLatLng(e.latlng);
+                latInput.value = e.latlng.lat.toFixed(7);
+                lngInput.value = e.latlng.lng.toFixed(7);
+                reverseGeocode(e.latlng.lat, e.latlng.lng);
+            });
+
+            // Inputs change listener
+            latInput.addEventListener('input', syncMapFromInputs);
+            lngInput.addEventListener('input', syncMapFromInputs);
+            radiusInput.addEventListener('input', function() {
+                const r = parseInt(this.value) || 50;
+                geofenceCircle.setRadius(r);
+                const radiusLbl = document.getElementById('map-radius-label');
+                if (radiusLbl) radiusLbl.textContent = r + ' meter';
+                const badgeRadius = document.getElementById('badge-radius');
+                if (badgeRadius) badgeRadius.textContent = r;
+            });
+        }
+
+        function syncMapFromInputs() {
+            const lat = parseFloat(document.getElementById('zone-lat').value);
+            const lng = parseFloat(document.getElementById('zone-lng').value);
+            const radius = parseInt(document.getElementById('zone-radius').value) || 100;
+            if (!isNaN(lat) && !isNaN(lng) && geofenceMap && geofenceMarker && geofenceCircle) {
+                const pos = [lat, lng];
+                geofenceMarker.setLatLng(pos);
+                geofenceCircle.setLatLng(pos);
+                geofenceCircle.setRadius(radius);
+                geofenceMap.panTo(pos);
+            }
+        }
+
+        function setQuickRadius(r) {
+            const radiusInput = document.getElementById('zone-radius');
+            if (radiusInput) {
+                radiusInput.value = r;
+                if (geofenceCircle) geofenceCircle.setRadius(r);
+                const radiusLbl = document.getElementById('map-radius-label');
+                if (radiusLbl) radiusLbl.textContent = r + ' meter';
+                const badgeRadius = document.getElementById('badge-radius');
+                if (badgeRadius) badgeRadius.textContent = r;
+            }
+        }
+
+        function reverseGeocode(lat, lng) {
+            const addrInput = document.getElementById('zone-address');
+            if (!addrInput) return;
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        addrInput.value = data.display_name;
+                    }
+                })
+                .catch(() => {});
+        }
+
+        function detectAdminCurrentLocation() {
+            const statusMsg = document.getElementById('geo-status-msg');
+            const btn = document.getElementById('btn-detect-my-location');
+            if (statusMsg) {
+                statusMsg.classList.remove('hidden');
+                statusMsg.textContent = 'Mendeteksi posisi GPS Anda...';
+                statusMsg.className = 'text-[11px] text-blue-600 mt-1';
+            }
+            if (!navigator.geolocation) {
+                if (statusMsg) {
+                    statusMsg.textContent = 'Geolokasi tidak didukung oleh browser ini.';
+                    statusMsg.className = 'text-[11px] text-red-600 mt-1';
+                }
+                return;
+            }
+            btn.disabled = true;
+            navigator.geolocation.getCurrentPosition(
+                pos => {
+                    btn.disabled = false;
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    document.getElementById('zone-lat').value = lat.toFixed(7);
+                    document.getElementById('zone-lng').value = lng.toFixed(7);
+                    if (geofenceMap && geofenceMarker && geofenceCircle) {
+                        const newPos = [lat, lng];
+                        geofenceMarker.setLatLng(newPos);
+                        geofenceCircle.setLatLng(newPos);
+                        geofenceMap.setView(newPos, 17);
+                    }
+                    reverseGeocode(lat, lng);
+                    if (statusMsg) {
+                        statusMsg.textContent = `Titik berhasil disetel ke lokasi GPS Anda: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                        statusMsg.className = 'text-[11px] text-emerald-600 font-semibold mt-1';
+                    }
+                },
+                err => {
+                    btn.disabled = false;
+                    if (statusMsg) {
+                        statusMsg.textContent = 'Gagal mendapatkan lokasi GPS: ' + (err.message || 'Izin ditolak.');
+                        statusMsg.className = 'text-[11px] text-red-600 mt-1';
+                    }
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initGeofenceMap();
         });
     </script>
 </body>

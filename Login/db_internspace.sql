@@ -206,6 +206,54 @@ INSERT INTO `users` (`id`, `role`, `username`, `password`) VALUES
 (4, 'intern', 'fairuz', 'a'),
 (5, 'intern', 'filbert', 'a');
 
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `attendance`
+--
+
+CREATE TABLE IF NOT EXISTS `attendance` (
+  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `username` varchar(50) NOT NULL,
+  `date` date NOT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'present',
+  `clock_in` varchar(5) DEFAULT NULL,
+  `clock_out` varchar(5) DEFAULT NULL,
+  `reason` text DEFAULT NULL,
+  `photo_in` varchar(255) DEFAULT NULL,
+  `photo_out` varchar(255) DEFAULT NULL,
+  `location_in` varchar(255) DEFAULT NULL,
+  `location_out` varchar(255) DEFAULT NULL,
+  `lat_in` decimal(11,8) DEFAULT NULL,
+  `lng_in` decimal(11,8) DEFAULT NULL,
+  `lat_out` decimal(11,8) DEFAULT NULL,
+  `lng_out` decimal(11,8) DEFAULT NULL,
+  `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `attendance_settings`
+--
+
+CREATE TABLE IF NOT EXISTS `attendance_settings` (
+  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `office_name` varchar(255) NOT NULL DEFAULT 'Kantor Kedayweb Banyuwangi',
+  `address` text DEFAULT NULL,
+  `latitude` decimal(11,8) NOT NULL DEFAULT -8.21932100,
+  `longitude` decimal(11,8) NOT NULL DEFAULT 114.36945800,
+  `radius_meters` int NOT NULL DEFAULT 100,
+  `is_strict` tinyint(1) NOT NULL DEFAULT 1,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `attendance_settings` (`id`, `office_name`, `address`, `latitude`, `longitude`, `radius_meters`, `is_strict`) VALUES
+(1, 'Kantor Kedayweb Banyuwangi', 'Jl. Tamansari, Tukangkayu, Banyuwangi, Jawa Timur', -8.21932100, 114.36945800, 100, 1)
+ON DUPLICATE KEY UPDATE `id`=`id`;
+
+
 --
 -- Indeks untuk tabel yang dibuang
 --
