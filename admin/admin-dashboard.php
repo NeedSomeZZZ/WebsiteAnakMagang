@@ -1,10 +1,27 @@
-<?php require_once __DIR__ . '/../session.php'; require_admin(); ?>
+<?php 
+require_once __DIR__ . '/../session.php'; 
+require_admin(); 
+require_once __DIR__ . '/../Login/koneksi.php';
+
+// Ambil data user intern dari database MySQL db_internspace
+$db_interns = [];
+$db_query = mysqli_query($conn, "SELECT id, username, role FROM users WHERE role = 'intern' ORDER BY id ASC");
+if ($db_query) {
+    while ($row = mysqli_fetch_assoc($db_query)) {
+        $db_interns[] = $row;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <title>Kedayweb Admin Dashboard</title>
+    <!-- Inject DB Interns to JS -->
+    <script>
+        window.DB_INTERNS = <?php echo json_encode($db_interns, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+    </script>
     <!-- Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <!-- Google Fonts -->
@@ -48,8 +65,23 @@ include '../partials/sidebar-admin.php';
                 </div>
             </div>
         </header>
-          <section class="mt-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <section class="mt-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
 
+            <!-- Card: Memilih & Melihat Dashboard Intern (Admin Feature) -->
+            <div class="glass-card p-5 rounded-xl border border-outline-variant lg:col-span-2 xl:col-span-3">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-4 pb-3 border-b border-outline-variant">
+                    <div>
+                        <h3 class="font-headline-md font-bold text-on-surface flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">badge</span>
+                            <span>Dashboard Intern (Kedayweb)</span>
+                        </h3>
+                        <p class="text-sm text-on-surface-variant">Pilih intern di bawah ini untuk melihat pratinjau dashboard personal & statistik mereka secara langsung.</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="admin-intern-cards-list">
+                    <!-- Dynamic Intern Cards -->
+                </div>
             </div>
 
             <!-- Project & Task Management Card (Admin Feature) -->
@@ -469,6 +501,90 @@ include '../partials/sidebar-admin.php';
             renderEverything();
         }
 
+        /* ================= INTERN DASHBOARD VIEWER ================= */
+        function renderInternDashboardList() {
+            if (!window.InternStore) return;
+            const container = document.getElementById('admin-intern-cards-list');
+            if (!container) return;
+            
+            let interns = InternStore.list();
+            
+            // Gabungkan akun intern dari Database MySQL (db_internspace.users) jika belum ada di InternStore
+            if (window.DB_INTERNS && Array.isArray(window.DB_INTERNS)) {
+                const existingNames = new Set(interns.map(i => i.name.toLowerCase()));
+                window.DB_INTERNS.forEach(dbUser => {
+                    const uname = dbUser.username;
+                    if (!existingNames.has(uname.toLowerCase())) {
+                        interns.push({
+                            id: 'db-' + dbUser.id,
+                            name: uname,
+                            email: uname,
+                            role: 'Intern',
+                            division: 'Intern Kedayweb'
+                        });
+                        existingNames.add(uname.toLowerCase());
+                    }
+                });
+            }
+
+            container.innerHTML = '';
+            
+            if (interns.length === 0) {
+                container.innerHTML = `<div class="col-span-3 text-center py-6 text-on-surface-variant italic">Belum ada intern terdaftar di database.</div>`;
+                return;
+            }
+
+            interns.forEach(intern => {
+                const tasks = window.ProjectStore ? ProjectStore.tasksByAssignee(intern.name) : [];
+                const completedTasks = tasks.filter(t => t.status === 'done').length;
+                const pendingTasks = tasks.filter(t => t.status !== 'done').length;
+                const attendance = InternStore.getAttendance(intern.name);
+                const presentCount = attendance.filter(r => r.status === 'present' || r.status === 'late').length;
+
+                const card = document.createElement('div');
+                card.className = 'p-4 rounded-xl border border-outline-variant bg-surface-container-low flex flex-col justify-between hover:shadow-md transition-all';
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-lg">
+                                ${escapeHtml(intern.name.charAt(0).toUpperCase())}
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-on-surface text-base line-clamp-1">${escapeHtml(intern.name)}</h4>
+                                <p class="text-xs text-on-surface-variant">${escapeHtml(intern.division || 'Intern Kedayweb')}</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 my-3 text-center text-xs">
+                            <div class="p-2 bg-white/60 rounded border border-outline-variant/40">
+                                <span class="block font-bold text-primary">${completedTasks}</span>
+                                <span class="text-[10px] text-on-surface-variant">Selesai</span>
+                            </div>
+                            <div class="p-2 bg-white/60 rounded border border-outline-variant/40">
+                                <span class="block font-bold text-amber-700">${pendingTasks}</span>
+                                <span class="text-[10px] text-on-surface-variant">Pending</span>
+                            </div>
+                            <div class="p-2 bg-white/60 rounded border border-outline-variant/40">
+                                <span class="block font-bold text-green-700">${presentCount}</span>
+                                <span class="text-[10px] text-on-surface-variant">Hadir</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-outline-variant/60 flex items-center gap-2">
+                        <a href="../dashboard.php?intern=${encodeURIComponent(intern.name)}" target="_blank" class="flex-1 px-3 py-1.5 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary-container text-center flex items-center justify-center gap-1 shadow-xs transition-colors">
+                            <span class="material-symbols-outlined text-[16px]">visibility</span>
+                            <span>Lihat Dashboard</span>
+                        </a>
+                        <a href="admin-attendance.php?intern=${encodeURIComponent(intern.name)}" class="px-2.5 py-1.5 border border-outline-variant text-on-surface hover:bg-surface-container-high rounded-lg text-xs font-semibold text-center flex items-center justify-center" title="Absensi Intern">
+                            <span class="material-symbols-outlined text-[16px]">calendar_month</span>
+                        </a>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
         /* ================= 1D. ATTENDANCE OVERVIEW ================= */
         function todayStr() {
             const d = new Date();
@@ -490,8 +606,17 @@ include '../partials/sidebar-admin.php';
             const select = document.getElementById('admin-attendance-intern-select');
             if (select) {
                 const current = select.value;
+                let listInterns = InternStore.list();
+                if (window.DB_INTERNS && Array.isArray(window.DB_INTERNS)) {
+                    const existingNames = new Set(listInterns.map(i => i.name.toLowerCase()));
+                    window.DB_INTERNS.forEach(u => {
+                        if (!existingNames.has(u.username.toLowerCase())) {
+                            listInterns.push({ name: u.username });
+                        }
+                    });
+                }
                 select.innerHTML = '<option value="" disabled ' + (current ? '' : 'selected') + '>Pilih intern...</option>' +
-                    InternStore.list().map(i => `<option value="${escapeHtml(i.name)}" ${i.name === current ? 'selected' : ''}>${escapeHtml(i.name)}</option>`).join('');
+                    listInterns.map(i => `<option value="${escapeHtml(i.name)}" ${i.name === current ? 'selected' : ''}>${escapeHtml(i.name)}</option>`).join('');
                 if (current) renderInternAttendanceCounts(current);
             }
         }
@@ -507,9 +632,6 @@ include '../partials/sidebar-admin.php';
         function renderEverything() {
             InternStore.seedAllAttendance();
             renderInternDashboardList();
-            populateGradeInternSelect();
-            renderInternTasksForGrading();
-            renderUserManagement();
             renderAdminProjects();
             renderAttendanceOverview();
         }

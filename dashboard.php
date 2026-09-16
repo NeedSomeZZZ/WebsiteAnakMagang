@@ -284,23 +284,43 @@ function toggleClock() {
         }
 
         if (window.ProjectStore) {
-            const projects = ProjectStore.projects();
+            const selectedIntern = internParam ? decodeURIComponent(internParam) : null;
+            let projects = ProjectStore.projects();
+            if (selectedIntern) {
+                // Filter projects where intern has assigned tasks or is involved
+                projects = projects.filter(p => (p.tasks || []).some(t => t.assignee === selectedIntern));
+            }
+            
             let completedCount = 0;
+            let pendingCount = 0;
+            
             projects.forEach(p => {
-                if (p.tasks) completedCount += p.tasks.filter(t => t.status === 'done').length;
+                if (p.tasks) {
+                    p.tasks.forEach(t => {
+                        if (!selectedIntern || t.assignee === selectedIntern) {
+                            if (ProjectStore.normalizeStatus(t.status) === 'done') completedCount++;
+                            else pendingCount++;
+                        }
+                    });
+                }
             });
+
             const pElem = document.getElementById('stat-active-proj-val');
             const tElem = document.getElementById('stat-tasks-done-val');
+            const pendingElem = document.getElementById('stat-tasks-pending-val');
+            
             if (pElem) pElem.textContent = projects.length;
             if (tElem) tElem.textContent = completedCount;
+            if (pendingElem) pendingElem.textContent = pendingCount;
 
-            // Total proyek yang diikuti & jumlah proyek yang sudah selesai
+            // Total proyek & proyek selesai
             const totalProjElem = document.getElementById('stat-total-proj-val');
             const completedProjElem = document.getElementById('stat-completed-proj-val');
             const finishedProjects = projects.filter(p =>
                 p.tasks && p.tasks.length > 0 &&
-                p.tasks.every(t => ProjectStore.normalizeStatus(t.status) === 'done')
+                p.tasks.filter(t => !selectedIntern || t.assignee === selectedIntern).every(t => ProjectStore.normalizeStatus(t.status) === 'done')
             ).length;
+
             if (totalProjElem) totalProjElem.textContent = projects.length;
             if (completedProjElem) completedProjElem.textContent = finishedProjects;
         }
