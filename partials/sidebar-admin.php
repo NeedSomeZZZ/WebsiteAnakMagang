@@ -30,6 +30,7 @@ $admin_nav_items = [
     'galeri'       => ['label' => 'Galeri Foto',         'icon' => 'photo_library',   'href' => $root_prefix . 'galeryanakmagang.php'],
     'events'       => ['label' => 'Histori Event',       'icon' => 'event',           'href' => $root_prefix . 'event_history.php'],
     'article'      => ['label' => 'Kelola Artikel',       'icon' => 'newspaper',        'href' => $admin_prefix . 'admin-articles.php'],
+    'certificates' => ['label' => 'Sertifikat',           'icon' => 'workspace_premium', 'href' => $admin_prefix . 'admin-certificates.php'],
     'stats'        => ['label' => 'Statistics',           'icon' => 'insights',         'href' => $admin_prefix . 'admin-stats.php'],
 ];
 
