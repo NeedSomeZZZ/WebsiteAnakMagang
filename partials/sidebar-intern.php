@@ -29,6 +29,7 @@ $intern_nav_items = [
     'events'       => ['label' => 'Histori Event',       'icon' => 'event',           'href' => $root_prefix . 'event_history.php', 'i18n' => 'nav_events'],
     'article'      => ['label' => 'Aktivitas & Artikel', 'icon' => 'newspaper',       'href' => $root_prefix . 'article.php',      'i18n' => 'nav_article'],
     'sop'          => ['label' => 'SOP',                 'icon' => 'description',     'href' => $root_prefix . 'sop.php',          'i18n' => 'nav_sop'],
+    'about'        => ['label' => 'Tentang',             'icon' => 'info',            'href' => $root_prefix . 'about.php',        'i18n' => 'nav_about'],
 ];
 
 if (current_user_role() === 'admin' || current_user_role() === 'superadmin') {
