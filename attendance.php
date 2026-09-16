@@ -1377,36 +1377,48 @@
 
             function draw(addressLines) {
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                const padX = canvas.width * 0.04;
-                const lineH = canvas.height * 0.034;
-                const boxH = canvas.height * (0.20 + addressLines.length * 0.034);
+
+                const padX = Math.round(canvas.width * 0.05);
+                const lineH = Math.round(canvas.height * 0.035);
+                const boxH = Math.round(canvas.height * 0.24 + (addressLines.length * lineH));
+
                 const grad = ctx.createLinearGradient(0, canvas.height - boxH, 0, canvas.height);
                 grad.addColorStop(0, 'rgba(0,0,0,0)');
-                grad.addColorStop(1, 'rgba(0,0,0,0.68)');
+                grad.addColorStop(0.35, 'rgba(0,0,0,0.55)');
+                grad.addColorStop(1, 'rgba(0,0,0,0.88)');
                 ctx.fillStyle = grad;
                 ctx.fillRect(0, canvas.height - boxH, canvas.width, boxH);
-                ctx.fillStyle = '#fff';
+
+                ctx.fillStyle = '#ffffff';
                 ctx.textBaseline = 'alphabetic';
-                const timeFontSize = canvas.width * 0.085;
-                ctx.font = `900 ${timeFontSize}px sans-serif`;
-                let y = canvas.height - boxH + timeFontSize + (canvas.height * 0.02);
-                ctx.fillText(timeStr, padX, y);
+
+                const timeFontSize = Math.round(canvas.width * 0.065);
+                ctx.font = `800 ${timeFontSize}px sans-serif`;
+
+                const yBase = canvas.height - (addressLines.length * lineH) - Math.round(canvas.height * 0.04);
+                ctx.fillText(timeStr, padX, yBase);
                 const timeWidth = ctx.measureText(timeStr).width;
-                ctx.strokeStyle = 'rgba(255,255,255,0.55)';
-                ctx.lineWidth = 2;
+
+                ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+                ctx.lineWidth = 1.5;
                 ctx.beginPath();
-                ctx.moveTo(padX + timeWidth + 14, y - timeFontSize * 0.8);
-                ctx.lineTo(padX + timeWidth + 14, y + 2);
+                ctx.moveTo(padX + timeWidth + 10, yBase - timeFontSize * 0.75);
+                ctx.lineTo(padX + timeWidth + 10, yBase);
                 ctx.stroke();
-                ctx.font = `600 ${timeFontSize * 0.3}px sans-serif`;
-                ctx.fillText(dateStr, padX + timeWidth + 26, y - timeFontSize * 0.4);
-                ctx.fillText(dayStr, padX + timeWidth + 26, y);
-                ctx.font = `500 ${canvas.width * 0.028}px sans-serif`;
-                let ay = y + canvas.height * 0.05;
+
+                const dateFontSize = Math.round(timeFontSize * 0.35);
+                ctx.font = `600 ${dateFontSize}px sans-serif`;
+                ctx.fillText(dateStr, padX + timeWidth + 18, yBase - dateFontSize * 1.1);
+                ctx.fillText(dayStr, padX + timeWidth + 18, yBase);
+
+                const addrFontSize = Math.round(canvas.width * 0.030);
+                ctx.font = `500 ${addrFontSize}px sans-serif`;
+                let ay = yBase + Math.round(lineH * 1.1);
                 addressLines.forEach(line => {
                     ctx.fillText(line, padX, ay);
                     ay += lineH;
                 });
+
                 attPendingDataUrl = canvas.toDataURL('image/jpeg', 0.85);
                 if (confirmBtn) confirmBtn.disabled = false;
                 if (statusEl) statusEl.textContent = 'Foto siap — cek dulu sebelum disimpan.';
