@@ -95,15 +95,16 @@ function get_all_gallery_items($conn, $json_file) {
     return $items;
 }
 
-$is_can_edit = $is_logged_in; // Pengguna terautentikasi (intern, admin, superadmin)
+$user_role = current_user_role();
+$is_can_edit = $is_logged_in && ($user_role === 'admin' || $user_role === 'superadmin');
 
-// Form Handlers (Hanya dapat dilakukan oleh pengguna yang telah login: intern, admin, superadmin)
+// Form Handlers (Hanya dapat dilakukan oleh Admin atau Superadmin)
 $action_msg = '';
 $action_type = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$is_can_edit) {
-        $action_msg = 'Anda harus masuk (login) sebagai Anak Magang, Admin, atau Superadmin untuk menambah, mengedit, atau menghapus kegiatan!';
+        $action_msg = 'Akses ditolak. Hanya Admin atau Superadmin yang memiliki wewenang untuk menambah, mengedit, atau menghapus kegiatan!';
         $action_type = 'danger';
     } else {
         $action = $_POST['action'] ?? '';
@@ -308,7 +309,7 @@ $gallery_list = get_all_gallery_items($conn, $json_file);
                         <span class="material-symbols-outlined">add_photo_alternate</span>
                         <span>Tambah Kegiatan Baru</span>
                     </button>
-                <?php else: ?>
+                <?php elseif (!$is_logged_in): ?>
                     <a href="Login/login.php" class="shrink-0 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl font-bold text-xs transition-all backdrop-blur-md flex items-center gap-2">
                         <span class="material-symbols-outlined text-sm">lock</span>
                         <span>Login untuk Menambah & Edit</span>

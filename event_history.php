@@ -113,15 +113,16 @@ function get_all_events_history($conn, $events_json) {
     return $events;
 }
 
-$is_can_edit = $is_logged_in; // Pengguna terautentikasi (intern, admin, superadmin)
+$user_role = current_user_role();
+$is_can_edit = $is_logged_in && ($user_role === 'admin' || $user_role === 'superadmin');
 
-// Form Handlers (Hanya dapat dilakukan oleh pengguna yang telah login: intern, admin, superadmin)
+// Form Handlers (Hanya dapat dilakukan oleh Admin atau Superadmin)
 $msg = '';
 $msg_type = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$is_can_edit) {
-        $msg = 'Anda harus masuk (login) sebagai Anak Magang, Admin, atau Superadmin untuk menambah, mengedit, atau menghapus event!';
+        $msg = 'Akses ditolak. Hanya Admin atau Superadmin yang memiliki wewenang untuk menambah, mengedit, atau menghapus event!';
         $msg_type = 'danger';
     } else {
         $action = $_POST['action'] ?? '';
@@ -330,7 +331,7 @@ $events_list = get_all_events_history($conn, $events_json);
                         <span class="material-symbols-outlined text-lg">add_circle</span>
                         <span>Tambah Event Baru</span>
                     </button>
-                <?php else: ?>
+                <?php elseif (!$is_logged_in): ?>
                     <a href="Login/login.php" class="shrink-0 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl font-bold text-xs transition-all backdrop-blur-md flex items-center gap-2">
                         <span class="material-symbols-outlined text-sm">lock</span>
                         <span>Login untuk Menambah & Edit</span>
