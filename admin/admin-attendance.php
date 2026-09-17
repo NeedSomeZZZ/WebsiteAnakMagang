@@ -158,9 +158,9 @@ if ($db_query) {
     include '../partials/sidebar-admin.php'; ?>
 
     <!-- Main -->
-    <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto p-5 md:p-10">
+    <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto">
         <header
-            class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 flex justify-between items-center px-4 z-10">
+            class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 flex justify-between items-center px-6 z-10">
             <div>
                 <h2 class="font-headline-lg">Kehadiran Semua Intern</h2>
             </div>
@@ -186,9 +186,9 @@ if ($db_query) {
                 </div>
             </div>
         </header>
-
+        <div class="p-5 md:p-10 flex-1 flex flex-col gap-6">
         <!-- Stats -->
-        <section class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 mb-6">
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div class="p-3 bg-surface-container-low rounded-lg border border-outline-variant/60">
                 <span class="text-xs font-bold uppercase tracking-wider text-primary">Total Intern</span>
                 <div class="text-2xl font-bold mt-1" id="stat-total-interns">0</div>
@@ -310,6 +310,10 @@ if ($db_query) {
                 </table>
             </div>
         </section>
+        </div>
+        <div class="mt-auto shrink-0 w-full">
+            <?php include '../partials/footer.php'; ?>
+        </div>
     </main>
 
     <!-- Detail modal: rincian kehadiran per-intern pada satu tanggal -->

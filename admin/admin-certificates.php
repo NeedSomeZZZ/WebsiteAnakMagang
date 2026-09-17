@@ -49,7 +49,7 @@ include '../partials/sidebar-admin.php';
         </button>
     </header>
 
-    <div class="p-6 space-y-6">
+    <div class="p-6 space-y-6 flex-1">
         <!-- Stats Row -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-4">
@@ -107,6 +107,9 @@ include '../partials/sidebar-admin.php';
                 </table>
             </div>
         </div>
+    </div>
+    <div class="mt-auto shrink-0 w-full">
+        <?php include '../partials/footer.php'; ?>
     </div>
 </main>
 

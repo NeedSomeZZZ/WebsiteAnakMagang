@@ -230,6 +230,9 @@ include '../partials/sidebar-admin.php';
             </div>
 
         </div>
+        <div class="mt-auto shrink-0 w-full no-print">
+            <?php include '../partials/footer.php'; ?>
+        </div>
     </main>
 
     <script>

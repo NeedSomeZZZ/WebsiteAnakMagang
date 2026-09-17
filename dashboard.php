@@ -63,7 +63,7 @@ $userName = current_user_name();
     </header>
 
     <!-- Dashboard Content -->
-    <div class="w-full max-w-container-max mx-auto p-md md:p-gutter flex flex-col gap-xl">
+    <div class="w-full max-w-container-max mx-auto p-md md:p-gutter flex flex-col gap-xl flex-1">
         
         <!-- Page Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -185,7 +185,9 @@ $userName = current_user_name();
 
         <div class="h-md"></div>
     </div>
-    <?php include 'partials/footer.php'; ?>
+    <div class="mt-auto shrink-0 w-full">
+        <?php include 'partials/footer.php'; ?>
+    </div>
 </main>
 
 <script>

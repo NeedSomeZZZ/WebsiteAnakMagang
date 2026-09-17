@@ -37,7 +37,7 @@
         </div>
     </header>
 
-    <div class="w-full max-w-container-max mx-auto p-md md:p-gutter flex flex-col gap-xl">
+    <div class="w-full max-w-container-max mx-auto p-md md:p-gutter flex flex-col gap-xl flex-1">
         <!-- Page Header -->
         <div>
             <span class="inline-flex items-center gap-xs px-3 py-1 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm mb-sm">
@@ -367,6 +367,9 @@
             </div>
         </div>
         <div class="h-md"></div>
+    </div>
+    <div class="mt-auto shrink-0 w-full">
+        <?php include 'partials/footer.php'; ?>
     </div>
 </main>
 </body>

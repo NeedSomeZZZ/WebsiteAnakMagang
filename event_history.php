@@ -308,7 +308,7 @@ $events_list = get_all_events_history($conn, $events_json);
     ?>
 
     <!-- Main Container -->
-    <main class="<?php echo $is_logged_in ? 'md:ml-[16.5rem]' : ''; ?> flex-1">
+    <main class="<?php echo $is_logged_in ? 'md:ml-[16.5rem]' : ''; ?> flex-1 flex flex-col">
         <!-- Hero Header -->
         <section class="bg-gradient-to-r from-amber-600 via-indigo-900 to-slate-900 text-white py-14 px-6 shadow-lg relative overflow-hidden">
             <div class="absolute -right-10 -bottom-10 opacity-10 text-white pointer-events-none">
@@ -459,14 +459,10 @@ $events_list = get_all_events_history($conn, $events_json);
             </div>
             <p id="noEventSearch" class="hidden text-center text-slate-500 py-12 text-sm">Tidak ada histori event yang sesuai dengan kueri pencarian.</p>
         </div>
+        <div class="shrink-0 mt-auto w-full">
+            <?php include 'partials/footer.php'; ?>
+        </div>
     </main>
-
-    <!-- Footer for public view -->
-    <?php if (!$is_logged_in): ?>
-        <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mt-auto">
-            <p>© 2024 Platform Kedayweb Histori Event Magang. Hak cipta dilindungi.</p>
-        </footer>
-    <?php endif; ?>
 
     <!-- Modal Form (Tambah / Edit Event) -->
     <div id="eventModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 hidden backdrop-blur-sm">

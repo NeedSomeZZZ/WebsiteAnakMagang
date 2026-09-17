@@ -109,7 +109,7 @@ $count_offer = count(array_filter($applications, fn($a) => ($a['status'] ?? '') 
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-900">
 <?php $active = 'applications'; include 'partials/sidebar-admin.php'; ?>
-  <main class="min-h-screen md:ml-[16.5rem]">
+  <main class="min-h-screen md:ml-[16.5rem] flex flex-col">
     <header class="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-5 md:px-8">
       <div class="relative hidden w-full max-w-md sm:block">
         <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400">search</span>
@@ -127,7 +127,7 @@ $count_offer = count(array_filter($applications, fn($a) => ($a['status'] ?? '') 
       </div>
     </header>
 
-    <div class="mx-auto max-w-7xl p-5 md:p-8">
+    <div class="mx-auto max-w-7xl p-5 md:p-8 flex-1 w-full">
       <?php if (!empty($action_msg)): ?>
         <div class="mb-6 rounded-xl bg-emerald-50 p-4 text-sm font-medium text-emerald-800 border border-emerald-200 flex items-center gap-2">
           <span class="material-symbols-outlined text-emerald-600">check_circle</span>
@@ -283,6 +283,9 @@ $count_offer = count(array_filter($applications, fn($a) => ($a['status'] ?? '') 
         </div>
         <p id="empty-search" class="hidden p-10 text-center text-sm text-slate-500">Tidak ada pendaftaran yang sesuai dengan pencarian/filter.</p>
       </section>
+    </div>
+    <div class="mt-auto shrink-0 w-full">
+      <?php include 'partials/footer.php'; ?>
     </div>
   </main>
 

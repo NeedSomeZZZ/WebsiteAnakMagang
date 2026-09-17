@@ -257,13 +257,16 @@ if (is_admin()) {
     include 'partials/sidebar-intern.php';
 }
 ?>
-  <main class="md:ml-[16.5rem]">
-    <header class="flex h-16 items-center justify-between border-b border-line bg-white px-5 md:px-8">
+  <main class="md:ml-[16.5rem] min-h-screen flex flex-col">
+    <header class="flex h-16 items-center justify-between border-b border-line bg-white px-5 md:px-8 shrink-0">
       <h1 class="font-geist text-lg font-bold text-primary" data-i18n="nav_projects">Projects</h1>
       <span class="rounded-full border border-line px-3 py-1 text-sm font-semibold text-slate-700"><?php echo htmlspecialchars($userName, ENT_QUOTES, 'UTF-8'); ?></span>
       <a href="logout.php" class="text-red-600 hover:text-red-700" title="Keluar" aria-label="Keluar"><span class="material-symbols-outlined">logout</span></a>
     </header>
-    <div id="app" class="mx-auto max-w-7xl p-5 md:p-8"></div>
+    <div id="app" class="mx-auto max-w-7xl p-5 md:p-8 flex-1 w-full"></div>
+    <div class="mt-auto shrink-0 w-full">
+      <?php include 'partials/footer.php'; ?>
+    </div>
   </main>
   <div id="modal" class="modal fixed inset-0 z-50 hidden items-center justify-center p-4"></div>
   <div id="toast" class="fixed bottom-5 right-5 z-[60] hidden rounded-lg bg-slate-900 px-4 py-3 text-sm font-semibold text-white"></div>

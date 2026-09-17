@@ -304,7 +304,7 @@ $categories = array_unique(array_column($articles, 'category'));
             </div>
         </header>
 
-        <div class="p-6 flex flex-col gap-6">
+        <div class="p-6 flex flex-col gap-6 flex-1">
 
             <!-- Alert Notification -->
             <?php if (!empty($msg)): ?>
@@ -451,6 +451,9 @@ $categories = array_unique(array_column($articles, 'category'));
                     <p id="no-articles-msg" class="hidden text-center py-8 text-on-surface-variant">Tidak ada artikel yang cocok dengan pencarian.</p>
                 </div>
             </div>
+        </div>
+        <div class="mt-auto shrink-0 w-full">
+            <?php include '../partials/footer.php'; ?>
         </div>
     </main>
 

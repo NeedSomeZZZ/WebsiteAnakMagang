@@ -246,21 +246,7 @@ include 'partials/topnav-public.php';
     </div>
 </main>
 
-<!-- Footer -->
-<footer class="bg-surface-container-high border-t border-outline-variant w-full py-xl mt-auto">
-    <div class="flex flex-col md:flex-row justify-between items-center px-gutter w-full max-w-container-max mx-auto gap-md">
-        <div class="font-label-md font-black text-on-surface flex items-center gap-2">
-            <span class="material-symbols-outlined filled-icon">school</span>
-            Kedayweb Platform
-        </div>
-        <nav class="flex flex-wrap justify-center gap-md font-body-sm text-body-sm">
-            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Kebijakan Privasi</a>
-            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Syarat & Ketentuan</a>
-            <a class="text-primary font-semibold" href="verification.php">Verifikasi Sertifikat</a>
-        </nav>
-        <div class="font-body-sm text-on-surface-variant">© 2024 Kedayweb Platform. Hak cipta dilindungi.</div>
-    </div>
-</footer>
+<?php include 'partials/footer.php'; ?>
 
 <script>
 // Data sertifikat aktif (diisi setelah fetch)

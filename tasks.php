@@ -200,7 +200,9 @@ if (is_admin()) {
 
             </div>
         </div>
-        <?php include 'partials/footer.php'; ?>
+        <div class="shrink-0 mt-auto w-full">
+            <?php include 'partials/footer.php'; ?>
+        </div>
     </main>
 
     <!-- Task Creation & Edit Modal -->

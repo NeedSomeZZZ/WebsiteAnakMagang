@@ -43,7 +43,7 @@
             </div>
         </header>
 
-        <div class="p-6 flex flex-col gap-6">
+        <div class="p-6 flex flex-col gap-6 flex-1">
             <!-- Key Metrics -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="glass-card rounded-xl border border-outline-variant p-4">
@@ -99,6 +99,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="mt-auto shrink-0 w-full">
+            <?php include '../partials/footer.php'; ?>
         </div>
     </main>
 

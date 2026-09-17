@@ -202,7 +202,8 @@ require_login(); ?>
     <?php include 'partials/topnav-mobile.php'; ?>
 
     <!-- Main Content -->
-    <main class="flex-1 md:ml-[16.5rem] pt-20 md:pt-0 pb-10 px-4 md:px-8 max-w-[1400px] mx-auto w-full">
+    <main class="flex-1 md:ml-[16.5rem] pt-20 md:pt-0 min-h-screen flex flex-col">
+        <div class="flex-1 pb-10 px-4 md:px-8 max-w-[1400px] mx-auto w-full">
 
         <!-- Page Header -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 mt-6 md:mt-8">
@@ -458,6 +459,10 @@ require_login(); ?>
                     <p class="text-xs text-on-surface-variant mt-1">Data kehadiran diperbarui oleh Admin</p>
                 </div>
             </div>
+        </div>
+        </div>
+        <div class="mt-auto shrink-0 w-full">
+            <?php include 'partials/footer.php'; ?>
         </div>
     </main>
 

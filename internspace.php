@@ -106,7 +106,7 @@ if (is_admin()) {
             </div>
         </div>
 
-        <div class="p-gutter max-w-7xl w-full mx-auto space-y-6 pb-12">
+        <div class="p-gutter max-w-7xl w-full mx-auto space-y-6 pb-12 flex-1">
             
             <!-- PAGE 1: Summary Stats Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -259,7 +259,7 @@ if (is_admin()) {
             </div>
 
         </div>
-        <div class="no-print">
+        <div class="no-print mt-auto w-full shrink-0">
             <?php include 'partials/footer.php'; ?>
         </div>
     </main>

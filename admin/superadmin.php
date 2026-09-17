@@ -534,6 +534,9 @@ $current_active_role = current_user_role();
             </div>
 
         </div>
+        <div class="mt-auto shrink-0 w-full">
+            <?php include '../partials/footer.php'; ?>
+        </div>
     </main>
 
     <!-- Modal Tambah User Baru -->

@@ -47,8 +47,8 @@ $sidebar_subtitle = 'Kedayweb';
 include '../partials/sidebar-admin.php';
 ?>
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto p-5 ">
-        <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 flex justify-between items-center px-4">
+    <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto">
+        <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10 flex justify-between items-center px-6">
             <h2 class="font-headline-lg">Admin Dashboard</h2>
             <div class="flex items-center gap-2">
                 <button class="p-2 rounded-full hover:bg-surface-container-low" title="Notifications">
@@ -65,7 +65,7 @@ include '../partials/sidebar-admin.php';
                 </div>
             </div>
         </header>
-        <section class="mt-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <section class="p-5 md:p-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 flex-1">
 
             <!-- Card: Memilih & Melihat Dashboard Intern (Admin Feature) -->
             <div class="glass-card p-5 rounded-xl border border-outline-variant lg:col-span-2 xl:col-span-3">
@@ -240,7 +240,9 @@ include '../partials/sidebar-admin.php';
             </div>
             <!-- News & Lessons Card -->
         </section>
-        <?php include '../partials/footer.php'; ?>
+        <div class="mt-auto shrink-0 w-full">
+            <?php include '../partials/footer.php'; ?>
+        </div>
     </main>
     <script>
         // Determine intern name from URL parameter (admin view)

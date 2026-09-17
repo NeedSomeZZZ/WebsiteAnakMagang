@@ -424,23 +424,7 @@ if (!is_array($positions) || empty($positions)) {
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-surface-container-high border-t border-outline-variant w-full py-xl mt-auto">
-        <div
-            class="flex flex-col md:flex-row justify-between items-center px-gutter w-full max-w-container-max mx-auto gap-md">
-            <div class="flex flex-col items-center md:items-start">
-                <span class="font-label-md text-label-md font-black text-on-surface mb-xs">Kedayweb</span>
-                <span class="font-body-sm text-body-sm text-on-surface-variant" data-i18n="footer_copy">© 2024 Platform
-                    Kedayweb. Hak cipta dilindungi.</span>
-            </div>
-            <nav class="flex flex-wrap justify-center gap-md">
-                <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-                    href="#" data-i18n="footer_privacy">Kebijakan Privasi</a>
-                <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"
-                    href="#" data-i18n="footer_terms">Syarat Layanan</a>
-            </nav>
-        </div>
-    </footer>
+    <?php include 'partials/footer.php'; ?>
 
     <script>
         /* ─── Step Indicator Helpers ─── */

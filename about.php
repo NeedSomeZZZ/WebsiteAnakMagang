@@ -185,7 +185,7 @@ $about = get_about_content($conn, $about_file);
     ?>
 
     <!-- Main Content Area -->
-    <main class="<?php echo $is_logged_in ? 'md:ml-[16.5rem]' : ''; ?> flex-1">
+    <main class="<?php echo $is_logged_in ? 'md:ml-[16.5rem]' : ''; ?> flex-1 flex flex-col">
         <!-- Hero Header -->
         <section class="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 text-white py-14 px-6 shadow-xl border-b border-indigo-900/50 relative overflow-hidden">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
@@ -314,14 +314,11 @@ $about = get_about_content($conn, $about_file);
                 </div>
             </section>
         </div>
-    </main>
 
-    <!-- Footer for public view -->
-    <?php if (!$is_logged_in): ?>
-        <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mt-auto">
-            <p>© 2024 Platform Kedayweb Tentang. Hak cipta dilindungi.</p>
-        </footer>
-    <?php endif; ?>
+        <div class="shrink-0 mt-auto w-full">
+            <?php include 'partials/footer.php'; ?>
+        </div>
+    </main>
 
     <!-- Modal Form Edit Konten (Khusus Superadmin) -->
     <?php if ($is_superadmin): ?>

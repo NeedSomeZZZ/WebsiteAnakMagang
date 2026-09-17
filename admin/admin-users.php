@@ -140,6 +140,9 @@ $total_admins = count(array_filter($users, static function (array $user): bool {
                 </div>
             </div>
         </div>
+        <div class="mt-auto shrink-0 w-full">
+            <?php include '../partials/footer.php'; ?>
+        </div>
     </main>
 
     <script>

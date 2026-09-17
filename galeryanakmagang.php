@@ -289,7 +289,7 @@ $gallery_list = get_all_gallery_items($conn, $json_file);
     ?>
 
     <!-- Main Content Area -->
-    <main class="<?php echo $is_logged_in ? 'md:ml-[16.5rem]' : ''; ?> flex-1">
+    <main class="<?php echo $is_logged_in ? 'md:ml-[16.5rem]' : ''; ?> flex-1 flex flex-col">
         <!-- Hero Header -->
         <section class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white py-12 px-6 shadow-md">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -409,14 +409,10 @@ $gallery_list = get_all_gallery_items($conn, $json_file);
             </div>
             <p id="noSearchResult" class="hidden text-center text-slate-500 py-12 text-sm">Tidak ada foto kegiatan yang cocok dengan pencarian.</p>
         </div>
+        <div class="shrink-0 mt-auto w-full">
+            <?php include 'partials/footer.php'; ?>
+        </div>
     </main>
-
-    <!-- Footer for public view -->
-    <?php if (!$is_logged_in): ?>
-        <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mt-auto">
-            <p>© 2024 Platform Kedayweb Galeri Anak Magang. Hak cipta dilindungi.</p>
-        </footer>
-    <?php endif; ?>
 
     <!-- Modal Form (Tambah / Edit Kegiatan Magang) -->
     <div id="galleryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 hidden backdrop-blur-sm">

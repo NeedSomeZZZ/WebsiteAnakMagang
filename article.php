@@ -377,7 +377,7 @@ if (!$featured_article && count($articles) > 0) {
     <?php endif; ?>
 
     <!-- Main Canvas -->
-    <main class="<?php echo $is_logged_in ? 'md:ml-[16.5rem] h-screen overflow-y-auto' : ''; ?> flex-1">
+    <main class="<?php echo $is_logged_in ? 'md:ml-[16.5rem] h-screen overflow-y-auto' : 'min-h-screen'; ?> flex-1 flex flex-col">
 
         <!-- Main Body Content -->
         <div class="w-full max-w-container-max mx-auto p-md md:p-gutter flex flex-col gap-xl">
@@ -582,14 +582,10 @@ if (!$featured_article && count($articles) > 0) {
             </div>
 
         </div>
+        <div class="shrink-0 mt-auto w-full">
+            <?php include 'partials/footer.php'; ?>
+        </div>
     </main>
-
-    <!-- Footer for public view -->
-    <?php if (!$is_logged_in): ?>
-        <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mt-auto">
-            <p>© 2024 Platform Kedayweb Artikel Aktivitas. Hak cipta dilindungi.</p>
-        </footer>
-    <?php endif; ?>
 
     <!-- Modal View Detail Artikel -->
     <div id="detail-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-md overflow-y-auto">
