@@ -345,6 +345,14 @@ if (!$featured_article && count($articles) > 0) {
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+        .category-chip,
+        .category-chip:focus,
+        .category-chip:active,
+        .category-chip:focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
+            -webkit-tap-highlight-color: transparent;
+        }
     </style>
 </head>
 <body class="<?php echo $is_logged_in ? 'bg-background text-on-surface font-body-md flex h-screen overflow-hidden' : 'bg-background text-on-surface font-body-md min-h-screen flex flex-col overflow-y-auto'; ?>">
@@ -729,44 +737,50 @@ if (!$featured_article && count($articles) > 0) {
 
     <!-- JavaScript Handlers -->
     <script>
-        // Category filtering
-        function filterCategory(category, element) {
-            document.querySelectorAll('.category-chip').forEach(chip => {
-                chip.classList.remove('bg-primary', 'text-on-primary', 'active');
-                chip.classList.add('bg-surface-container-high', 'text-on-surface-variant');
-            });
-            element.classList.remove('bg-surface-container-high', 'text-on-surface-variant');
-            element.classList.add('bg-primary', 'text-on-primary', 'active');
+        // Category & Search filtering
+        let activeCategory = 'all';
 
-            const items = document.querySelectorAll('.article-item');
-            let visibleCount = 0;
-            items.forEach(item => {
-                const itemCat = item.getAttribute('data-category');
-                if (category === 'all' || itemCat === category) {
-                    item.style.display = '';
-                    visibleCount++;
-                } else {
-                    item.style.display = 'none';
-                }
+        function filterCategory(category, element) {
+            activeCategory = category;
+            document.querySelectorAll('.category-chip').forEach(chip => {
+                chip.classList.remove('active', 'bg-blue-600', 'text-white', 'shadow-md', 'font-bold', 'border-transparent');
+                chip.classList.add('bg-white/10', 'text-slate-200', 'hover:bg-white/20', 'border', 'border-white/10', 'font-semibold');
             });
-            document.getElementById('article-count').innerText = visibleCount + ' Aktivitas Ditemukan';
+            if (element) {
+                element.classList.remove('bg-white/10', 'text-slate-200', 'hover:bg-white/20', 'border-white/10', 'font-semibold');
+                element.classList.add('active', 'bg-blue-600', 'text-white', 'shadow-md', 'font-bold', 'border-transparent');
+            }
+            applyFilters();
         }
 
-        // Search filtering
         function filterArticles() {
-            const query = document.getElementById('article-search').value.toLowerCase().trim();
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const query = (document.getElementById('article-search')?.value || '').toLowerCase().trim();
             const items = document.querySelectorAll('.article-item');
             let visibleCount = 0;
+
             items.forEach(item => {
-                const title = item.getAttribute('data-title');
-                if (title.includes(query)) {
+                const itemCat = item.getAttribute('data-category');
+                const title = (item.getAttribute('data-title') || '').toLowerCase();
+
+                const matchCategory = (activeCategory === 'all' || itemCat === activeCategory);
+                const matchSearch = (!query || title.includes(query));
+
+                if (matchCategory && matchSearch) {
                     item.style.display = '';
                     visibleCount++;
                 } else {
                     item.style.display = 'none';
                 }
             });
-            document.getElementById('article-count').innerText = visibleCount + ' Aktivitas Ditemukan';
+
+            const countEl = document.getElementById('article-count');
+            if (countEl) {
+                countEl.innerText = visibleCount + ' Aktivitas Ditemukan';
+            }
         }
 
         // Modal Detail View
