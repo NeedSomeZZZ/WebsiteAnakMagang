@@ -73,7 +73,6 @@ if (is_admin()) {
             <div class="flex flex-col sm:flex-row sm:items-center gap-md">
                 <div>
                     <div class="flex items-center gap-sm">
-                        <span class="material-symbols-outlined text-primary text-[26px]">folder_open</span>
                         <h2 id="project-title-display" data-no-i18n="true" class="font-headline-lg text-headline-lg text-on-surface font-bold">Memuat...</h2>
                         <span id="project-task-pill" class="bg-primary-fixed text-primary px-2.5 py-0.5 rounded-full text-xs font-bold">0 tasks</span>
                     </div>

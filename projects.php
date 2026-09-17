@@ -258,10 +258,43 @@ if (is_admin()) {
 }
 ?>
   <main class="md:ml-[16.5rem] min-h-screen flex flex-col">
-    <header class="flex h-16 items-center justify-between border-b border-line bg-white px-5 md:px-8 shrink-0">
-      <h1 class="font-geist text-lg font-bold text-primary" data-i18n="nav_projects">Projects</h1>
-      <span class="rounded-full border border-line px-3 py-1 text-sm font-semibold text-slate-700"><?php echo htmlspecialchars($userName, ENT_QUOTES, 'UTF-8'); ?></span>
-      <a href="logout.php" class="text-red-600 hover:text-red-700" title="Keluar" aria-label="Keluar"><span class="material-symbols-outlined">logout</span></a>
+    <!-- TopNavBar -->
+    <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10 shrink-0">
+      <div class="flex justify-between items-center px-gutter w-full max-w-container-max mx-auto h-full">
+        <div class="flex-1 flex items-center gap-md">
+          <!-- Page Title Badge -->
+          <div class="flex items-center gap-2 pr-4 border-r border-outline-variant hidden sm:flex">
+            <span class="material-symbols-outlined text-primary text-[22px]" style="font-variation-settings: 'FILL' 1;">folder_open</span>
+            <span class="font-headline-md text-headline-md font-bold text-primary" data-i18n="nav_projects">Projects</span>
+          </div>
+          <!-- Search Input -->
+          <div class="relative w-full max-w-md">
+            <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">search</span>
+            <input id="proj-search-input" oninput="window.filterProjectSearch(this.value)" class="w-full pl-xl pr-md py-sm rounded-lg bg-surface-bright border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary-fixed focus:outline-none font-body-sm text-body-sm transition-all" placeholder="Cari project..." type="text"/>
+          </div>
+        </div>
+        <!-- Trailing Actions -->
+        <div class="flex items-center gap-sm">
+          <a href="tasks.php" class="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-primary bg-primary-fixed hover:bg-primary hover:text-white rounded-lg transition-all shadow-xs" title="Lihat Papan Kanban">
+            <span class="material-symbols-outlined text-[16px]">view_kanban</span>
+            <span>Papan Kanban</span>
+          </a>
+          <button class="p-sm text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors relative cursor-pointer active:scale-95" title="Notifications">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+          </button>
+          <div class="h-8 w-px bg-outline-variant mx-xs"></div>
+          <div class="flex items-center gap-sm p-xs pr-md rounded-full border border-outline-variant">
+            <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container overflow-hidden">
+              <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+            </div>
+            <span class="font-label-md text-label-md hidden sm:inline-block"><?php echo htmlspecialchars($userName, ENT_QUOTES, 'UTF-8'); ?></span>
+            <a href="logout.php" class="text-error hover:text-red-700" title="Keluar" aria-label="Keluar">
+              <span class="material-symbols-outlined">logout</span>
+            </a>
+          </div>
+        </div>
+      </div>
     </header>
     <div id="app" class="mx-auto max-w-7xl p-5 md:p-8 flex-1 w-full"></div>
     <div class="mt-auto shrink-0 w-full">

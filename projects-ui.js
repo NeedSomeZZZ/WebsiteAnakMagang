@@ -52,8 +52,37 @@ function projectForm(project = {}) {
   `;
 }
 
-function renderProjects() {
-  const projects = ProjectStore.projects();
+let currentSearchQuery = '';
+
+function getSearchQuery(overrideQuery) {
+  if (overrideQuery !== undefined && overrideQuery !== null && overrideQuery !== '') {
+    return String(overrideQuery).toLowerCase().trim();
+  }
+  const input = document.getElementById('proj-search-input');
+  if (input && input.value !== undefined && input.value !== null) {
+    return String(input.value).toLowerCase().trim();
+  }
+  return String(currentSearchQuery || '').toLowerCase().trim();
+}
+
+function renderProjects(filterQuery) {
+  const allProjects = ProjectStore.projects() || [];
+  const q = getSearchQuery(filterQuery);
+
+  const projects = q ? allProjects.filter(p => {
+    const title = String(p.title || p.name || '').toLowerCase();
+    const desc = String(p.description || '').toLowerCase();
+    const tasks = p.tasks || [];
+    const hasMatchingTask = tasks.some(t =>
+      String(t.title || '').toLowerCase().includes(q) ||
+      String(t.description || '').toLowerCase().includes(q) ||
+      String(t.assignee || '').toLowerCase().includes(q) ||
+      String(t.status || '').toLowerCase().includes(q) ||
+      String(t.priority || '').toLowerCase().includes(q)
+    );
+    return title.includes(q) || desc.includes(q) || hasMatchingTask;
+  }) : allProjects;
+
   const activeProjectId = ProjectStore.getActiveProjectId();
   const kanbanLink = activeProjectId ? `tasks.php?project=${encodeURIComponent(activeProjectId)}` : 'tasks.php';
 
@@ -112,38 +141,120 @@ function renderProjects() {
         `;
       }).join('') : `
         <div class="col-span-full rounded-2xl border border-dashed border-line bg-white p-14 text-center">
-          <span class="material-symbols-outlined text-4xl text-primary">folder_off</span>
-          <h3 class="mt-3 font-geist text-xl font-bold">Belum ada project</h3>
-          <p class="mt-2 text-slate-600">Buat project pertama Anda untuk disimpan ke database MySQL.</p>
+          <span class="material-symbols-outlined text-4xl text-primary">${q ? 'search_off' : 'folder_off'}</span>
+          <h3 class="mt-3 font-geist text-xl font-bold">${q ? 'Project tidak ditemukan' : 'Belum ada project'}</h3>
+          <p class="mt-2 text-slate-600">${q ? `Tidak ada project yang cocok dengan kata kunci "${escape(q)}".` : 'Buat project pertama Anda untuk disimpan ke database MySQL.'}</p>
         </div>
       `}
     </div>
   `;
 }
 
-function renderBoard() {
+function filterProjectSearch(query) {
+  const input = document.getElementById('proj-search-input');
+  currentSearchQuery = query !== undefined ? query : (input ? input.value : '');
+  if (projectId) {
+    renderBoard(currentSearchQuery);
+  } else {
+    renderProjects(currentSearchQuery);
+  }
+}
+window.filterProjectSearch = filterProjectSearch;
+
+function renderBoard(filterQuery) {
   const project = ProjectStore.get(projectId);
   if (!project) {
     location.href = 'projects.php';
     return;
   }
   const title = project.title || project.name || 'Untitled';
+  const q = getSearchQuery(filterQuery);
+  const allTasks = project.tasks || [];
+  const tasks = q ? allTasks.filter(t =>
+    String(t.title || '').toLowerCase().includes(q) ||
+    String(t.description || '').toLowerCase().includes(q) ||
+    String(t.assignee || '').toLowerCase().includes(q) ||
+    String(t.priority || '').toLowerCase().includes(q) ||
+    String(t.status || '').toLowerCase().includes(q)
+  ) : allTasks;
+
+  const completedTasks = allTasks.filter(t => t.status === 'done').length;
+
   app.innerHTML = `
-    <div class="flex items-center justify-between">
-      <a href="projects.php" class="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
-        <span class="material-symbols-outlined text-lg">arrow_back</span>
-        Semua Project
-      </a>
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <a href="projects.php" class="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline mb-2">
+          <span class="material-symbols-outlined text-lg">arrow_back</span>
+          Semua Project
+        </a>
+        <h2 class="font-geist text-3xl font-bold text-on-surface">${escape(title)}</h2>
+        <p class="mt-1 text-slate-600">${escape(project.description || 'Project terhubung ke MySQL.')}</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="tasks.php?project=${encodeURIComponent(project.id)}" onclick="ProjectStore.setActiveProjectId('${project.id}')" class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 font-bold text-white hover:bg-primary-container transition-colors shadow-sm">
+          <span class="material-symbols-outlined">view_kanban</span>
+          Buka Papan Kanban
+        </a>
+      </div>
     </div>
-    <div class="mt-4">
-      <h2 class="font-geist text-3xl font-bold text-on-surface">${escape(title)}</h2>
-      <p class="mt-2 text-slate-600">${escape(project.description || 'Project terhubung ke MySQL.')}</p>
+
+    <!-- Task List for this Project -->
+    <div class="rounded-2xl border border-line bg-white p-6 shadow-xs">
+      <div class="flex items-center justify-between mb-4 border-b border-line pb-3">
+        <h3 class="font-geist text-lg font-bold text-slate-900 flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">task</span>
+          Daftar Tugas Project (${tasks.length}/${allTasks.length})
+        </h3>
+        <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">${completedTasks} Selesai</span>
+      </div>
+
+      ${tasks.length ? `
+        <div class="grid gap-4 md:grid-cols-2">
+          ${tasks.map(t => {
+            let statusBadge = '';
+            const status = (t.status || 'todo').toLowerCase();
+            if (status === 'done') {
+              statusBadge = '<span class="px-2.5 py-0.5 bg-green-100 text-green-800 text-xs font-bold rounded-full">Done</span>';
+            } else if (status === 'inprogress') {
+              statusBadge = '<span class="px-2.5 py-0.5 bg-blue-100 text-blue-800 text-xs font-bold rounded-full">In Progress</span>';
+            } else if (status === 'underreview') {
+              statusBadge = '<span class="px-2.5 py-0.5 bg-purple-100 text-purple-800 text-xs font-bold rounded-full">Under Review</span>';
+            } else {
+              statusBadge = '<span class="px-2.5 py-0.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-full">To Do</span>';
+            }
+
+            return `
+              <div class="p-4 rounded-xl border border-line bg-surface-bright flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold uppercase text-slate-400">Priority: ${escape(t.priority || 'Medium')}</span>
+                    ${statusBadge}
+                  </div>
+                  <h4 class="font-bold text-slate-900 text-base mb-1">${escape(t.title)}</h4>
+                  <p class="text-xs text-slate-600 line-clamp-2 mb-3">${escape(t.description || 'Tidak ada deskripsi.')}</p>
+                </div>
+                <div class="pt-2 border-t border-line flex items-center justify-between text-xs text-slate-500">
+                  <span>Assignee: <strong class="text-slate-700">${escape(t.assignee || 'Belum diassign')}</strong></span>
+                  <a href="tasks.php?project=${encodeURIComponent(project.id)}" class="text-primary font-bold hover:underline flex items-center gap-1">
+                    Buka di Kanban <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                  </a>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      ` : `
+        <div class="rounded-xl border border-dashed border-line p-8 text-center text-slate-500">
+          <span class="material-symbols-outlined text-3xl text-slate-400 mb-1">search_off</span>
+          <p class="text-sm font-semibold">${q ? `Tugas tidak ditemukan untuk kata kunci "${escape(q)}"` : 'Belum ada tugas pada project ini.'}</p>
+        </div>
+      `}
     </div>
   `;
 }
 
 function render() {
-  projectId ? renderBoard() : renderProjects();
+  projectId ? renderBoard(currentSearchQuery) : renderProjects(currentSearchQuery);
   window.refreshLanguage?.();
 }
 
@@ -193,4 +304,16 @@ async function removeProject(id) {
   app.innerHTML = '<div class="p-8 text-center text-slate-500">Memuat data dari database...</div>';
   await ProjectStore.init();
   render();
+
+  const searchInput = document.getElementById('proj-search-input');
+  if (searchInput) {
+    ['input', 'keyup', 'change', 'search'].forEach(evt => {
+      searchInput.addEventListener(evt, (e) => {
+        window.filterProjectSearch(e.target.value);
+      });
+    });
+    if (searchInput.value) {
+      window.filterProjectSearch(searchInput.value);
+    }
+  }
 })();
