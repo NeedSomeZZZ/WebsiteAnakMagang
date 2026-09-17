@@ -185,7 +185,5 @@
                 : '<p class="text-sm text-on-surface-variant">Belum ada data performa.</p>';
         });
     </script>
-    <script src="../lang.js"></script>
-    <script src="../language-ui.js"></script>
 </body>
 </html>
