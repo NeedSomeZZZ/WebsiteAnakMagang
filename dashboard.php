@@ -33,11 +33,13 @@ $userName = current_user_name();
 
 <!-- Main Content Canvas -->
 <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto relative">
-    <!-- TopNavBar -->
     <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10">
-        <div class="flex justify-between items-center px-gutter w-full max-w-container-max mx-auto h-full">
+        <div class="flex justify-between items-center px-gutter w-full max-w-container-max mx-auto h-full gap-2">
+            <button onclick="toggleMobileSidebar()" type="button" class="md:hidden p-2 text-on-surface hover:bg-surface-container-high rounded-lg shrink-0" aria-label="Buka Menu Sidebar">
+                <span class="material-symbols-outlined text-2xl">menu</span>
+            </button>
             <div class="flex-1 flex items-center">
-                <div class="relative w-full max-w-md hidden sm:block">
+                <div class="relative w-full max-w-md">
                     <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">search</span>
                     <input id="dash-search-input" oninput="filterDashboardSearch(this.value)" class="w-full pl-xl pr-md py-sm rounded-lg bg-surface-bright border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary-fixed focus:outline-none font-body-sm text-body-sm transition-all" placeholder="Cari tugas, project..." type="text"/>
                 </div>

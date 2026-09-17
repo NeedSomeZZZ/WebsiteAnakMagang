@@ -260,7 +260,10 @@ if (is_admin()) {
   <main class="md:ml-[16.5rem] min-h-screen flex flex-col">
     <!-- TopNavBar -->
     <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10 shrink-0">
-      <div class="flex justify-between items-center px-gutter w-full max-w-container-max mx-auto h-full">
+      <div class="flex justify-between items-center px-gutter w-full max-w-container-max mx-auto h-full gap-2">
+        <button onclick="toggleMobileSidebar()" type="button" class="md:hidden p-2 text-on-surface hover:bg-surface-container-high rounded-lg shrink-0" aria-label="Buka Menu Sidebar">
+          <span class="material-symbols-outlined text-2xl">menu</span>
+        </button>
         <div class="flex-1 flex items-center gap-md">
           <!-- Page Title Badge -->
           <div class="flex items-center gap-2 pr-4 border-r border-outline-variant hidden sm:flex">

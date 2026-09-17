@@ -283,6 +283,9 @@ $categories = array_unique(array_column($articles, 'category'));
         <!-- Top Header -->
         <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 flex justify-between items-center px-6 z-10">
             <h2 class="font-headline-lg flex items-center gap-2">
+                <button onclick="toggleMobileSidebar()" class="md:hidden text-on-surface hover:text-primary focus:outline-none flex items-center mr-1" aria-label="Toggle Sidebar">
+                    <span class="material-symbols-outlined text-2xl">menu</span>
+                </button>
                 <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">newspaper</span>
                 <span>Kelola Artikel & Aktivitas</span>
             </h2>

@@ -36,26 +36,36 @@ if (current_user_role() === 'admin' || current_user_role() === 'superadmin') {
     $intern_nav_items['applications'] = ['label' => 'Applications', 'icon' => 'description', 'href' => $root_prefix . 'applications.php', 'i18n' => 'nav_applications'];
 }
 ?>
-<aside class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
-    <a href="<?php echo $root_prefix; ?>index.php" class="flex items-center gap-sm mb-xl px-sm rounded-lg transition-all duration-200 hover:bg-surface-container-high group" title="Kembali ke Beranda" aria-label="Kembali ke Beranda">
-        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary group-hover:opacity-80 transition-opacity">
-            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
-        </div>
-        <div>
-            <h1 class="font-headline-md text-headline-md text-primary font-bold group-hover:underline" data-i18n="brand_name">Kedayweb</h1>
-            <p class="font-label-sm text-label-sm text-on-surface-variant" data-i18n="brand_subtitle">Portal PKL</p>
-        </div>
-    </a>
+<!-- Mobile Sidebar Backdrop Overlay -->
+<div id="sidebar-backdrop" onclick="closeMobileSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden transition-opacity md:hidden"></div>
+
+<!-- Sidebar Navigation -->
+<aside id="app-sidebar" class="fixed left-0 top-0 bottom-0 z-50 flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md transform -translate-x-full md:translate-x-0 transition-transform duration-300 shadow-2xl md:shadow-none">
+    <div class="flex items-center justify-between mb-xl px-sm">
+        <a href="<?php echo $root_prefix; ?>index.php" class="flex items-center gap-sm rounded-lg transition-all duration-200 hover:bg-surface-container-high group" title="Kembali ke Beranda" aria-label="Kembali ke Beranda">
+            <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary group-hover:opacity-80 transition-opacity">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
+            </div>
+            <div>
+                <h1 class="font-headline-md text-headline-md text-primary font-bold group-hover:underline" data-i18n="brand_name">Kedayweb</h1>
+                <p class="font-label-sm text-label-sm text-on-surface-variant" data-i18n="brand_subtitle">Portal PKL</p>
+            </div>
+        </a>
+        <button onclick="closeMobileSidebar()" type="button" class="md:hidden text-on-surface-variant hover:text-primary p-1 rounded-lg">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+
     <nav class="flex-1 space-y-sm overflow-y-auto pr-1">
         <?php foreach ($intern_nav_items as $key => $item): ?>
             <?php $is_active = ($active === $key) || ($key === 'galeri' && $active === 'gallery') || ($key === 'events' && $active === 'events_history'); ?>
-            <a class="flex items-center gap-md px-md py-sm rounded-lg font-label-md text-label-md transition-all duration-200 <?php echo $is_active ? 'bg-primary-container text-on-primary-container active:scale-[0.98] transition-transform' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-high'; ?>" href="<?php echo $item['href']; ?>">
+            <a onclick="closeMobileSidebar()" class="flex items-center gap-md px-md py-sm rounded-lg font-label-md text-label-md transition-all duration-200 <?php echo $is_active ? 'bg-primary-container text-on-primary-container active:scale-[0.98] transition-transform' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-high'; ?>" href="<?php echo $item['href']; ?>">
                 <span class="material-symbols-outlined"<?php echo $is_active ? ' style="font-variation-settings: \'FILL\' 1;"' : ''; ?>><?php echo $item['icon']; ?></span>
                 <span data-i18n="<?php echo $item['i18n']; ?>"><?php echo $item['label']; ?></span>
             </a>
         <?php endforeach; ?>
         <?php if ($show_admin_link || current_user_role() === 'admin' || current_user_role() === 'superadmin'): ?>
-            <a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md active:scale-[0.98] transition-transform" href="<?php echo $admin_prefix; ?>admin-dashboard.php">
+            <a onclick="closeMobileSidebar()" class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md active:scale-[0.98] transition-transform" href="<?php echo $admin_prefix; ?>admin-dashboard.php">
                 <span class="material-symbols-outlined">admin_panel_settings</span>
                 <span data-i18n="nav_admin_dashboard">Admin Dashboard</span>
             </a>
@@ -72,3 +82,25 @@ if (current_user_role() === 'admin' || current_user_role() === 'superadmin') {
         </a>
     </div>
 </aside>
+
+<script>
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('app-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (!sidebar) return;
+    const isClosed = sidebar.classList.contains('-translate-x-full');
+    if (isClosed) {
+        sidebar.classList.remove('-translate-x-full');
+        if (backdrop) backdrop.classList.remove('hidden');
+    } else {
+        sidebar.classList.add('-translate-x-full');
+        if (backdrop) backdrop.classList.add('hidden');
+    }
+}
+function closeMobileSidebar() {
+    const sidebar = document.getElementById('app-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (sidebar) sidebar.classList.add('-translate-x-full');
+    if (backdrop) backdrop.classList.add('hidden');
+}
+</script>

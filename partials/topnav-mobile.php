@@ -16,10 +16,16 @@ if (!isset($root_prefix)) {
     $root_prefix = (basename(dirname($script_path)) === 'admin') ? '../' : '';
 }
 ?>
-<header class="md:hidden flex justify-between items-center px-md w-full h-16 bg-surface-container-lowest border-b border-outline-variant shadow-sm fixed top-0 z-50">
-<h1 class="font-headline-md text-headline-md font-bold text-primary font-geist">
-    <a href="<?php echo $root_prefix; ?>index.php" class="hover:underline hover:opacity-80 transition-opacity" title="Kembali ke Beranda" aria-label="Kembali ke Beranda"><?php echo htmlspecialchars($mobile_title); ?></a>
-</h1>    <div class="flex items-center gap-sm">
+<header class="md:hidden flex justify-between items-center px-md w-full h-16 bg-surface-container-lowest border-b border-outline-variant shadow-sm fixed top-0 z-30">
+    <div class="flex items-center gap-2">
+        <button onclick="toggleMobileSidebar()" type="button" class="p-2 text-on-surface hover:bg-surface-container-high rounded-lg shrink-0" aria-label="Buka Menu Sidebar">
+            <span class="material-symbols-outlined text-2xl">menu</span>
+        </button>
+        <h1 class="font-headline-md text-headline-md font-bold text-primary font-geist">
+            <a href="<?php echo $root_prefix; ?>index.php" class="hover:underline hover:opacity-80 transition-opacity" title="Kembali ke Beranda" aria-label="Kembali ke Beranda"><?php echo htmlspecialchars($mobile_title); ?></a>
+        </h1>
+    </div>
+    <div class="flex items-center gap-sm">
         <span class="font-label-sm text-on-surface truncate max-w-[8rem]"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
         <a href="logout.php" class="text-error" aria-label="Keluar" title="Keluar">
             <span class="material-symbols-outlined">logout</span>

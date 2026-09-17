@@ -379,6 +379,16 @@ if (!$featured_article && count($articles) > 0) {
     <!-- Main Canvas -->
     <main class="<?php echo $is_logged_in ? 'md:ml-[16.5rem] h-screen overflow-y-auto' : 'min-h-screen'; ?> flex-1 flex flex-col">
 
+        <?php if ($is_logged_in): ?>
+        <!-- Sticky TopBar for Logged-in Users -->
+        <header class="w-full h-14 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10 flex items-center px-gutter gap-3">
+            <button onclick="toggleMobileSidebar()" class="md:hidden text-on-surface hover:text-primary focus:outline-none flex items-center" aria-label="Toggle Sidebar">
+                <span class="material-symbols-outlined text-2xl">menu</span>
+            </button>
+            <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Aktivitas & Artikel</h2>
+        </header>
+        <?php endif; ?>
+
         <!-- Main Body Content -->
         <div class="w-full max-w-container-max mx-auto p-md md:p-gutter flex flex-col gap-xl">
 

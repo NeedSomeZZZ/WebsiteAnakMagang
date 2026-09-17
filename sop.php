@@ -21,6 +21,9 @@
     <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10">
         <div class="flex justify-between items-center px-gutter w-full max-w-container-max mx-auto h-full">
             <div class="flex-1 flex items-center">
+                <button onclick="toggleMobileSidebar()" class="md:hidden mr-md text-on-surface hover:text-primary focus:outline-none flex items-center" aria-label="Toggle Sidebar">
+                    <span class="material-symbols-outlined text-2xl">menu</span>
+                </button>
                 <h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">SOP Peserta Magang</h2>
             </div>
             <div class="flex items-center gap-sm">

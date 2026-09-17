@@ -39,24 +39,34 @@ if (is_superadmin()) {
     $admin_nav_items['superadmin'] = ['label' => 'Superadmin Panel', 'icon' => 'verified_user', 'href' => $admin_prefix . 'superadmin.php'];
 }
 ?>
-<aside class="hidden md:flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md fixed left-0 top-0 z-20">
-    <a href="<?php echo $root_prefix; ?>index.php" class="flex items-center gap-sm mb-xl px-sm rounded-lg transition-all duration-200 hover:bg-surface-container-high group" title="Kembali ke Beranda" aria-label="Kembali ke Beranda">
-        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary group-hover:opacity-80 transition-opacity">
-            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
-        </div>
-        <div>
-            <?php if (isset($sidebar_title_html)): ?>
-                <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold group-hover:underline"><?php echo $sidebar_title_html; ?></h2>
-            <?php else: ?>
-                <h2 class="font-headline-lg text-on-surface font-bold group-hover:underline"><?php echo htmlspecialchars($sidebar_title); ?></h2>
-            <?php endif; ?>
-            <p class="font-label-sm text-label-sm text-on-surface-variant"><?php echo htmlspecialchars($sidebar_subtitle); ?></p>
-        </div>
-    </a>
+<!-- Mobile Sidebar Backdrop Overlay -->
+<div id="sidebar-backdrop" onclick="closeMobileSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden transition-opacity md:hidden"></div>
+
+<!-- Sidebar Navigation -->
+<aside id="app-sidebar" class="fixed left-0 top-0 bottom-0 z-50 flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md transform -translate-x-full md:translate-x-0 transition-transform duration-300 shadow-2xl md:shadow-none">
+    <div class="flex items-center justify-between mb-xl px-sm">
+        <a href="<?php echo $root_prefix; ?>index.php" class="flex items-center gap-sm rounded-lg transition-all duration-200 hover:bg-surface-container-high group" title="Kembali ke Beranda" aria-label="Kembali ke Beranda">
+            <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary group-hover:opacity-80 transition-opacity">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
+            </div>
+            <div>
+                <?php if (isset($sidebar_title_html)): ?>
+                    <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold group-hover:underline"><?php echo $sidebar_title_html; ?></h2>
+                <?php else: ?>
+                    <h2 class="font-headline-lg text-on-surface font-bold group-hover:underline"><?php echo htmlspecialchars($sidebar_title); ?></h2>
+                <?php endif; ?>
+                <p class="font-label-sm text-label-sm text-on-surface-variant"><?php echo htmlspecialchars($sidebar_subtitle); ?></p>
+            </div>
+        </a>
+        <button onclick="closeMobileSidebar()" type="button" class="md:hidden text-on-surface-variant hover:text-primary p-1 rounded-lg">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+
     <nav class="flex-1 space-y-sm overflow-y-auto pr-1">
         <?php foreach ($admin_nav_items as $key => $item): ?>
             <?php $is_active = ($active === $key); ?>
-            <a class="flex items-center gap-md px-md py-sm rounded-lg font-label-md <?php echo $is_active ? 'bg-primary-container text-on-primary-container' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-high'; ?>" href="<?php echo $item['href']; ?>">
+            <a onclick="closeMobileSidebar()" class="flex items-center gap-md px-md py-sm rounded-lg font-label-md <?php echo $is_active ? 'bg-primary-container text-on-primary-container font-bold' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-high'; ?>" href="<?php echo $item['href']; ?>">
                 <span class="material-symbols-outlined"><?php echo $item['icon']; ?></span>
                 <span><?php echo $item['label']; ?></span>
             </a>
@@ -73,3 +83,25 @@ if (is_superadmin()) {
         </a>
     </div>
 </aside>
+
+<script>
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('app-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (!sidebar) return;
+    const isClosed = sidebar.classList.contains('-translate-x-full');
+    if (isClosed) {
+        sidebar.classList.remove('-translate-x-full');
+        if (backdrop) backdrop.classList.remove('hidden');
+    } else {
+        sidebar.classList.add('-translate-x-full');
+        if (backdrop) backdrop.classList.add('hidden');
+    }
+}
+function closeMobileSidebar() {
+    const sidebar = document.getElementById('app-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (sidebar) sidebar.classList.add('-translate-x-full');
+    if (backdrop) backdrop.classList.add('hidden');
+}
+</script>

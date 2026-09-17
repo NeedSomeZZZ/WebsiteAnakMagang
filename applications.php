@@ -107,13 +107,18 @@ $count_offer = count(array_filter($applications, fn($a) => ($a['status'] ?? '') 
     .tab.active { color: #00236f; border-color: #00236f; }
   </style>
 </head>
-<body class="min-h-screen bg-slate-50 text-slate-900">
+<body class="bg-background text-on-surface font-body-md flex h-screen overflow-hidden">
 <?php $active = 'applications'; include 'partials/sidebar-admin.php'; ?>
-  <main class="min-h-screen md:ml-[16.5rem] flex flex-col">
-    <header class="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-5 md:px-8">
-      <div class="relative hidden w-full max-w-md sm:block">
-        <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400">search</span>
-        <input id="searchInput" onkeyup="filterApplications()" class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-10 pr-4 text-sm outline-none focus:border-blue-600 focus:bg-white transition-colors" placeholder="Cari pelamar (nama, email, posisi)..." type="search">
+  <main class="flex-1 md:ml-[16.5rem] flex flex-col h-screen overflow-y-auto">
+    <header class="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-5 md:px-8">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleMobileSidebar()" class="md:hidden text-on-surface hover:text-primary focus:outline-none flex items-center" aria-label="Toggle Sidebar">
+            <span class="material-symbols-outlined text-2xl">menu</span>
+        </button>
+        <div class="relative w-full max-w-md hidden sm:block">
+          <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400">search</span>
+          <input id="searchInput" onkeyup="filterApplications()" class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-10 pr-4 text-sm outline-none focus:border-blue-600 focus:bg-white transition-colors" placeholder="Cari pelamar (nama, email, posisi)..." type="search">
+        </div>
       </div>
       <div class="ml-auto flex items-center gap-3">
         <span class="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 py-1 pl-1 pr-3 text-sm font-semibold text-slate-700">

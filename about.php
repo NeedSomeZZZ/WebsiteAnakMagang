@@ -172,7 +172,7 @@ $about = get_about_content($conn, $about_file);
         .font-geist { font-family: Geist, sans-serif; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+<body class="<?php echo $is_logged_in ? 'bg-background text-on-surface font-body-md flex h-screen overflow-hidden' : 'bg-slate-50 text-slate-900 min-h-screen flex flex-col'; ?>">
     <?php 
     if ($is_logged_in) {
         $active = 'about';
@@ -185,10 +185,26 @@ $about = get_about_content($conn, $about_file);
     ?>
 
     <!-- Main Content Area -->
-    <main class="<?php echo $is_logged_in ? 'md:ml-[16.5rem]' : ''; ?> flex-1 flex flex-col">
+    <main class="<?php echo $is_logged_in ? 'md:ml-[16.5rem] h-screen overflow-y-auto' : ''; ?> flex-1 flex flex-col">
+        <?php if ($is_logged_in): ?>
+        <!-- Sticky TopBar for Logged-in Users -->
+        <header class="w-full h-14 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10 flex items-center px-gutter gap-3">
+            <button onclick="toggleMobileSidebar()" class="md:hidden text-on-surface hover:text-primary focus:outline-none flex items-center" aria-label="Toggle Sidebar">
+                <span class="material-symbols-outlined text-2xl">menu</span>
+            </button>
+            <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Tentang Kedayweb</h2>
+        </header>
+        <?php endif; ?>
         <!-- Hero Header -->
         <section class="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 text-white py-14 px-6 shadow-xl border-b border-indigo-900/50 relative overflow-hidden">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+                <?php if ($is_logged_in): ?>
+                    <div class="md:hidden">
+                        <button onclick="toggleMobileSidebar()" class="px-3 py-2 rounded-lg bg-white/20 text-white flex items-center gap-2 text-sm font-semibold border border-white/30 hover:bg-white/30 transition-all hidden">
+                            <span class="material-symbols-outlined">menu</span>
+                        </button>
+                    </div>
+                <?php endif; ?>
                 <div>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold border border-blue-400/30 mb-3 backdrop-blur-md">
                         <span class="material-symbols-outlined text-sm">info</span>

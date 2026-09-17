@@ -315,6 +315,14 @@ $events_list = get_all_events_history($conn, $events_json);
                 <span class="material-symbols-outlined text-[280px]">workspace_premium</span>
             </div>
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+                <?php if ($is_logged_in): ?>
+                    <div class="md:hidden">
+                        <button onclick="toggleMobileSidebar()" class="px-3 py-2 rounded-lg bg-white/20 text-white flex items-center gap-2 text-sm font-semibold border border-white/30 hover:bg-white/30 transition-all">
+                            <span class="material-symbols-outlined">menu</span>
+                            <span>Menu Sidebar</span>
+                        </button>
+                    </div>
+                <?php endif; ?>
                 <div>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 text-amber-200 text-xs font-bold border border-amber-400/30 mb-3">
                         <span class="material-symbols-outlined text-sm">history_edu</span>

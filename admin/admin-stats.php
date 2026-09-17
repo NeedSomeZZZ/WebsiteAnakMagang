@@ -28,7 +28,12 @@
     <!-- Main -->
     <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto">
         <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 flex justify-between items-center px-6 z-10">
-            <h2 class="font-headline-lg">Statistik Portal</h2>
+            <h2 class="font-headline-lg flex items-center gap-2">
+                <button onclick="toggleMobileSidebar()" class="md:hidden text-on-surface hover:text-primary focus:outline-none flex items-center mr-1" aria-label="Toggle Sidebar">
+                    <span class="material-symbols-outlined text-2xl">menu</span>
+                </button>
+                <span>Statistik Portal</span>
+            </h2>
             <div class="flex items-center gap-2">
                 <button class="p-2 rounded-full hover:bg-surface-container-low" title="Notifications">
                     <span class="material-symbols-outlined">notifications</span>

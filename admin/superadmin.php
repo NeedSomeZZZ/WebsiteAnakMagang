@@ -253,11 +253,16 @@ $current_active_role = current_user_role();
     <!-- Main Content -->
     <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto">
         <!-- Top Header -->
-        <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 flex justify-between items-center px-6 z-10">
-            <h2 class="font-headline-lg flex items-center gap-2 text-primary font-bold">
-                <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">verified_user</span>
-                <span>Superadmin Control Center</span>
-            </h2>
+        <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 flex justify-between items-center px-6 z-10 gap-2">
+            <div class="flex items-center gap-2">
+                <button onclick="toggleMobileSidebar()" type="button" class="md:hidden p-2 text-on-surface hover:bg-surface-container-high rounded-lg shrink-0" aria-label="Buka Menu Sidebar">
+                    <span class="material-symbols-outlined text-2xl">menu</span>
+                </button>
+                <h2 class="font-headline-lg flex items-center gap-2 text-primary font-bold">
+                    <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+                    <span>Superadmin Control Center</span>
+                </h2>
+            </div>
             <div class="flex items-center gap-3">
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">

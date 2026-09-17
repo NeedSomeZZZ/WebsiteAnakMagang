@@ -293,6 +293,14 @@ $gallery_list = get_all_gallery_items($conn, $json_file);
         <!-- Hero Header -->
         <section class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white py-12 px-6 shadow-md">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <?php if ($is_logged_in): ?>
+                    <div class="md:hidden">
+                        <button onclick="toggleMobileSidebar()" class="px-3 py-2 rounded-lg bg-white/20 text-white flex items-center gap-2 text-sm font-semibold border border-white/30 hover:bg-white/30 transition-all">
+                            <span class="material-symbols-outlined">menu</span>
+                            <span>Menu Sidebar</span>
+                        </button>
+                    </div>
+                <?php endif; ?>
                 <div>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-200 text-xs font-bold border border-blue-400/30 mb-3">
                         <span class="material-symbols-outlined text-sm">photo_camera</span>

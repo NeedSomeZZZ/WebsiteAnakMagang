@@ -70,12 +70,16 @@ if (is_admin()) {
     <main class="flex-1 md:ml-[16.5rem] flex flex-col h-full bg-surface overflow-x-auto">
         <!-- Top Action Bar showing Active Project Name -->
         <header class="min-h-20 px-gutter py-3 flex flex-col md:flex-row items-start md:items-center justify-between border-b border-outline-variant bg-surface-container-lowest flex-shrink-0 gap-md min-w-max">
-            <div class="flex flex-col sm:flex-row sm:items-center gap-md">
-                <div>
-                    <div class="flex items-center gap-sm">
-                        <h2 id="project-title-display" data-no-i18n="true" class="font-headline-lg text-headline-lg text-on-surface font-bold">Memuat...</h2>
-                        <span id="project-task-pill" class="bg-primary-fixed text-primary px-2.5 py-0.5 rounded-full text-xs font-bold">0 tasks</span>
-                    </div>
+            <div class="flex items-center gap-md">
+                <button onclick="toggleMobileSidebar()" type="button" class="md:hidden p-2 text-on-surface hover:bg-surface-container-high rounded-lg shrink-0" aria-label="Buka Menu Sidebar">
+                    <span class="material-symbols-outlined text-2xl">menu</span>
+                </button>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-md">
+                    <div>
+                        <div class="flex items-center gap-sm">
+                            <h2 id="project-title-display" data-no-i18n="true" class="font-headline-lg text-headline-lg text-on-surface font-bold">Memuat...</h2>
+                            <span id="project-task-pill" class="bg-primary-fixed text-primary px-2.5 py-0.5 rounded-full text-xs font-bold">0 tasks</span>
+                        </div>
                     <p id="project-desc-display" data-no-i18n="true" class="font-body-sm text-body-sm text-on-surface-variant max-w-md truncate">Sprint Kanban Project Management</p>
                 </div>
                 <!-- Project Dropdown Switcher -->
