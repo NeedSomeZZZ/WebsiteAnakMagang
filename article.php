@@ -576,6 +576,13 @@ if (!$featured_article && count($articles) > 0) {
         </div>
     </main>
 
+    <!-- Footer for public view -->
+    <?php if (!$is_logged_in): ?>
+        <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mt-auto">
+            <p>© 2024 Platform Kedayweb Artikel Aktivitas. Hak cipta dilindungi.</p>
+        </footer>
+    <?php endif; ?>
+
     <!-- Modal View Detail Artikel -->
     <div id="detail-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-md overflow-y-auto">
         <div class="bg-surface-container-lowest w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden my-8 flex flex-col max-h-[90vh]">

@@ -316,6 +316,13 @@ $about = get_about_content($conn, $about_file);
         </div>
     </main>
 
+    <!-- Footer for public view -->
+    <?php if (!$is_logged_in): ?>
+        <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mt-auto">
+            <p>© 2024 Platform Kedayweb Tentang. Hak cipta dilindungi.</p>
+        </footer>
+    <?php endif; ?>
+
     <!-- Modal Form Edit Konten (Khusus Superadmin) -->
     <?php if ($is_superadmin): ?>
         <div id="editAboutModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 hidden backdrop-blur-sm">
