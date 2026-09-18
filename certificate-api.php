@@ -60,7 +60,7 @@ if ($action === 'toggle_master_status' && $_SERVER['REQUEST_METHOD'] === 'POST')
         }
     }
 
-    $msg = $enabled ? 'Sistem sertifikat berhasil DIAKTIFKAN!' : 'Sistem sertifikat berhasil DINONAKTIFKAN!';
+    $msg = $enabled ? 'Tombol Sertifikat di Panel Intern BERHASIL DITAMPILKAN!' : 'Tombol Sertifikat di Panel Intern BERHASIL DISEMBUNYIKAN!';
     echo json_encode(['success' => true, 'message' => $msg, 'enabled' => (bool)$enabled]);
     exit;
 }
@@ -95,19 +95,6 @@ if ($action === 'toggle_single_status' && $_SERVER['REQUEST_METHOD'] === 'POST')
 
 // ── VERIFY sertifikat (publik) ──────────────────────────────────────────────
 if ($action === 'verify') {
-    // Check if master system is enabled
-    $master_enabled = 1;
-    if ($conn) {
-        $res_m = @mysqli_query($conn, "SELECT certificate_enabled FROM attendance_settings WHERE id = 1 LIMIT 1");
-        if ($res_m && $r_m = mysqli_fetch_assoc($res_m)) {
-            $master_enabled = intval($r_m['certificate_enabled'] ?? 1);
-        }
-    }
-    if (!$master_enabled) {
-        echo json_encode(['success' => false, 'disabled' => true, 'message' => 'Sistem verifikasi sertifikat saat ini sedang dinonaktifkan oleh Administrator.']);
-        exit;
-    }
-
     $cert_id = trim($_GET['id'] ?? '');
     if (!$cert_id) {
         echo json_encode(['success' => false, 'message' => 'ID sertifikat tidak boleh kosong.']);

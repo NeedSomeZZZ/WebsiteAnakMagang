@@ -125,24 +125,24 @@ include '../partials/sidebar-admin.php';
             </div>
         </div>
 
-        <!-- Toggle Master Status Sistem Sertifikat -->
+        <!-- Toggle Status Visibilitas Tombol Sertifikat di Panel Intern -->
         <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
             <div class="flex items-center gap-3.5">
                 <div class="w-11 h-11 rounded-2xl bg-primary-container flex items-center justify-center text-primary shrink-0 shadow-xs">
-                    <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">verified</span>
+                    <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">visibility</span>
                 </div>
                 <div>
                     <h4 class="font-bold text-on-surface text-sm sm:text-base flex items-center gap-2">
-                        <span>Status Sistem Sertifikat Magang</span>
-                        <span id="master-status-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Aktif</span>
+                        <span>Visibilitas Tombol Sertifikat (Panel Intern)</span>
+                        <span id="master-status-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Tampil di Intern</span>
                     </h4>
-                    <p class="text-xs text-on-surface-variant mt-0.5">Aktifkan atau nonaktifkan penerbitan & verifikasi publik seluruh sertifikat magang di sistem.</p>
+                    <p class="text-xs text-on-surface-variant mt-0.5">Aktifkan untuk menampilkan tombol "Sertifikat Saya" di panel intern, atau matikan untuk menyembunyikannya. Admin tetap bisa mengelola sertifikat.</p>
                 </div>
             </div>
             <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
                 <input type="checkbox" id="toggle-certificate-master" class="sr-only peer" onchange="toggleMasterCertificate(this.checked)"/>
                 <div class="w-14 h-7 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-600"></div>
-                <span id="toggle-master-label" class="ml-3 text-xs font-bold text-slate-700">Aktif</span>
+                <span id="toggle-master-label" class="ml-3 text-xs font-bold text-slate-700">Tampil</span>
             </label>
         </div>
     </div>
@@ -461,14 +461,14 @@ function updateMasterToggleUI(enabled) {
     const label = document.getElementById('toggle-master-label');
     if (chk) chk.checked = !!enabled;
     if (badge) {
-        badge.textContent = enabled ? 'Aktif' : 'Nonaktif';
+        badge.textContent = enabled ? 'Tampil di Intern' : 'Sembunyi dari Intern';
         badge.className = enabled 
             ? 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800'
-            : 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800';
+            : 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800';
     }
     if (label) {
-        label.textContent = enabled ? 'Aktif' : 'Nonaktif';
-        label.className = enabled ? 'ml-3 text-xs font-bold text-emerald-700' : 'ml-3 text-xs font-bold text-red-600';
+        label.textContent = enabled ? 'Tampil' : 'Sembunyi';
+        label.className = enabled ? 'ml-3 text-xs font-bold text-emerald-700' : 'ml-3 text-xs font-bold text-amber-700';
     }
 }
 
