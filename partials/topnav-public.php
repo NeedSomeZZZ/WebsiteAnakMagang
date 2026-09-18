@@ -36,9 +36,9 @@ if (!isset($nav_cta_href)) {
             <a href="<?php echo $root_prefix; ?>event_history.php" class="px-3 py-2 rounded-lg font-label-md text-body-sm text-on-surface hover:text-primary hover:bg-surface-container-high transition-colors">Histori Event</a>
             <a href="<?php echo $root_prefix; ?>galeryanakmagang.php" class="px-3 py-2 rounded-lg font-label-md text-body-sm text-on-surface hover:text-primary hover:bg-surface-container-high transition-colors">Galeri Magang</a>
             <a href="<?php echo $root_prefix; ?>article.php" class="px-3 py-2 rounded-lg font-label-md text-body-sm text-on-surface hover:text-primary hover:bg-surface-container-high transition-colors">Artikel</a>
-            <a href="<?php echo $root_prefix; ?>index.php#features" class="px-3 py-2 rounded-lg font-label-md text-body-sm text-on-surface hover:text-primary hover:bg-surface-container-high transition-colors" data-i18n="nav_features">Fitur</a>
+            <!-- <a href="<?php echo $root_prefix; ?>index.php#features" class="px-3 py-2 rounded-lg font-label-md text-body-sm text-on-surface hover:text-primary hover:bg-surface-container-high transition-colors" data-i18n="nav_features">Fitur</a>
             <a href="<?php echo $root_prefix; ?>index.php#faq" class="px-3 py-2 rounded-lg font-label-md text-body-sm text-on-surface hover:text-primary hover:bg-surface-container-high transition-colors" data-i18n="nav_faq">FAQ</a>
-            <a href="<?php echo $root_prefix; ?>index.php#contact" class="px-3 py-2 rounded-lg font-label-md text-body-sm text-on-surface hover:text-primary hover:bg-surface-container-high transition-colors" data-i18n="nav_contact">Kontak</a>
+            <a href="<?php echo $root_prefix; ?>index.php#contact" class="px-3 py-2 rounded-lg font-label-md text-body-sm text-on-surface hover:text-primary hover:bg-surface-container-high transition-colors" data-i18n="nav_contact">Kontak</a> -->
         </nav>
 
         <!-- Desktop & Tablet CTA Actions -->
@@ -63,9 +63,9 @@ if (!isset($nav_cta_href)) {
         <a href="<?php echo $root_prefix; ?>event_history.php" class="block px-md py-sm rounded-lg font-label-md text-on-surface hover:bg-surface-container-high hover:text-primary transition-colors">Histori Event</a>
         <a href="<?php echo $root_prefix; ?>galeryanakmagang.php" class="block px-md py-sm rounded-lg font-label-md text-on-surface hover:bg-surface-container-high hover:text-primary transition-colors">Galeri Magang</a>
         <a href="<?php echo $root_prefix; ?>article.php" class="block px-md py-sm rounded-lg font-label-md text-on-surface hover:bg-surface-container-high hover:text-primary transition-colors">Artikel</a>
-        <a href="<?php echo $root_prefix; ?>index.php#features" class="block px-md py-sm rounded-lg font-label-md text-on-surface hover:bg-surface-container-high hover:text-primary transition-colors" data-i18n="nav_features">Fitur</a>
+        <!-- <a href="<?php echo $root_prefix; ?>index.php#features" class="block px-md py-sm rounded-lg font-label-md text-on-surface hover:bg-surface-container-high hover:text-primary transition-colors" data-i18n="nav_features">Fitur</a>
         <a href="<?php echo $root_prefix; ?>index.php#faq" class="block px-md py-sm rounded-lg font-label-md text-on-surface hover:bg-surface-container-high hover:text-primary transition-colors" data-i18n="nav_faq">FAQ</a>
-        <a href="<?php echo $root_prefix; ?>index.php#contact" class="block px-md py-sm rounded-lg font-label-md text-on-surface hover:bg-surface-container-high hover:text-primary transition-colors" data-i18n="nav_contact">Kontak</a>
+        <a href="<?php echo $root_prefix; ?>index.php#contact" class="block px-md py-sm rounded-lg font-label-md text-on-surface hover:bg-surface-container-high hover:text-primary transition-colors" data-i18n="nav_contact">Kontak</a> -->
 
         <div class="pt-sm mt-sm border-t border-outline-variant flex flex-col gap-2 sm:hidden">
             <a href="<?php echo $root_prefix; ?>verification.php" class="w-full justify-center border border-outline-variant text-primary hover:bg-primary hover:text-white px-3 py-2 rounded-lg font-label-md text-sm transition-all flex items-center gap-1.5 font-bold">

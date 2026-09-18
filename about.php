@@ -185,48 +185,62 @@ $about = get_about_content($conn, $about_file);
     ?>
 
     <!-- Main Content Area -->
-    <main class="<?php echo $is_logged_in ? 'md:ml-[16.5rem] h-screen overflow-y-auto' : ''; ?> flex-1 flex flex-col">
+    <main class="<?php echo $is_logged_in ? 'md:ml-[16.5rem] h-screen overflow-y-auto' : 'min-h-screen'; ?> flex-1 flex flex-col">
         <?php if ($is_logged_in): ?>
         <!-- Sticky TopBar for Logged-in Users -->
-        <header class="w-full h-14 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10 flex items-center px-gutter gap-3">
-            <button onclick="toggleMobileSidebar()" class="md:hidden text-on-surface hover:text-primary focus:outline-none flex items-center" aria-label="Toggle Sidebar">
-                <span class="material-symbols-outlined text-2xl">menu</span>
-            </button>
-            <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Tentang Kedayweb</h2>
+        <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10 flex items-center justify-between px-gutter shrink-0">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleMobileSidebar()" class="md:hidden text-on-surface hover:text-primary focus:outline-none flex items-center p-1 rounded-lg hover:bg-surface-container-high" aria-label="Toggle Sidebar">
+                    <span class="material-symbols-outlined text-2xl">menu</span>
+                </button>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">info</span>
+                    <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Tentang Kedayweb</h2>
+                </div>
+            </div>
+            <div class="flex items-center gap-sm">
+                <div class="flex items-center gap-sm p-xs pr-md rounded-full border border-outline-variant">
+                    <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container overflow-hidden">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+                    </div>
+                    <span class="font-label-md text-label-md hidden sm:inline-block"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
+                </div>
+            </div>
         </header>
         <?php endif; ?>
-        <!-- Hero Header -->
-        <section class="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 text-white py-14 px-6 shadow-xl border-b border-indigo-900/50 relative overflow-hidden">
-            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
-                <?php if ($is_logged_in): ?>
-                    <div class="md:hidden">
-                        <button onclick="toggleMobileSidebar()" class="px-3 py-2 rounded-lg bg-white/20 text-white flex items-center gap-2 text-sm font-semibold border border-white/30 hover:bg-white/30 transition-all hidden">
-                            <span class="material-symbols-outlined">menu</span>
-                        </button>
-                    </div>
-                <?php endif; ?>
-                <div>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold border border-blue-400/30 mb-3 backdrop-blur-md">
-                        <span class="material-symbols-outlined text-sm">info</span>
-                        <span>Official Information & Company Profile</span>
-                    </span>
-                    <h1 class="font-geist text-3xl md:text-5xl font-extrabold tracking-tight">Tentang Kedayweb & Anak Magang</h1>
-                    <p class="mt-3 text-slate-300 max-w-2xl text-sm leading-relaxed">
-                        Mengenal lebih dekat profil Kedayweb Technology dan ekosistem program magang yang memberdayakan talenta digital muda.
-                    </p>
-                </div>
-                
-                <?php if ($is_superadmin): ?>
-                    <button onclick="openEditAboutModal()" class="shrink-0 px-6 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm rounded-xl transition-all shadow-xl flex items-center gap-2 active:scale-95">
-                        <span class="material-symbols-outlined text-lg">edit_note</span>
-                        <span>Edit Konten (Superadmin)</span>
-                    </button>
-                <?php endif; ?>
-            </div>
-        </section>
 
-        <!-- Main Body -->
-        <div class="max-w-7xl mx-auto p-6 md:p-8 space-y-12">
+        <!-- Main Body Content -->
+        <div class="w-full max-w-7xl mx-auto p-4 md:p-8 space-y-8 flex-1">
+            <!-- Hero Header Card -->
+            <section class="relative w-full rounded-3xl overflow-hidden bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 text-white p-6 md:p-10 shadow-xl border border-indigo-900/50">
+                <!-- Ambient decorative icon -->
+                <div class="absolute -right-6 -bottom-6 opacity-10 text-white pointer-events-none">
+                    <span class="material-symbols-outlined text-[200px] md:text-[260px]">info</span>
+                </div>
+
+                <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div class="space-y-3 max-w-3xl">
+                        <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold border border-blue-400/30 backdrop-blur-md">
+                            <span class="material-symbols-outlined text-sm">verified_user</span>
+                            <span>Official Information & Company Profile</span>
+                        </span>
+                        <h1 class="font-geist text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight text-white">
+                            Tentang Kedayweb & Anak Magang
+                        </h1>
+                        <p class="text-slate-300 text-xs sm:text-sm md:text-base leading-relaxed max-w-2xl">
+                            Mengenal lebih dekat profil Kedayweb Technology dan ekosistem program magang yang memberdayakan talenta digital muda.
+                        </p>
+                    </div>
+                    
+                    <?php if ($is_superadmin): ?>
+                        <button onclick="openEditAboutModal()" class="shrink-0 px-6 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm rounded-xl transition-all shadow-xl flex items-center gap-2 active:scale-95">
+                            <span class="material-symbols-outlined text-lg">edit_note</span>
+                            <span>Edit Konten (Superadmin)</span>
+                        </button>
+                    <?php endif; ?>
+                </div>
+            </section>
+
             <!-- Alert Notification -->
             <?php if (!empty($msg)): ?>
                 <div class="p-4 rounded-xl <?php echo $msg_type === 'success' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-red-50 text-red-800 border border-red-200'; ?> flex justify-between items-center text-sm font-medium">
