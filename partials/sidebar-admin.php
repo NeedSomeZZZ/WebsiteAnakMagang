@@ -8,7 +8,7 @@ if (!isset($active)) {
     $active = '';
 }
 if (!isset($sidebar_title)) {
-    $sidebar_title = 'Kedayweb';
+    $sidebar_title = 'AnakMagang';
 }
 if (!isset($sidebar_subtitle)) {
     $sidebar_subtitle = 'Admin Panel';
@@ -46,9 +46,7 @@ if (is_superadmin()) {
 <aside id="app-sidebar" class="fixed left-0 top-0 bottom-0 z-50 flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md transform -translate-x-full md:translate-x-0 transition-transform duration-300 shadow-2xl md:shadow-none">
     <div class="flex items-center justify-between mb-xl px-sm">
         <a href="<?php echo $root_prefix; ?>index.php" class="flex items-center gap-sm rounded-lg transition-all duration-200 hover:bg-surface-container-high group" title="Kembali ke Beranda" aria-label="Kembali ke Beranda">
-            <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary group-hover:opacity-80 transition-opacity">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
-            </div>
+            <img src="<?php echo $root_prefix; ?>uploads/Icon/Anak_Magang_Icon.jpg.jpeg" alt="Logo Anak Magang" class="w-8 h-8 rounded-lg object-cover shadow-xs border border-outline-variant/30 shrink-0 group-hover:opacity-90 transition-opacity"/>
             <div>
                 <?php if (isset($sidebar_title_html)): ?>
                     <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold group-hover:underline"><?php echo $sidebar_title_html; ?></h2>

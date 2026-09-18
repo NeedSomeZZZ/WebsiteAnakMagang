@@ -43,7 +43,7 @@ if ($db_query) {
 <?php
 $active = 'dashboard';
 
-$sidebar_subtitle = 'Kedayweb';
+$sidebar_subtitle = 'Admin Panel';
 include '../partials/sidebar-admin.php';
 ?>
     <!-- Main Content -->

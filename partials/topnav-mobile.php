@@ -7,7 +7,7 @@
  *   $mobile_title (string) -> teks brand yang ditampilkan (default: 'Kedayweb')
  */
 if (!isset($mobile_title)) {
-    $mobile_title = 'Kedayweb';
+    $mobile_title = 'AnakMagang';
 }
 
 // Deteksi apakah file saat ini ada di dalam subfolder (mis. /admin/)

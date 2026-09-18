@@ -31,7 +31,7 @@ while ($row = mysqli_fetch_assoc($q)) $users[] = $row;
 
 <?php
 $active           = 'certificates';
-$sidebar_subtitle = 'Kedayweb';
+$sidebar_subtitle = 'Admin Panel';
 include '../partials/sidebar-admin.php';
 ?>
 

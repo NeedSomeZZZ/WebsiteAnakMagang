@@ -24,10 +24,10 @@ if (!isset($nav_cta_href)) {
     <div class="flex justify-between items-center px-gutter w-full max-w-container-max mx-auto h-16">
         <!-- Logo & Brand -->
         <div class="flex items-center gap-sm shrink-0">
-            <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;"><?php echo htmlspecialchars($nav_icon); ?></span>
-            </div>
-            <a href="<?php echo htmlspecialchars($nav_home_href); ?>" class="font-headline-md text-headline-md font-bold text-primary" data-i18n="brand_name">Kedayweb</a>
+            <a href="<?php echo htmlspecialchars($nav_home_href); ?>" class="flex items-center gap-sm group">
+                <img src="<?php echo $root_prefix; ?>uploads/Icon/Anak_Magang_Icon.jpg.jpeg" alt="Logo AnakMagang" class="w-8 h-8 rounded-lg object-cover shadow-xs border border-outline-variant/30 shrink-0 group-hover:opacity-90 transition-opacity"/>
+                <span class="font-headline-md text-headline-md font-bold text-primary" data-i18n="brand_name">AnakMagang</span>
+            </a>
         </div>
 
         <!-- Desktop Navigation Links (Visible on xl+) -->
