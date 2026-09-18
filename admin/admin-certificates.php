@@ -3,6 +3,11 @@ require_once __DIR__ . '/../session.php';
 require_admin();
 require_once __DIR__ . '/../Login/koneksi.php';
 
+// Auto sync certificates for all intern users
+if ($conn) {
+    sync_all_intern_certificates($conn);
+}
+
 // Ambil daftar user intern untuk dropdown
 $users = [];
 $q = mysqli_query($conn, "SELECT id, username FROM users WHERE role='intern' ORDER BY username ASC");
@@ -118,6 +123,27 @@ include '../partials/sidebar-admin.php';
                     </tbody>
                 </table>
             </div>
+        </div>
+
+        <!-- Toggle Master Status Sistem Sertifikat -->
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+            <div class="flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-2xl bg-primary-container flex items-center justify-center text-primary shrink-0 shadow-xs">
+                    <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">verified</span>
+                </div>
+                <div>
+                    <h4 class="font-bold text-on-surface text-sm sm:text-base flex items-center gap-2">
+                        <span>Status Sistem Sertifikat Magang</span>
+                        <span id="master-status-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Aktif</span>
+                    </h4>
+                    <p class="text-xs text-on-surface-variant mt-0.5">Aktifkan atau nonaktifkan penerbitan & verifikasi publik seluruh sertifikat magang di sistem.</p>
+                </div>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
+                <input type="checkbox" id="toggle-certificate-master" class="sr-only peer" onchange="toggleMasterCertificate(this.checked)"/>
+                <div class="w-14 h-7 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-600"></div>
+                <span id="toggle-master-label" class="ml-3 text-xs font-bold text-slate-700">Aktif</span>
+            </label>
         </div>
     </div>
     <div class="mt-auto shrink-0 w-full">
@@ -301,8 +327,8 @@ async function loadCertificates() {
             </td>
             <td class="px-4 py-3 text-center">
                 ${c.status === 'active'
-                    ? '<span class="bg-[#dcfce7] text-[#166534] px-2 py-1 rounded-full text-xs font-bold">Aktif</span>'
-                    : '<span class="bg-error-container text-error px-2 py-1 rounded-full text-xs font-bold">Dicabut</span>'}
+                    ? `<button type="button" onclick="toggleSingleCertStatus(${c.id}, 'revoked')" class="bg-[#dcfce7] text-[#166534] hover:bg-red-100 hover:text-red-700 transition-colors px-2 py-1 rounded-full text-xs font-bold cursor-pointer" title="Klik untuk menonaktifkan / mencabut sertifikat ini">Aktif</button>`
+                    : `<button type="button" onclick="toggleSingleCertStatus(${c.id}, 'active')" class="bg-error-container text-error hover:bg-emerald-100 hover:text-emerald-800 transition-colors px-2 py-1 rounded-full text-xs font-bold cursor-pointer" title="Klik untuk mengaktifkan sertifikat ini">Dicabut</button>`}
             </td>
             <td class="px-4 py-3 text-center text-xs text-on-surface-variant">${c.issue_fmt}</td>
             <td class="px-4 py-3 text-center">
@@ -416,6 +442,76 @@ function confirmDelete(id) {
     };
 }
 
+// ── Master Status Toggle ───────────────────────────────────────────────────
+async function loadMasterCertificateStatus() {
+    try {
+        const res = await fetch('../certificate-api.php?action=get_master_status');
+        const json = await res.json();
+        if (json.success) {
+            updateMasterToggleUI(json.enabled);
+        }
+    } catch (e) {
+        console.error("Gagal memuat status master sertifikat", e);
+    }
+}
+
+function updateMasterToggleUI(enabled) {
+    const chk = document.getElementById('toggle-certificate-master');
+    const badge = document.getElementById('master-status-badge');
+    const label = document.getElementById('toggle-master-label');
+    if (chk) chk.checked = !!enabled;
+    if (badge) {
+        badge.textContent = enabled ? 'Aktif' : 'Nonaktif';
+        badge.className = enabled 
+            ? 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800'
+            : 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800';
+    }
+    if (label) {
+        label.textContent = enabled ? 'Aktif' : 'Nonaktif';
+        label.className = enabled ? 'ml-3 text-xs font-bold text-emerald-700' : 'ml-3 text-xs font-bold text-red-600';
+    }
+}
+
+async function toggleMasterCertificate(enabled) {
+    try {
+        const fd = new FormData();
+        fd.set('action', 'toggle_master_status');
+        fd.set('enabled', enabled ? '1' : '0');
+        const res = await fetch('../certificate-api.php', { method: 'POST', body: fd });
+        const json = await res.json();
+        if (json.success) {
+            updateMasterToggleUI(json.enabled);
+            showToast(json.message, json.enabled ? 'success' : 'error');
+        } else {
+            showToast(json.message || 'Gagal mengubah status', 'error');
+            loadMasterCertificateStatus();
+        }
+    } catch (e) {
+        showToast('Terjadi kesalahan koneksi', 'error');
+        loadMasterCertificateStatus();
+    }
+}
+
+// ── Single Certificate Status Toggle ───────────────────────────────────────
+async function toggleSingleCertStatus(id, newStatus) {
+    try {
+        const fd = new FormData();
+        fd.set('action', 'toggle_single_status');
+        fd.set('id', id);
+        fd.set('status', newStatus);
+        const res = await fetch('../certificate-api.php', { method: 'POST', body: fd });
+        const json = await res.json();
+        if (json.success) {
+            loadCertificates();
+            showToast(json.message, newStatus === 'active' ? 'success' : 'error');
+        } else {
+            showToast(json.message || 'Gagal memperbarui status sertifikat', 'error');
+        }
+    } catch (e) {
+        showToast('Terjadi kesalahan server', 'error');
+    }
+}
+
 // ── Toast notification ─────────────────────────────────────────────────────
 function showToast(msg, type = 'success') {
     const t = document.createElement('div');
@@ -429,6 +525,7 @@ function showToast(msg, type = 'success') {
 
 // ── Init ───────────────────────────────────────────────────────────────────
 loadCertificates();
+loadMasterCertificateStatus();
 </script>
 </body>
 </html>

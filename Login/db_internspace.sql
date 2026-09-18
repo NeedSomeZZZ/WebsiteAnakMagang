@@ -286,7 +286,10 @@ CREATE TABLE `users` (
   `id` int NOT NULL,
   `role` varchar(20) NOT NULL,
   `username` varchar(50) NOT NULL,
-  `password` varchar(255) NOT NULL
+  `password` varchar(255) NOT NULL,
+  `intern_position` varchar(150) DEFAULT NULL,
+  `university` varchar(150) DEFAULT NULL,
+  `major` varchar(150) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --

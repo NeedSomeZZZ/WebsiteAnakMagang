@@ -4,7 +4,7 @@ require_admin();
 require_once __DIR__ . '/../Login/koneksi.php';
 
 $users = [];
-$users_query = mysqli_query($conn, 'SELECT id, username, password, role FROM users ORDER BY id ASC');
+$users_query = mysqli_query($conn, 'SELECT id, username, password, role, intern_position, university, major FROM users ORDER BY id ASC');
 if ($users_query) {
     while ($user = mysqli_fetch_assoc($users_query)) {
         $users[] = $user;
@@ -112,6 +112,9 @@ $total_admins = count(array_filter($users, static function (array $user): bool {
                                     <th class="pb-2 pr-4 font-semibold">Password</th>
                                 <?php endif; ?>
                                 <th class="pb-2 pr-4 font-semibold">Role</th>
+                                <th class="pb-2 pr-4 font-semibold">Posisi Magang</th>
+                                <th class="pb-2 pr-4 font-semibold">Instansi / Universitas</th>
+                                <th class="pb-2 pr-4 font-semibold">Jurusan</th>
                             </tr>
                         </thead>
                         <tbody id="users-table-body" class="divide-y divide-outline-variant">
@@ -134,6 +137,15 @@ $total_admins = count(array_filter($users, static function (array $user): bool {
                                         <span class="px-2.5 py-0.5 rounded-full text-xs font-bold <?php echo $user['role'] === 'superadmin' ? 'bg-purple-100 text-purple-700' : ($user['role'] === 'admin' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'); ?>">
                                             <?php echo strtoupper(htmlspecialchars($user['role'], ENT_QUOTES, 'UTF-8')); ?>
                                         </span>
+                                    </td>
+                                    <td class="py-2.5 pr-4 font-medium text-on-surface">
+                                        <?php echo !empty($user['intern_position']) ? htmlspecialchars($user['intern_position'], ENT_QUOTES, 'UTF-8') : '<span class="text-slate-400 italic text-xs">-</span>'; ?>
+                                    </td>
+                                    <td class="py-2.5 pr-4 font-medium text-on-surface">
+                                        <?php echo !empty($user['university']) ? htmlspecialchars($user['university'], ENT_QUOTES, 'UTF-8') : '<span class="text-slate-400 italic text-xs">-</span>'; ?>
+                                    </td>
+                                    <td class="py-2.5 pr-4 font-medium text-on-surface">
+                                        <?php echo !empty($user['major']) ? htmlspecialchars($user['major'], ENT_QUOTES, 'UTF-8') : '<span class="text-slate-400 italic text-xs">-</span>'; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

@@ -11,10 +11,103 @@ header('Access-Control-Allow-Methods: GET, POST');
 
 require_once __DIR__ . '/Login/koneksi.php';
 
+// Auto migration: Ensure certificate_enabled column exists in attendance_settings
+if ($conn) {
+    $chk_col = @mysqli_query($conn, "SHOW COLUMNS FROM attendance_settings LIKE 'certificate_enabled'");
+    if ($chk_col && mysqli_num_rows($chk_col) == 0) {
+        @mysqli_query($conn, "ALTER TABLE attendance_settings ADD COLUMN certificate_enabled TINYINT(1) NOT NULL DEFAULT 1");
+    }
+}
+
 $action = $_GET['action'] ?? $_POST['action'] ?? 'verify';
+
+// ── GET MASTER STATUS (publik / admin) ───────────────────────────────────────
+if ($action === 'get_master_status') {
+    $enabled = 1;
+    if ($conn) {
+        $res = @mysqli_query($conn, "SELECT certificate_enabled FROM attendance_settings WHERE id = 1 LIMIT 1");
+        if ($res && $r = mysqli_fetch_assoc($res)) {
+            $enabled = intval($r['certificate_enabled'] ?? 1);
+        }
+    }
+    echo json_encode(['success' => true, 'enabled' => (bool)$enabled]);
+    exit;
+}
+
+// ── TOGGLE MASTER STATUS (admin only) ───────────────────────────────────────
+if ($action === 'toggle_master_status' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    session_start();
+    if (empty($_SESSION['user_logged_in']) || !in_array($_SESSION['role'] ?? '', ['admin', 'superadmin'])) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'Akses ditolak.']);
+        exit;
+    }
+
+    $enabled = isset($_POST['enabled']) && ($_POST['enabled'] == '1' || $_POST['enabled'] == 'true' || $_POST['enabled'] === true) ? 1 : 0;
+    
+    if ($conn) {
+        $chk = mysqli_query($conn, "SELECT id FROM attendance_settings WHERE id = 1 LIMIT 1");
+        if ($chk && mysqli_num_rows($chk) > 0) {
+            $stmt = mysqli_prepare($conn, "UPDATE attendance_settings SET certificate_enabled = ? WHERE id = 1");
+            mysqli_stmt_bind_param($stmt, "i", $enabled);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+        } else {
+            $stmt = mysqli_prepare($conn, "INSERT INTO attendance_settings (id, certificate_enabled) VALUES (1, ?)");
+            mysqli_stmt_bind_param($stmt, "i", $enabled);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+        }
+    }
+
+    $msg = $enabled ? 'Sistem sertifikat berhasil DIAKTIFKAN!' : 'Sistem sertifikat berhasil DINONAKTIFKAN!';
+    echo json_encode(['success' => true, 'message' => $msg, 'enabled' => (bool)$enabled]);
+    exit;
+}
+
+// ── TOGGLE SINGLE CERTIFICATE STATUS (admin only) ───────────────────────────
+if ($action === 'toggle_single_status' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    session_start();
+    if (empty($_SESSION['user_logged_in']) || !in_array($_SESSION['role'] ?? '', ['admin', 'superadmin'])) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'Akses ditolak.']);
+        exit;
+    }
+
+    $id = (int)($_POST['id'] ?? 0);
+    $status = trim($_POST['status'] ?? 'active');
+    if (!in_array($status, ['active', 'revoked'])) {
+        $status = 'active';
+    }
+
+    if ($conn && $id > 0) {
+        $stmt = mysqli_prepare($conn, "UPDATE certificates SET status = ? WHERE id = ?");
+        mysqli_stmt_bind_param($stmt, "si", $status, $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        $msg = $status === 'active' ? 'Status sertifikat berhasil DIAKTIFKAN!' : 'Status sertifikat berhasil DICABUT / DINONAKTIFKAN!';
+        echo json_encode(['success' => true, 'message' => $msg, 'status' => $status]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'ID sertifikat tidak valid.']);
+    }
+    exit;
+}
 
 // ── VERIFY sertifikat (publik) ──────────────────────────────────────────────
 if ($action === 'verify') {
+    // Check if master system is enabled
+    $master_enabled = 1;
+    if ($conn) {
+        $res_m = @mysqli_query($conn, "SELECT certificate_enabled FROM attendance_settings WHERE id = 1 LIMIT 1");
+        if ($res_m && $r_m = mysqli_fetch_assoc($res_m)) {
+            $master_enabled = intval($r_m['certificate_enabled'] ?? 1);
+        }
+    }
+    if (!$master_enabled) {
+        echo json_encode(['success' => false, 'disabled' => true, 'message' => 'Sistem verifikasi sertifikat saat ini sedang dinonaktifkan oleh Administrator.']);
+        exit;
+    }
+
     $cert_id = trim($_GET['id'] ?? '');
     if (!$cert_id) {
         echo json_encode(['success' => false, 'message' => 'ID sertifikat tidak boleh kosong.']);

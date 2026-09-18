@@ -54,9 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
     if ($action === 'add_user') {
-        $username = trim($_POST['username'] ?? '');
-        $password = trim($_POST['password'] ?? '');
-        $role     = trim($_POST['role'] ?? 'intern');
+        $username        = trim($_POST['username'] ?? '');
+        $password        = trim($_POST['password'] ?? '');
+        $role            = trim($_POST['role'] ?? 'intern');
+        $intern_position = trim($_POST['intern_position'] ?? '');
+        $university      = trim($_POST['university'] ?? '');
+        $major           = trim($_POST['major'] ?? '');
 
         if (empty($username) || empty($password)) {
             $msg = "Username dan Password wajib diisi!";
@@ -72,20 +75,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $msg = "Username '{$username}' sudah terdaftar!";
                 $msg_type = "danger";
             } else {
-                $insert_stmt = mysqli_prepare($conn, "INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
+                $insert_stmt = mysqli_prepare($conn, "INSERT INTO users (username, password, role, intern_position, university, major) VALUES (?, ?, ?, ?, ?, ?)");
                 if ($insert_stmt) {
-                    mysqli_stmt_bind_param($insert_stmt, "sss", $username, $password, $role);
+                    mysqli_stmt_bind_param($insert_stmt, "ssssss", $username, $password, $role, $intern_position, $university, $major);
                     if (mysqli_stmt_execute($insert_stmt)) {
-                        $msg = "User baru '{$username}' dengan role '{$role}' berhasil ditambahkan!";
+                        $new_user_id = mysqli_insert_id($conn);
+                        if ($role === 'intern' && $new_user_id > 0) {
+                            ensure_intern_certificate($conn, $new_user_id, $username, $intern_position, $university, $major);
+                        }
+                        $msg = "User baru '{$username}' dengan role '{$role}' berhasil ditambahkan (Sertifikat dibuat otomatis)!";
                         $msg_type = "success";
                     } else {
-                        $msg = "Gagal menambahkan user ke database.";
+                        $msg = "Gagal menambahkan user ke database: " . mysqli_error($conn);
                         $msg_type = "danger";
                     }
                     mysqli_stmt_close($insert_stmt);
                 }
             }
             mysqli_stmt_close($check_stmt);
+        }
+    } elseif ($action === 'update_user') {
+        $user_id         = intval($_POST['user_id'] ?? 0);
+        $username        = trim($_POST['username'] ?? '');
+        $password        = trim($_POST['password'] ?? '');
+        $role            = trim($_POST['role'] ?? 'intern');
+        $intern_position = trim($_POST['intern_position'] ?? '');
+        $university      = trim($_POST['university'] ?? '');
+        $major           = trim($_POST['major'] ?? '');
+
+        if ($conn && $user_id > 0) {
+            if (!empty($password)) {
+                $stmt = mysqli_prepare($conn, "UPDATE users SET username=?, password=?, role=?, intern_position=?, university=?, major=? WHERE id=?");
+                if ($stmt) {
+                    mysqli_stmt_bind_param($stmt, "ssssssi", $username, $password, $role, $intern_position, $university, $major, $user_id);
+                    mysqli_stmt_execute($stmt);
+                    mysqli_stmt_close($stmt);
+                }
+            } else {
+                $stmt = mysqli_prepare($conn, "UPDATE users SET username=?, role=?, intern_position=?, university=?, major=? WHERE id=?");
+                if ($stmt) {
+                    mysqli_stmt_bind_param($stmt, "sssssi", $username, $role, $intern_position, $university, $major, $user_id);
+                    mysqli_stmt_execute($stmt);
+                    mysqli_stmt_close($stmt);
+                }
+            }
+            if ($role === 'intern') {
+                ensure_intern_certificate($conn, $user_id, $username, $intern_position, $university, $major);
+            }
+            $msg = "Data user ID #{$user_id} berhasil diperbarui!";
+            $msg_type = "success";
         }
     } elseif ($action === 'update_user_role') {
         $user_id = intval($_POST['user_id'] ?? 0);
@@ -96,6 +134,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 mysqli_stmt_bind_param($stmt, "si", $new_role, $user_id);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
+                if ($new_role === 'intern') {
+                    ensure_intern_certificate($conn, $user_id, '');
+                }
                 $msg = "Role user ID #{$user_id} berhasil diubah menjadi {$new_role}.";
                 $msg_type = "success";
             }
@@ -188,7 +229,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Fetch Database Users
 $users = [];
 if ($conn) {
-    $res = @mysqli_query($conn, "SELECT id, username, password, role FROM users ORDER BY id ASC");
+    // Auto migration: Ensure intern_position, university, major columns exist in users table
+    $cols_to_check = [
+        'intern_position' => 'VARCHAR(150) DEFAULT NULL',
+        'university'      => 'VARCHAR(150) DEFAULT NULL',
+        'major'           => 'VARCHAR(150) DEFAULT NULL'
+    ];
+    foreach ($cols_to_check as $col_name => $col_def) {
+        $chk_col = @mysqli_query($conn, "SHOW COLUMNS FROM users LIKE '$col_name'");
+        if ($chk_col && mysqli_num_rows($chk_col) == 0) {
+            @mysqli_query($conn, "ALTER TABLE users ADD COLUMN $col_name $col_def");
+        }
+    }
+
+    // Auto sync certificates for any intern users
+    sync_all_intern_certificates($conn);
+
+    $res = @mysqli_query($conn, "SELECT id, username, password, role, intern_position, university, major FROM users ORDER BY id ASC");
     if ($res) {
         while ($row = mysqli_fetch_assoc($res)) {
             $users[] = $row;
@@ -477,17 +534,20 @@ $current_active_role = current_user_role();
                     <table class="w-full text-sm text-left">
                         <thead>
                             <tr class="border-b border-outline-variant bg-surface-container-low text-on-surface-variant">
-                                <th class="py-3 px-4 font-semibold">ID User</th>
+                                <th class="py-3 px-4 font-semibold">ID</th>
                                 <th class="py-3 px-4 font-semibold">Username / Email</th>
                                 <th class="py-3 px-4 font-semibold">Password</th>
-                                <th class="py-3 px-4 font-semibold">Role Sekarang</th>
-                                <th class="py-3 px-4 font-semibold text-right">Kelola Role & Akun</th>
+                                <th class="py-3 px-4 font-semibold">Role</th>
+                                <th class="py-3 px-4 font-semibold">Posisi Magang</th>
+                                <th class="py-3 px-4 font-semibold">Instansi / Universitas</th>
+                                <th class="py-3 px-4 font-semibold">Jurusan</th>
+                                <th class="py-3 px-4 font-semibold text-right">Kelola Akun</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-outline-variant">
                             <?php if (empty($users)): ?>
                                 <tr>
-                                    <td colspan="5" class="text-center py-6 text-on-surface-variant">Tidak ada data user di database.</td>
+                                    <td colspan="8" class="text-center py-6 text-on-surface-variant">Tidak ada data user di database.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($users as $u): ?>
@@ -508,19 +568,21 @@ $current_active_role = current_user_role();
                                                 <?php echo strtoupper(htmlspecialchars($u['role'], ENT_QUOTES, 'UTF-8')); ?>
                                             </span>
                                         </td>
+                                        <td class="py-3 px-4 font-medium text-on-surface">
+                                            <?php echo !empty($u['intern_position']) ? htmlspecialchars($u['intern_position'], ENT_QUOTES, 'UTF-8') : '<span class="text-slate-400 italic text-xs">-</span>'; ?>
+                                        </td>
+                                        <td class="py-3 px-4 font-medium text-on-surface">
+                                            <?php echo !empty($u['university']) ? htmlspecialchars($u['university'], ENT_QUOTES, 'UTF-8') : '<span class="text-slate-400 italic text-xs">-</span>'; ?>
+                                        </td>
+                                        <td class="py-3 px-4 font-medium text-on-surface">
+                                            <?php echo !empty($u['major']) ? htmlspecialchars($u['major'], ENT_QUOTES, 'UTF-8') : '<span class="text-slate-400 italic text-xs">-</span>'; ?>
+                                        </td>
                                         <td class="py-3 px-4 text-right">
-                                            <div class="inline-flex items-center gap-2">
-                                                <!-- Form Ubah Role -->
-                                                <form action="superadmin.php" method="POST" class="inline-flex items-center gap-1.5">
-                                                    <input type="hidden" name="action" value="update_user_role"/>
-                                                    <input type="hidden" name="user_id" value="<?php echo (int) $u['id']; ?>"/>
-                                                    <select name="role" class="px-2.5 py-1 text-xs border border-outline-variant rounded-lg bg-surface-container-lowest font-medium">
-                                                        <option value="intern" <?php echo $u['role'] === 'intern' ? 'selected' : ''; ?>>INTERN</option>
-                                                        <option value="admin" <?php echo $u['role'] === 'admin' ? 'selected' : ''; ?>>ADMIN</option>
-                                                        <option value="superadmin" <?php echo $u['role'] === 'superadmin' ? 'selected' : ''; ?>>SUPERADMIN</option>
-                                                    </select>
-                                                    <button type="submit" class="px-2.5 py-1 text-xs bg-primary text-on-primary rounded-lg font-bold hover:bg-primary-container transition-colors shadow-xs cursor-pointer">Simpan</button>
-                                                </form>
+                                            <div class="inline-flex items-center gap-1.5">
+                                                <!-- Tombol Edit User -->
+                                                <button type="button" onclick='openEditUserModal(<?php echo json_encode($u, JSON_HEX_APOS | JSON_HEX_QUOT); ?>)' class="px-2.5 py-1 text-xs bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white border border-indigo-200 rounded-lg font-bold transition-all flex items-center gap-1 cursor-pointer" title="Edit Detail User">
+                                                    <span class="material-symbols-outlined text-[14px]">edit</span> Edit
+                                                </button>
 
                                                 <!-- Form Hapus User -->
                                                 <form action="superadmin.php" method="POST" class="inline-block confirm-action-form" data-confirm-title="Hapus Akun User" data-confirm-message="PERINGATAN SUPERADMIN: Apakah Anda yakin ingin menghapus akun '<?php echo htmlspecialchars(addslashes($u['username']), ENT_QUOTES, 'UTF-8'); ?>' (ID #<?php echo (int) $u['id']; ?>)? Tindakan ini akan menghapus akun secara permanen!">
@@ -548,7 +610,7 @@ $current_active_role = current_user_role();
 
     <!-- Modal Tambah User Baru -->
     <div id="add-user-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 hidden backdrop-blur-sm">
-        <div class="bg-surface-container-lowest rounded-2xl max-w-md w-full p-6 shadow-2xl border border-outline-variant">
+        <div class="bg-surface-container-lowest rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-outline-variant max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center pb-3 border-b border-outline-variant mb-4">
                 <h3 class="font-headline-md font-bold text-indigo-700 flex items-center gap-2">
                     <span class="material-symbols-outlined">person_add</span>
@@ -561,13 +623,15 @@ $current_active_role = current_user_role();
 
             <form action="superadmin.php" method="POST" class="space-y-4">
                 <input type="hidden" name="action" value="add_user"/>
-                <div>
-                    <label class="block text-xs font-semibold mb-1">Username / Email</label>
-                    <input type="text" name="username" required placeholder="Masukkan username atau email" class="w-full px-3 py-2 border border-outline-variant rounded-xl text-sm outline-none focus:border-indigo-600"/>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold mb-1">Password</label>
-                    <input type="password" name="password" required placeholder="Masukkan password" class="w-full px-3 py-2 border border-outline-variant rounded-xl text-sm outline-none focus:border-indigo-600"/>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Username / Email <span class="text-red-500">*</span></label>
+                        <input type="text" name="username" required placeholder="Contoh: user@kedayweb.com" class="w-full px-3 py-2 border border-outline-variant rounded-xl text-sm outline-none focus:border-indigo-600"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Password <span class="text-red-500">*</span></label>
+                        <input type="password" name="password" required placeholder="Masukkan password" class="w-full px-3 py-2 border border-outline-variant rounded-xl text-sm outline-none focus:border-indigo-600"/>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold mb-1">Role Akun</label>
@@ -577,9 +641,91 @@ $current_active_role = current_user_role();
                         <option value="superadmin">SUPERADMIN</option>
                     </select>
                 </div>
+
+                <div class="pt-2 border-t border-outline-variant">
+                    <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">Detail Anak Magang (Intern Info)</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Posisi Magang (intern_position)</label>
+                            <input type="text" name="intern_position" placeholder="Contoh: Magang Web Developer" class="w-full px-3 py-2 border border-outline-variant rounded-xl text-sm outline-none focus:border-indigo-600"/>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Asal Instansi / Universitas (university)</label>
+                            <input type="text" name="university" placeholder="Contoh: Universitas Gadjah Mada" class="w-full px-3 py-2 border border-outline-variant rounded-xl text-sm outline-none focus:border-indigo-600"/>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Jurusan (major)</label>
+                            <input type="text" name="major" placeholder="Contoh: Informatika / Sistem Informasi" class="w-full px-3 py-2 border border-outline-variant rounded-xl text-sm outline-none focus:border-indigo-600"/>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" onclick="document.getElementById('add-user-modal').classList.add('hidden')" class="px-4 py-2 border rounded-xl text-sm">Batal</button>
-                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors">Simpan User</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors shadow-sm">Simpan User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Edit User -->
+    <div id="edit-user-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 hidden backdrop-blur-sm">
+        <div class="bg-surface-container-lowest rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-outline-variant max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-3 border-b border-outline-variant mb-4">
+                <h3 class="font-headline-md font-bold text-indigo-700 flex items-center gap-2">
+                    <span class="material-symbols-outlined">edit</span>
+                    <span>Edit User & Detail Intern</span>
+                </h3>
+                <button onclick="document.getElementById('edit-user-modal').classList.add('hidden')" class="text-on-surface-variant hover:text-on-surface">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <form action="superadmin.php" method="POST" class="space-y-4">
+                <input type="hidden" name="action" value="update_user"/>
+                <input type="hidden" name="user_id" id="edit-user-id"/>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Username / Email <span class="text-red-500">*</span></label>
+                        <input type="text" name="username" id="edit-username" required class="w-full px-3 py-2 border border-outline-variant rounded-xl text-sm outline-none focus:border-indigo-600"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Password Baru (opsional)</label>
+                        <input type="password" name="password" id="edit-password" placeholder="Biarkan kosong jika tidak diubah" class="w-full px-3 py-2 border border-outline-variant rounded-xl text-sm outline-none focus:border-indigo-600"/>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Role Akun</label>
+                    <select name="role" id="edit-role" class="w-full px-3 py-2 border border-outline-variant rounded-xl text-sm outline-none focus:border-indigo-600">
+                        <option value="intern">INTERN (Anak Magang)</option>
+                        <option value="admin">ADMIN</option>
+                        <option value="superadmin">SUPERADMIN</option>
+                    </select>
+                </div>
+
+                <div class="pt-2 border-t border-outline-variant">
+                    <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">Detail Anak Magang (Intern Info)</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Posisi Magang (intern_position)</label>
+                            <input type="text" name="intern_position" id="edit-intern-position" placeholder="Contoh: Magang Web Developer" class="w-full px-3 py-2 border border-outline-variant rounded-xl text-sm outline-none focus:border-indigo-600"/>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Asal Instansi / Universitas (university)</label>
+                            <input type="text" name="university" id="edit-university" placeholder="Contoh: Universitas Gadjah Mada" class="w-full px-3 py-2 border border-outline-variant rounded-xl text-sm outline-none focus:border-indigo-600"/>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Jurusan (major)</label>
+                            <input type="text" name="major" id="edit-major" placeholder="Contoh: Informatika / Sistem Informasi" class="w-full px-3 py-2 border border-outline-variant rounded-xl text-sm outline-none focus:border-indigo-600"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="document.getElementById('edit-user-modal').classList.add('hidden')" class="px-4 py-2 border rounded-xl text-sm">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors shadow-sm">Simpan Perubahan</button>
                 </div>
             </form>
         </div>
@@ -635,6 +781,17 @@ $current_active_role = current_user_role();
     <?php include '../partials/confirm-modal.php'; ?>
 
     <script>
+        function openEditUserModal(user) {
+            document.getElementById('edit-user-id').value = user.id || '';
+            document.getElementById('edit-username').value = user.username || '';
+            document.getElementById('edit-password').value = '';
+            document.getElementById('edit-role').value = user.role || 'intern';
+            document.getElementById('edit-intern-position').value = user.intern_position || '';
+            document.getElementById('edit-university').value = user.university || '';
+            document.getElementById('edit-major').value = user.major || '';
+            document.getElementById('edit-user-modal').classList.remove('hidden');
+        }
+
         function togglePassword(btn) {
             const parent = btn.parentElement;
             const textSpan = parent.querySelector('.password-text');
