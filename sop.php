@@ -18,22 +18,25 @@
 
 <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto relative">
     <!-- TopNavBar -->
-    <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10">
+    <header class="w-full h-20 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10 shrink-0">
         <div class="flex justify-between items-center px-gutter w-full max-w-container-max mx-auto h-full">
             <div class="flex-1 flex items-center">
-                <button onclick="toggleMobileSidebar()" class="md:hidden mr-md text-on-surface hover:text-primary focus:outline-none flex items-center" aria-label="Toggle Sidebar">
+                <button onclick="toggleMobileSidebar()" class="md:hidden mr-md text-on-surface hover:text-primary focus:outline-none flex items-center p-1 rounded-lg hover:bg-surface-container-high" aria-label="Toggle Sidebar">
                     <span class="material-symbols-outlined text-2xl">menu</span>
                 </button>
-                <h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">SOP Peserta Magang</h2>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">description</span>
+                    <h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">SOP Peserta Magang</h2>
+                </div>
             </div>
             <div class="flex items-center gap-sm">
-                <div class="flex items-center gap-sm p-xs pr-md rounded-full border border-outline-variant">
-                    <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container overflow-hidden">
+                <div class="flex items-center gap-sm p-1.5 px-3 rounded-full border border-outline-variant bg-surface-bright shadow-2xs">
+                    <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container overflow-hidden shrink-0">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
                     </div>
                     <span class="font-label-md text-label-md hidden sm:inline-block"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
-                    <a href="logout.php" class="text-error hover:text-red-700" title="Keluar" aria-label="Keluar">
-                        <span class="material-symbols-outlined">logout</span>
+                    <a href="logout.php" class="text-error hover:text-red-700 hover:bg-red-50 p-1.5 rounded-full transition-colors flex items-center justify-center" title="Keluar" aria-label="Keluar">
+                        <span class="material-symbols-outlined text-[20px]">logout</span>
                     </a>
                 </div>
             </div>

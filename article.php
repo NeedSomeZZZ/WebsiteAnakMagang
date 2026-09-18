@@ -381,11 +381,27 @@ if (!$featured_article && count($articles) > 0) {
 
         <?php if ($is_logged_in): ?>
         <!-- Sticky TopBar for Logged-in Users -->
-        <header class="w-full h-14 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10 flex items-center px-gutter gap-3">
-            <button onclick="toggleMobileSidebar()" class="md:hidden text-on-surface hover:text-primary focus:outline-none flex items-center" aria-label="Toggle Sidebar">
-                <span class="material-symbols-outlined text-2xl">menu</span>
-            </button>
-            <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Aktivitas & Artikel</h2>
+        <header class="w-full h-20 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10 flex items-center justify-between px-gutter shrink-0">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleMobileSidebar()" class="md:hidden text-on-surface hover:text-primary focus:outline-none flex items-center p-1 rounded-lg hover:bg-surface-container-high" aria-label="Toggle Sidebar">
+                    <span class="material-symbols-outlined text-2xl">menu</span>
+                </button>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">newspaper</span>
+                    <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Aktivitas & Artikel</h2>
+                </div>
+            </div>
+            <div class="flex items-center gap-sm">
+                <div class="flex items-center gap-sm p-1.5 px-3 rounded-full border border-outline-variant bg-surface-bright shadow-2xs">
+                    <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container overflow-hidden shrink-0">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+                    </div>
+                    <span class="font-label-md text-label-md hidden sm:inline-block"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
+                    <a href="logout.php" class="text-error hover:text-red-700 hover:bg-red-50 p-1.5 rounded-full transition-colors flex items-center justify-center" title="Keluar" aria-label="Keluar">
+                        <span class="material-symbols-outlined text-[20px]">logout</span>
+                    </a>
+                </div>
+            </div>
         </header>
         <?php endif; ?>
 

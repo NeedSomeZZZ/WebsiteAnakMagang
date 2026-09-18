@@ -33,7 +33,7 @@ $userName = current_user_name();
 
 <!-- Main Content Canvas -->
 <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto relative">
-    <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10">
+    <header class="w-full h-20 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10 shrink-0">
         <div class="flex justify-between items-center px-gutter w-full max-w-container-max mx-auto h-full gap-2">
             <button onclick="toggleMobileSidebar()" type="button" class="md:hidden p-2 text-on-surface hover:bg-surface-container-high rounded-lg shrink-0" aria-label="Buka Menu Sidebar">
                 <span class="material-symbols-outlined text-2xl">menu</span>
@@ -46,18 +46,13 @@ $userName = current_user_name();
             </div>
             <!-- Trailing Actions -->
             <div class="flex items-center gap-sm">
-                <button class="p-sm text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors relative cursor-pointer active:scale-95" title="Notifications">
-                    <span class="material-symbols-outlined">notifications</span>
-                    <span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
-                </button>
-                <div class="h-8 w-px bg-outline-variant mx-xs"></div>
-                <div class="flex items-center gap-sm p-xs pr-md rounded-full border border-outline-variant">
-                    <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container overflow-hidden">
+                <div class="flex items-center gap-sm p-1.5 px-3 rounded-full border border-outline-variant bg-surface-bright shadow-2xs">
+                    <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container overflow-hidden shrink-0">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
                     </div>
                     <span class="font-label-md text-label-md hidden sm:inline-block"><?php echo htmlspecialchars($userName, ENT_QUOTES, 'UTF-8'); ?></span>
-                    <a href="logout.php" class="text-error hover:text-red-700" title="Keluar" aria-label="Keluar">
-                        <span class="material-symbols-outlined">logout</span>
+                    <a href="logout.php" class="text-error hover:text-red-700 hover:bg-red-50 p-1.5 rounded-full transition-colors flex items-center justify-center" title="Keluar" aria-label="Keluar">
+                        <span class="material-symbols-outlined text-[20px]">logout</span>
                     </a>
                 </div>
             </div>

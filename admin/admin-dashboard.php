@@ -48,24 +48,21 @@ include '../partials/sidebar-admin.php';
 ?>
     <!-- Main Content -->
     <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto">
-        <header class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10 flex justify-between items-center px-6 gap-2">
+        <header class="w-full h-20 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-10 flex justify-between items-center px-6 gap-2 shrink-0">
             <div class="flex items-center gap-2">
                 <button onclick="toggleMobileSidebar()" type="button" class="md:hidden p-2 text-on-surface hover:bg-surface-container-high rounded-lg shrink-0" aria-label="Buka Menu Sidebar">
                     <span class="material-symbols-outlined text-2xl">menu</span>
                 </button>
-                <h2 class="font-headline-lg">Admin Dashboard</h2>
+                <h2 class="font-headline-lg font-bold text-on-surface">Admin Dashboard</h2>
             </div>
-            <div class="flex items-center gap-2">
-                <button class="p-2 rounded-full hover:bg-surface-container-low" title="Notifications">
-                    <span class="material-symbols-outlined">notifications</span>
-                </button>
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-sm p-1.5 px-3 rounded-full border border-outline-variant bg-surface-bright shadow-2xs">
+                    <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container overflow-hidden shrink-0">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
                     </div>
-                    <span class="hidden sm:inline-block"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
-                    <a href="../Login/logout.php" class="text-error hover:text-red-700" title="Keluar" aria-label="Keluar">
-                        <span class="material-symbols-outlined">logout</span>
+                    <span class="hidden sm:inline-block font-label-md"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
+                    <a href="../Login/logout.php" class="text-error hover:text-red-700 hover:bg-red-50 p-1.5 rounded-full transition-colors flex items-center justify-center" title="Keluar" aria-label="Keluar">
+                        <span class="material-symbols-outlined text-[20px]">logout</span>
                     </a>
                 </div>
             </div>

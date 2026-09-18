@@ -159,33 +159,33 @@ if ($db_query) {
 
     <!-- Main -->
     <main class="flex-1 flex flex-col md:ml-[16.5rem] h-screen overflow-y-auto">
-        <header
-            class="w-full h-16 bg-surface-container-lowest border-b border-outline-variant sticky top-0 flex justify-between items-center px-6 z-10">
+        <header class="w-full h-20 bg-surface-container-lowest border-b border-outline-variant sticky top-0 flex justify-between items-center px-6 z-10 shrink-0">
             <div class="flex items-center gap-2">
-                <button onclick="toggleMobileSidebar()" class="md:hidden text-on-surface hover:text-primary focus:outline-none flex items-center mr-2" aria-label="Toggle Sidebar">
+                <button onclick="toggleMobileSidebar()" class="md:hidden text-on-surface hover:text-primary focus:outline-none flex items-center mr-2 p-1 rounded-lg hover:bg-surface-container-high" aria-label="Toggle Sidebar">
                     <span class="material-symbols-outlined text-2xl">menu</span>
                 </button>
-                <h2 class="font-headline-lg">Kehadiran Semua Intern</h2>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">event_available</span>
+                    <h2 class="font-headline-lg font-bold text-on-surface">Kehadiran Semua Intern</h2>
+                </div>
             </div>
             <div class="flex items-center gap-3">
                 <button onclick="exportAllAdminAttendanceCSV()"
-                    class="px-3.5 py-1.5 bg-primary text-on-primary rounded-xl text-xs font-bold hover:opacity-90 flex items-center gap-1 shadow-sm">
+                    class="px-3.5 py-2 bg-primary text-on-primary rounded-xl text-xs font-bold hover:opacity-90 flex items-center gap-1 shadow-sm active:scale-95 transition-all">
                     <span class="material-symbols-outlined text-[16px]">download</span>
                     <span>Export CSV</span>
                 </button>
-                <a href="admin-dashboard.php" class="text-sm text-primary hover:underline flex items-center gap-1">
+                <a href="admin-dashboard.php" class="text-sm font-semibold text-primary hover:underline flex items-center gap-1 hidden sm:flex">
                     <span class="material-symbols-outlined text-[18px]">arrow_back</span> Kembali ke Dashboard
                 </a>
-                <div class="flex items-center gap-2 ml-2">
-                    <div
-                        class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
-                        <span class="material-symbols-outlined"
-                            style="font-variation-settings: 'FILL' 1;">account_circle</span>
+                <div class="flex items-center gap-sm p-1.5 px-3 rounded-full border border-outline-variant bg-surface-bright shadow-2xs">
+                    <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container overflow-hidden shrink-0">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
                     </div>
-                    <span
-                        class="hidden sm:inline-block font-label-md"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
-                    <a href="../Login/logout.php" class="text-error hover:text-red-700" title="Keluar"
-                        aria-label="Keluar"><span class="material-symbols-outlined">logout</span></a>
+                    <span class="hidden sm:inline-block font-label-md"><?php echo htmlspecialchars(current_user_name(), ENT_QUOTES, 'UTF-8'); ?></span>
+                    <a href="../Login/logout.php" class="text-error hover:text-red-700 hover:bg-red-50 p-1.5 rounded-full transition-colors flex items-center justify-center" title="Keluar" aria-label="Keluar">
+                        <span class="material-symbols-outlined text-[20px]">logout</span>
+                    </a>
                 </div>
             </div>
         </header>

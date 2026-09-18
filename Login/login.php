@@ -63,11 +63,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body class="bg-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between">
   <!-- Navbar Header -->
-  <header class="w-full px-8 py-4 flex justify-between items-center text-slate-700 max-w-6xl mx-auto">
+  <header class="w-full px-6 md:px-10 py-4 flex justify-between items-center text-slate-700 shrink-0">
     <div class="flex items-center gap-2 font-bold text-xl text-blue-900">
       <i class="fa-solid fa-rocket"></i> InternSpace
     </div>
-    <a href="#" class="text-sm font-medium hover:underline text-slate-600">
+    <a href="#" class="text-sm font-medium hover:underline text-slate-600 flex items-center gap-1.5">
       <i class="fa-regular fa-circle-question"></i> Support
     </a>
   </header>
@@ -87,13 +87,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <!-- Card Big Container (Menampung Selamat Datang & Form Login) -->
       <div class="bg-white rounded-2xl shadow-2xl flex flex-col md:flex-row w-full overflow-hidden border border-slate-200">
         
-        <!-- Panel Kiri: Selamat Datang di InternSpace -->
+        <!-- Panel Kiri: Selamat Datang Anak Magang -->
         <div class="md:w-5/12 bg-blue-900 bg-grid text-white p-8 flex flex-col justify-between relative">
           <div>
             <span class="inline-block bg-blue-800/80 text-blue-200 text-xs px-3 py-1 rounded-full font-semibold mb-6 border border-blue-700">
               <i class="fa-solid fa-shield-halved mr-1"></i> Sistem Karir Terintegrasi v3.4
             </span>
-            <h1 class="text-2xl font-bold leading-tight mb-3">Selamat Datang di InternSpace</h1>
+            <h1 class="text-2xl font-bold leading-tight mb-3">Selamat Datang Anak Magang</h1>
             <p class="text-xs text-blue-200 leading-relaxed mb-8">
               Platform Terpadu Manajemen Magang, Presensi & Gamifikasi Portofolio Talenta Digital Indonesia.
             </p>
