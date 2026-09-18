@@ -30,7 +30,7 @@
 <?php
 $nav_icon      = 'school';
 $nav_cta_label = 'Portal Login';
-$nav_cta_href  = 'index.php';
+$nav_cta_href  = 'Login/login.php';
 include 'partials/topnav-public.php';
 ?>
 
