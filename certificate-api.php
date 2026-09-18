@@ -9,7 +9,21 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
 
+require_once __DIR__ . '/session.php';
 require_once __DIR__ . '/Login/koneksi.php';
+
+function check_admin_api(): void {
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+    $is_logged = !empty($_SESSION['user_logged_in']);
+    $role = (string)($_SESSION['role'] ?? '');
+    if (!$is_logged || !in_array($role, ['admin', 'superadmin'])) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'Akses ditolak. Sesi Admin tidak valid.']);
+        exit;
+    }
+}
 
 // Auto migration: Ensure certificate_enabled column exists in attendance_settings
 if ($conn) {
@@ -36,12 +50,7 @@ if ($action === 'get_master_status') {
 
 // ── TOGGLE MASTER STATUS (admin only) ───────────────────────────────────────
 if ($action === 'toggle_master_status' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    session_start();
-    if (empty($_SESSION['user_logged_in']) || !in_array($_SESSION['role'] ?? '', ['admin', 'superadmin'])) {
-        http_response_code(403);
-        echo json_encode(['success' => false, 'message' => 'Akses ditolak.']);
-        exit;
-    }
+    check_admin_api();
 
     $enabled = isset($_POST['enabled']) && ($_POST['enabled'] == '1' || $_POST['enabled'] == 'true' || $_POST['enabled'] === true) ? 1 : 0;
     
@@ -67,12 +76,7 @@ if ($action === 'toggle_master_status' && $_SERVER['REQUEST_METHOD'] === 'POST')
 
 // ── TOGGLE SINGLE CERTIFICATE STATUS (admin only) ───────────────────────────
 if ($action === 'toggle_single_status' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    session_start();
-    if (empty($_SESSION['user_logged_in']) || !in_array($_SESSION['role'] ?? '', ['admin', 'superadmin'])) {
-        http_response_code(403);
-        echo json_encode(['success' => false, 'message' => 'Akses ditolak.']);
-        exit;
-    }
+    check_admin_api();
 
     $id = (int)($_POST['id'] ?? 0);
     $status = trim($_POST['status'] ?? 'active');
@@ -157,12 +161,7 @@ if ($action === 'verify') {
 
 // ── LIST semua sertifikat (admin only) ─────────────────────────────────────
 if ($action === 'list') {
-    session_start();
-    if (empty($_SESSION['user_logged_in']) || !in_array($_SESSION['role'] ?? '', ['admin', 'superadmin'])) {
-        http_response_code(403);
-        echo json_encode(['success' => false, 'message' => 'Akses ditolak.']);
-        exit;
-    }
+    check_admin_api();
 
     $search = '%' . trim($_GET['search'] ?? '') . '%';
     $stmt = $conn->prepare(
@@ -182,12 +181,7 @@ if ($action === 'list') {
 
 // ── CREATE sertifikat (admin only) ─────────────────────────────────────────
 if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    session_start();
-    if (empty($_SESSION['user_logged_in']) || !in_array($_SESSION['role'] ?? '', ['admin', 'superadmin'])) {
-        http_response_code(403);
-        echo json_encode(['success' => false, 'message' => 'Akses ditolak.']);
-        exit;
-    }
+    check_admin_api();
 
     $fields = ['certificate_id','intern_name','intern_position','university','major',
                'start_date','end_date','issue_date','score_technical','score_discipline',
@@ -231,12 +225,7 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // ── UPDATE sertifikat (admin only) ─────────────────────────────────────────
 if ($action === 'update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    session_start();
-    if (empty($_SESSION['user_logged_in']) || !in_array($_SESSION['role'] ?? '', ['admin', 'superadmin'])) {
-        http_response_code(403);
-        echo json_encode(['success' => false, 'message' => 'Akses ditolak.']);
-        exit;
-    }
+    check_admin_api();
 
     $id = (int)($_POST['id'] ?? 0);
     if (!$id) {
@@ -271,12 +260,7 @@ if ($action === 'update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // ── DELETE sertifikat (admin only) ─────────────────────────────────────────
 if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    session_start();
-    if (empty($_SESSION['user_logged_in']) || !in_array($_SESSION['role'] ?? '', ['admin', 'superadmin'])) {
-        http_response_code(403);
-        echo json_encode(['success' => false, 'message' => 'Akses ditolak.']);
-        exit;
-    }
+    check_admin_api();
 
     $id = (int)($_POST['id'] ?? 0);
     if (!$id) {
@@ -296,12 +280,7 @@ if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // ── GET single (admin edit form) ────────────────────────────────────────────
 if ($action === 'get') {
-    session_start();
-    if (empty($_SESSION['user_logged_in']) || !in_array($_SESSION['role'] ?? '', ['admin', 'superadmin'])) {
-        http_response_code(403);
-        echo json_encode(['success' => false, 'message' => 'Akses ditolak.']);
-        exit;
-    }
+    check_admin_api();
     $id = (int)($_GET['id'] ?? 0);
     $stmt = $conn->prepare("SELECT * FROM certificates WHERE id=? LIMIT 1");
     $stmt->bind_param('i', $id);

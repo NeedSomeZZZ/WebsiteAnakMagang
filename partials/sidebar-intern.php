@@ -19,35 +19,32 @@ $is_in_admin_dir = (basename(dirname($script_path)) === 'admin');
 $root_prefix = $is_in_admin_dir ? '../' : '';
 $admin_prefix = $is_in_admin_dir ? '' : 'admin/';
 
-// Lookup certificate ID for direct link to verification.php & check master toggle status
+// Lookup certificate ID & status untuk intern yang login
 $cert_href = $root_prefix . 'certificate.php';
-$master_cert_enabled = 1;
+$show_cert_button = false;
 
 if (file_exists(__DIR__ . '/../Login/koneksi.php')) {
     include_once __DIR__ . '/../Login/koneksi.php';
 }
 
-if (!empty($conn)) {
-    $res_m = @mysqli_query($conn, "SELECT certificate_enabled FROM attendance_settings WHERE id = 1 LIMIT 1");
-    if ($res_m && $r_m = mysqli_fetch_assoc($res_m)) {
-        $master_cert_enabled = intval($r_m['certificate_enabled'] ?? 1);
+if (!empty($conn) && !empty($_SESSION['user_id'])) {
+    if (function_exists('sync_all_intern_certificates')) {
+        sync_all_intern_certificates($conn);
     }
-
-    if ($master_cert_enabled && !empty($_SESSION['user_id'])) {
-        if (function_exists('sync_all_intern_certificates')) {
-            sync_all_intern_certificates($conn);
-        }
-        $uid = intval($_SESSION['user_id']);
-        $q_cert = mysqli_prepare($conn, "SELECT certificate_id FROM certificates WHERE user_id = ? LIMIT 1");
-        if ($q_cert) {
-            mysqli_stmt_bind_param($q_cert, "i", $uid);
-            mysqli_stmt_execute($q_cert);
-            $res_cert = mysqli_stmt_get_result($q_cert);
-            if ($row_cert = mysqli_fetch_assoc($res_cert)) {
+    $uid = intval($_SESSION['user_id']);
+    // Cek sertifikat intern ini — hanya tampilkan jika status = 'active'
+    $q_cert = mysqli_prepare($conn, "SELECT certificate_id, status FROM certificates WHERE user_id = ? LIMIT 1");
+    if ($q_cert) {
+        mysqli_stmt_bind_param($q_cert, "i", $uid);
+        mysqli_stmt_execute($q_cert);
+        $res_cert = mysqli_stmt_get_result($q_cert);
+        if ($row_cert = mysqli_fetch_assoc($res_cert)) {
+            if ($row_cert['status'] === 'active') {
+                $show_cert_button = true;
                 $cert_href = $root_prefix . 'verification.php?id=' . urlencode($row_cert['certificate_id']);
             }
-            mysqli_stmt_close($q_cert);
         }
+        mysqli_stmt_close($q_cert);
     }
 }
 
@@ -59,7 +56,7 @@ $intern_nav_items = [
     'internspace'  => ['label' => 'Riwayat Tugas',       'icon' => 'history_edu',     'href' => $root_prefix . 'internspace.php',  'i18n' => 'nav_internspace'],
 ];
 
-if ($master_cert_enabled) {
+if ($show_cert_button) {
     $intern_nav_items['certificate'] = ['label' => 'Sertifikat Saya', 'icon' => 'workspace_premium', 'href' => $cert_href, 'i18n' => 'nav_certificate'];
 }
 

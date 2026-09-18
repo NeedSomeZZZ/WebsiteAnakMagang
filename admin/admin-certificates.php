@@ -112,7 +112,7 @@ include '../partials/sidebar-admin.php';
                             <th class="px-4 py-3 text-left">Nama Intern</th>
                             <th class="px-4 py-3 text-left">Posisi</th>
                             <th class="px-4 py-3 text-left">Universitas</th>
-                            <th class="px-4 py-3 text-center">Grade</th>
+                            <th class="px-4 py-3 text-center">TOGGLE</th>
                             <th class="px-4 py-3 text-center">Status</th>
                             <th class="px-4 py-3 text-center">Terbit</th>
                             <th class="px-4 py-3 text-center">Aksi</th>
@@ -125,26 +125,6 @@ include '../partials/sidebar-admin.php';
             </div>
         </div>
 
-        <!-- Toggle Status Visibilitas Tombol Sertifikat di Panel Intern -->
-        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
-            <div class="flex items-center gap-3.5">
-                <div class="w-11 h-11 rounded-2xl bg-primary-container flex items-center justify-center text-primary shrink-0 shadow-xs">
-                    <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">visibility</span>
-                </div>
-                <div>
-                    <h4 class="font-bold text-on-surface text-sm sm:text-base flex items-center gap-2">
-                        <span>Visibilitas Tombol Sertifikat (Panel Intern)</span>
-                        <span id="master-status-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Tampil di Intern</span>
-                    </h4>
-                    <p class="text-xs text-on-surface-variant mt-0.5">Aktifkan untuk menampilkan tombol "Sertifikat Saya" di panel intern, atau matikan untuk menyembunyikannya. Admin tetap bisa mengelola sertifikat.</p>
-                </div>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
-                <input type="checkbox" id="toggle-certificate-master" class="sr-only peer" onchange="toggleMasterCertificate(this.checked)"/>
-                <div class="w-14 h-7 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-600"></div>
-                <span id="toggle-master-label" class="ml-3 text-xs font-bold text-slate-700">Tampil</span>
-            </label>
-        </div>
     </div>
     <div class="mt-auto shrink-0 w-full">
         <?php include '../partials/footer.php'; ?>
@@ -323,12 +303,15 @@ async function loadCertificates() {
             <td class="px-4 py-3 text-on-surface-variant">${c.intern_position}</td>
             <td class="px-4 py-3 text-on-surface-variant text-xs">${c.university || '—'}</td>
             <td class="px-4 py-3 text-center">
-                <span class="bg-primary-fixed text-primary px-2 py-1 rounded-md font-bold text-sm">${c.final_grade || '—'}</span>
+                <label class="relative inline-flex items-center cursor-pointer select-none">
+                    <input type="checkbox" class="sr-only peer" ${c.status === 'active' ? 'checked' : ''} onchange="toggleSingleCertStatus(${c.id}, this.checked ? 'active' : 'revoked')"/>
+                    <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                </label>
             </td>
             <td class="px-4 py-3 text-center">
                 ${c.status === 'active'
-                    ? `<button type="button" onclick="toggleSingleCertStatus(${c.id}, 'revoked')" class="bg-[#dcfce7] text-[#166534] hover:bg-red-100 hover:text-red-700 transition-colors px-2 py-1 rounded-full text-xs font-bold cursor-pointer" title="Klik untuk menonaktifkan / mencabut sertifikat ini">Aktif</button>`
-                    : `<button type="button" onclick="toggleSingleCertStatus(${c.id}, 'active')" class="bg-error-container text-error hover:bg-emerald-100 hover:text-emerald-800 transition-colors px-2 py-1 rounded-full text-xs font-bold cursor-pointer" title="Klik untuk mengaktifkan sertifikat ini">Dicabut</button>`}
+                    ? '<span class="bg-[#dcfce7] text-[#166534] px-2.5 py-1 rounded-full text-xs font-bold">Aktif</span>'
+                    : '<span class="bg-error-container text-error px-2.5 py-1 rounded-full text-xs font-bold">Dicabut</span>'}
             </td>
             <td class="px-4 py-3 text-center text-xs text-on-surface-variant">${c.issue_fmt}</td>
             <td class="px-4 py-3 text-center">
@@ -442,55 +425,6 @@ function confirmDelete(id) {
     };
 }
 
-// ── Master Status Toggle ───────────────────────────────────────────────────
-async function loadMasterCertificateStatus() {
-    try {
-        const res = await fetch('../certificate-api.php?action=get_master_status');
-        const json = await res.json();
-        if (json.success) {
-            updateMasterToggleUI(json.enabled);
-        }
-    } catch (e) {
-        console.error("Gagal memuat status master sertifikat", e);
-    }
-}
-
-function updateMasterToggleUI(enabled) {
-    const chk = document.getElementById('toggle-certificate-master');
-    const badge = document.getElementById('master-status-badge');
-    const label = document.getElementById('toggle-master-label');
-    if (chk) chk.checked = !!enabled;
-    if (badge) {
-        badge.textContent = enabled ? 'Tampil di Intern' : 'Sembunyi dari Intern';
-        badge.className = enabled 
-            ? 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800'
-            : 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800';
-    }
-    if (label) {
-        label.textContent = enabled ? 'Tampil' : 'Sembunyi';
-        label.className = enabled ? 'ml-3 text-xs font-bold text-emerald-700' : 'ml-3 text-xs font-bold text-amber-700';
-    }
-}
-
-async function toggleMasterCertificate(enabled) {
-    try {
-        const fd = new FormData();
-        fd.set('action', 'toggle_master_status');
-        fd.set('enabled', enabled ? '1' : '0');
-        const res = await fetch('../certificate-api.php', { method: 'POST', body: fd });
-        const json = await res.json();
-        if (json.success) {
-            updateMasterToggleUI(json.enabled);
-            showToast(json.message, json.enabled ? 'success' : 'error');
-        } else {
-            showToast(json.message || 'Gagal mengubah status', 'error');
-            loadMasterCertificateStatus();
-        }
-    } catch (e) {
-        showToast('Terjadi kesalahan koneksi', 'error');
-        loadMasterCertificateStatus();
-    }
-}
 
 // ── Single Certificate Status Toggle ───────────────────────────────────────
 async function toggleSingleCertStatus(id, newStatus) {
@@ -525,7 +459,6 @@ function showToast(msg, type = 'success') {
 
 // ── Init ───────────────────────────────────────────────────────────────────
 loadCertificates();
-loadMasterCertificateStatus();
 </script>
 </body>
 </html>

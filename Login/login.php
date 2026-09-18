@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Jika berhasil, set Session
             session_regenerate_id(true);
             $_SESSION['user_logged_in'] = true;
-            $_SESSION['user_id'] = $user_data['username'];
+            $_SESSION['user_id'] = $user_data['id'];
             $_SESSION['username'] = $user_data['username'];
             $_SESSION['role'] = $user_data['role'];
             
