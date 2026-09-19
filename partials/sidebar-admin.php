@@ -31,7 +31,7 @@ $admin_nav_items = [
     'events'       => ['label' => 'Histori Event',       'icon' => 'event',           'href' => $root_prefix . 'event_history.php'],
     'article'      => ['label' => 'Kelola Artikel',       'icon' => 'newspaper',        'href' => $admin_prefix . 'admin-articles.php'],
     'certificates' => ['label' => 'Sertifikat',           'icon' => 'workspace_premium', 'href' => $admin_prefix . 'admin-certificates.php'],
-    'stats'        => ['label' => 'Statistics',           'icon' => 'insights',         'href' => $admin_prefix . 'admin-stats.php'],
+    // 'stats'        => ['label' => 'Statistics',           'icon' => 'insights',         'href' => $admin_prefix . 'admin-stats.php'],
 ];
 
 // Superadmin Panel hanya muncul untuk role superadmin
@@ -46,7 +46,7 @@ if (is_superadmin()) {
 <aside id="app-sidebar" class="fixed left-0 top-0 bottom-0 z-50 flex flex-col h-full w-[16.5rem] bg-surface-container-lowest border-r border-outline-variant p-md transform -translate-x-full md:translate-x-0 transition-transform duration-300 shadow-2xl md:shadow-none">
     <div class="flex items-center justify-between mb-xl px-sm">
         <a href="<?php echo $root_prefix; ?>index.php" class="flex items-center gap-sm rounded-lg transition-all duration-200 hover:bg-surface-container-high group" title="Kembali ke Beranda" aria-label="Kembali ke Beranda">
-            <img src="<?php echo $root_prefix; ?>uploads/Icon/Anak_Magang_Icon.jpg.jpeg" alt="Logo Anak Magang" class="w-8 h-8 rounded-lg object-cover shadow-xs border border-outline-variant/30 shrink-0 group-hover:opacity-90 transition-opacity"/>
+            <img src="<?php echo $root_prefix; ?>uploads/Images/Anak_Magang_Icon.jpg.jpeg" alt="Logo Anak Magang" class="w-8 h-8 rounded-lg object-cover shadow-xs border border-outline-variant/30 shrink-0 group-hover:opacity-90 transition-opacity"/>
             <div>
                 <?php if (isset($sidebar_title_html)): ?>
                     <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-bold group-hover:underline"><?php echo $sidebar_title_html; ?></h2>
