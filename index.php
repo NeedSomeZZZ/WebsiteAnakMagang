@@ -45,9 +45,8 @@ if (!is_array($positions) || empty($positions)) {
         rel="stylesheet" />
     <!-- Anime.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="shared-config.js"></script>
+    <link rel="stylesheet" href="output.css" />
     <style>
         html {
             scroll-behavior: smooth;

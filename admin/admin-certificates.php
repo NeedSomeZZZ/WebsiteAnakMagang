@@ -21,9 +21,8 @@ while ($row = mysqli_fetch_assoc($q)) $users[] = $row;
     <title>Kelola Sertifikat – Admin Kedayweb</title>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="../shared-config.js"></script>
-    <link rel="stylesheet" href="../style.css"/>
+    <link rel="stylesheet" href="../output.css"/>
     <style>
         .filled-icon { font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; }
         dialog::backdrop { background: rgba(0,0,0,.5); backdrop-filter: blur(4px); }

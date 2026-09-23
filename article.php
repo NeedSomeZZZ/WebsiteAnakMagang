@@ -317,10 +317,8 @@ if (!$featured_article && count($articles) > 0) {
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="shared-config.js"></script>
-    <link rel="stylesheet" href="style.css"/>
+    <link rel="stylesheet" href="output.css"/>
     <style>
         .article-card {
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);

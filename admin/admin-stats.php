@@ -13,7 +13,7 @@
     <script src="../shared-config.js"></script>
     <script src="../project-store.js"></script>
     <script src="../intern-store.js"></script>
-    <link rel="stylesheet" href="../style.css"/>
+    <link rel="stylesheet" href="../output.css"/>
     <style>
         .glass-card { background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); }
         .bar {
