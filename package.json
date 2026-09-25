@@ -4,6 +4,8 @@
   "description": "Internship Portal Frontend Management System",
   "main": "project-store.js",
   "scripts": {
+    "dev": "npx @tailwindcss/cli -i ./src/input.css -o ./output.css --watch",
+    "build": "npx @tailwindcss/cli -i ./src/input.css -o ./output.css --minify",
     "test": "node test-suite.js"
   },
   "keywords": [
@@ -13,5 +15,9 @@
     "management"
   ],
   "author": "Kedayweb Team",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.0",
+    "tailwindcss": "^4.0.0"
+  }
 }
