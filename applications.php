@@ -99,8 +99,8 @@ $count_offer = count(array_filter($applications, fn($a) => ($a['status'] ?? '') 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:FILL@0..1" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script src="shared-config.js"></script>
-  <link rel="stylesheet" href="output.css">
   <style>
     body { font-family: Inter, sans-serif; }
     .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 500; }

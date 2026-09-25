@@ -292,7 +292,7 @@ $current_active_role = current_user_role();
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="../shared-config.js"></script>
-    <link rel="stylesheet" href="../output.css"/>
+    <link rel="stylesheet" href="../style.css"/>
     <!-- Leaflet Map CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

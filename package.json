@@ -13,18 +13,5 @@
     "management"
   ],
   "author": "Kedayweb Team",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/NeedSomeZZZ/WebsiteAnakMagang.git"
-  },
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/NeedSomeZZZ/WebsiteAnakMagang/issues"
-  },
-  "homepage": "https://github.com/NeedSomeZZZ/WebsiteAnakMagang#readme",
-  "devDependencies": {
-    "@tailwindcss/cli": "^4.3.3",
-    "tailwindcss": "^4.3.3"
-  }
+  "license": "MIT"
 }
