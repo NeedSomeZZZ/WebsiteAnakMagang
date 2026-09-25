@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <!-- Navbar Header -->
   <header class="w-full px-6 md:px-10 py-4 flex justify-between items-center text-slate-700 shrink-0">
     <div class="flex items-center gap-2 font-bold text-xl text-blue-900">
-       <img src="../uploads/Images/Anak_Magang_Icon.jpg.jpeg" alt="Logo AnakMagang" class="w-8 h-8 rounded-lg object-cover shadow-xs border border-outline-variant/30 shrink-0"/>
+       <img src="../uploads/Icon/Anak_Magang_Icon.jpg.jpeg" alt="Logo AnakMagang" class="w-8 h-8 rounded-lg object-cover shadow-xs border border-outline-variant/30 shrink-0"/>
                 <span class="font-headline-md text-headline-md font-bold text-primary" data-i18n="brand_name">AnakMagang</span>
     </div>
     <a href="#" class="text-sm font-medium hover:underline text-slate-600 flex items-center gap-1.5">

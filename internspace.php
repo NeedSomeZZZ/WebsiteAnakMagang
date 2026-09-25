@@ -99,7 +99,7 @@ if (is_admin()) {
         <div class="hidden print-header p-6 border-b-2 border-slate-900 mb-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Kedayweb IT and Multimedia Agency</h1>
+                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">KEDAYWEB INTERNSPACE</h1>
                     <p class="text-sm font-semibold text-primary">Laporan Portfolio & Performance Pekerjaan Intern</p>
                     <p class="text-xs text-slate-500 mt-1">Tanggal Cetak: <?php echo date('d F Y, H:i'); ?> WIB</p>
                 </div>
@@ -258,7 +258,7 @@ if (is_admin()) {
                     <div class="text-center w-48">
                         <p class="text-xs text-slate-600 mb-12">Mengetahui,<br><strong>Pembimbing / Admin Magang</strong></p>
                         <div class="border-b border-slate-400 w-full mb-1"></div>
-                        <p class="text-xs font-bold text-slate-800">M. Lutfi Nur Fauzi, S.Kom.</p>
+                        <p class="text-xs font-bold text-slate-800">Kedayweb Management</p>
                     </div>
                 </div>
             </div>

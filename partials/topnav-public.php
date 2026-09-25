@@ -25,7 +25,7 @@ if (!isset($nav_cta_href)) {
         <!-- Logo & Brand -->
         <div class="flex items-center gap-sm shrink-0">
             <a href="<?php echo htmlspecialchars($nav_home_href); ?>" class="flex items-center gap-sm group">
-                <img src="<?php echo $root_prefix; ?>uploads/Images/Anak_Magang_Icon.jpg.jpeg" alt="Logo AnakMagang" class="w-8 h-8 rounded-lg object-cover shadow-xs border border-outline-variant/30 shrink-0 group-hover:opacity-90 transition-opacity"/>
+                <img src="<?php echo $root_prefix; ?>uploads/Icon/Anak_Magang_Icon.jpg.jpeg" alt="Logo AnakMagang" class="w-8 h-8 rounded-lg object-cover shadow-xs border border-outline-variant/30 shrink-0 group-hover:opacity-90 transition-opacity"/>
                 <span class="font-headline-md text-headline-md font-bold text-primary" data-i18n="brand_name">AnakMagang</span>
             </a>
         </div>

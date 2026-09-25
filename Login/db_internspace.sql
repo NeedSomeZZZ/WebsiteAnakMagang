@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 18, 2026 at 08:24 AM
+-- Generation Time: Sep 17, 2026 at 02:03 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.2.32
 
@@ -133,16 +133,15 @@ CREATE TABLE `attendance_settings` (
   `longitude` decimal(11,8) NOT NULL DEFAULT '114.36922200',
   `radius_meters` int NOT NULL DEFAULT '100',
   `is_strict` tinyint(1) NOT NULL DEFAULT '1',
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `certificate_enabled` tinyint(1) NOT NULL DEFAULT '1'
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `attendance_settings`
 --
 
-INSERT INTO `attendance_settings` (`id`, `office_name`, `address`, `latitude`, `longitude`, `radius_meters`, `is_strict`, `updated_at`, `certificate_enabled`) VALUES
-(1, 'Kantor Kedayweb Banyuwangi', 'Jl. Tamansari, Tukangkayu, Banyuwangi, Jawa Timur', -8.21932100, 114.36945800, 100, 1, '2026-09-18 14:43:21', 0);
+INSERT INTO `attendance_settings` (`id`, `office_name`, `address`, `latitude`, `longitude`, `radius_meters`, `is_strict`, `updated_at`) VALUES
+(1, 'Kantor Kedayweb Banyuwangi', 'Jl. Tamansari, Tukangkayu, Banyuwangi, Jawa Timur', -8.21932100, 114.36945800, 100, 1, '2026-09-16 14:15:34');
 
 -- --------------------------------------------------------
 
@@ -178,10 +177,8 @@ CREATE TABLE `certificates` (
 
 INSERT INTO `certificates` (`id`, `certificate_id`, `user_id`, `intern_name`, `intern_position`, `university`, `major`, `start_date`, `end_date`, `issue_date`, `score_technical`, `score_discipline`, `score_attitude`, `final_grade`, `supervisor_name`, `status`, `notes`, `created_at`, `updated_at`) VALUES
 (1, 'IS-2024-001', 1, 'INT-2024-001', 'Web Developer Intern', 'Universitas Indonesia', 'Ilmu Komputer', '2024-07-01', '2024-10-01', '2024-10-05', 88, 90, 92, 'A', 'Shaliza Mirza', 'active', NULL, '2026-09-16 12:35:41', '2026-09-16 12:35:41'),
-(2, 'IS-2024-002', 4, 'fairuz', 'full stack developer', 'smkn 1 banyuwangi', 'pplg', '2024-07-01', '2024-10-01', '2024-10-05', 85, 88, 95, 'A', 'Shaliza Mirza', 'active', NULL, '2026-09-16 12:35:41', '2026-09-18 14:06:03'),
-(3, 'IS-2024-003', 5, 'filbert', 'Backend Engineer Intern', 'Universitas Gadjah Mada', 'Teknik Informatika', '2024-07-01', '2024-10-01', '2024-10-05', 92, 85, 88, 'A', 'Shaliza Mirza', 'active', NULL, '2026-09-16 12:35:41', '2026-09-18 14:01:53'),
-(4, 'IS-2026-006', 6, 'fil', 'Magang Web Developer', '-', '-', '2026-09-18', '2026-12-18', '2026-12-18', 85, 85, 85, 'A', 'Shaliza Mirza', 'revoked', NULL, '2026-09-18 14:01:53', '2026-09-18 15:08:38'),
-(5, 'IS-2026-009', 9, 'budi', 'full stack developer', 'smkn 1 banyuwangi', 'pplg', '2026-09-18', '2026-12-18', '2026-12-18', 85, 85, 85, 'A', 'Shaliza Mirza', 'active', NULL, '2026-09-18 14:03:47', '2026-09-18 15:08:35');
+(2, 'IS-2024-002', 4, 'Fairuz', 'UI/UX Design Intern', 'Institut Teknologi Bandung', 'Desain Komunikasi Visual', '2024-07-01', '2024-10-01', '2024-10-05', 85, 88, 95, 'A', 'Shaliza Mirza', 'active', NULL, '2026-09-16 12:35:41', '2026-09-16 12:35:41'),
+(3, 'IS-2024-003', 5, 'Filbert', 'Backend Engineer Intern', 'Universitas Gadjah Mada', 'Teknik Informatika', '2024-07-01', '2024-10-01', '2024-10-05', 92, 85, 88, 'A', 'Shaliza Mirza', 'active', NULL, '2026-09-16 12:35:41', '2026-09-16 12:35:41');
 
 -- --------------------------------------------------------
 
@@ -290,25 +287,24 @@ CREATE TABLE `users` (
   `role` varchar(20) NOT NULL,
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `intern_position` varchar(255) DEFAULT NULL,
-  `university` varchar(255) DEFAULT NULL,
-  `major` varchar(255) DEFAULT NULL
+  `intern_position` varchar(150) DEFAULT NULL,
+  `university` varchar(150) DEFAULT NULL,
+  `major` varchar(150) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `role`, `username`, `password`, `intern_position`, `university`, `major`) VALUES
-(1, 'intern', 'INT-2024-001', '12345678', NULL, NULL, NULL),
-(2, 'admin', 'admin@internspace.com', 'admin123', NULL, NULL, NULL),
-(3, 'superadmin', 'shaliza', 'mirza', NULL, NULL, NULL),
-(4, 'intern', 'fairuz', 'a', 'full stack developer', 'smkn 1 banyuwangi', 'pplg'),
-(5, 'intern', 'filbert', 'a', NULL, NULL, NULL),
-(6, 'intern', 'fil', 'liem', NULL, NULL, NULL),
-(7, 'admin', 'fil2', 'liem', NULL, NULL, NULL),
-(8, 'superadmin', 'fil3', 'lem', NULL, NULL, NULL),
-(9, 'intern', 'budi', 'budi', 'full stack developer', 'smkn 1 banyuwangi', 'pplg');
+INSERT INTO `users` (`id`, `role`, `username`, `password`) VALUES
+(1, 'intern', 'INT-2024-001', '12345678'),
+(2, 'admin', 'admin@internspace.com', 'admin123'),
+(3, 'superadmin', 'shaliza', 'mirza'),
+(4, 'intern', 'fairuz', 'a'),
+(5, 'intern', 'filbert', 'a'),
+(6, 'intern', 'fil', 'liem'),
+(7, 'admin', 'fil2', 'liem'),
+(8, 'superadmin', 'fil3', 'lem');
 
 --
 -- Indexes for dumped tables
@@ -418,7 +414,7 @@ ALTER TABLE `attendance_settings`
 -- AUTO_INCREMENT for table `certificates`
 --
 ALTER TABLE `certificates`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `events_history`
@@ -448,7 +444,7 @@ ALTER TABLE `tasks`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables

@@ -10,7 +10,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist:wght@400;500;600;700;800;900&family=Montserrat:wght@800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="shared-config.js"></script>
@@ -24,47 +24,6 @@
         .animate-in { animation: fadeSlideUp .5s ease both; }
         .spin { animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ── Sertifikat visual (template: uploads/Certificate/) ──────────
-           Semua posisi memakai % / cqw agar tetap proporsional di layar apa pun.
-           Angka posisi diambil dari sertifikat_pkl_kedayweb.php:
-             nama  → top 45%, tengah, lebar 50%, font 26px pada lebar 1000px (= 2.6cqw)
-             QR    → left 43.7%, bottom 11.6%, 12.5% x 17.7% (persegi)          */
-        .cert-canvas {
-            position: relative; width: 100%; aspect-ratio: 297 / 210;
-            container-type: inline-size; overflow: hidden; background: #f5f3e7;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,.25);
-            -webkit-print-color-adjust: exact; print-color-adjust: exact;
-        }
-        .cert-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill;
-                   user-select: none; -webkit-user-drag: none; pointer-events: none; }
-        .cert-name {
-            position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%);
-            width: 50%; text-align: center; white-space: nowrap; z-index: 10;
-            font-family: 'Montserrat', sans-serif; font-weight: 800; color: #0f172a;
-            font-size: calc(var(--cert-fs, 2.6) * 1cqw); line-height: 1.25;
-            text-transform: capitalize;
-        }
-        .cert-qr {
-            position: absolute; left: 43.7%; bottom: 11.6%; width: 12.5%; height: 17.7%;
-            display: flex; align-items: center; justify-content: center; z-index: 20;
-            background: #fff; border-radius: .8cqw; padding: .9cqw; box-sizing: border-box;
-        }
-        .cert-qr img { width: 100%; height: 100%; object-fit: contain; display: block; }
-
-        /* ── Cetak / Simpan PDF: hanya sertifikat, A4 landscape, tanpa margin ── */
-        @page { size: A4 landscape; margin: 0; }
-        @media print {
-            html, body { height: 210mm !important; overflow: hidden !important; margin: 0 !important; background: #fff !important; }
-            body * { visibility: hidden !important; }
-            #result-section { animation: none !important; transform: none !important; }
-            #cert-preview, #cert-preview * { visibility: visible !important; }
-            #cert-preview {
-                position: fixed !important; left: 0; top: 0; z-index: 9999;
-                width: 297mm !important; height: 210mm !important; max-width: none !important;
-                aspect-ratio: auto !important; margin: 0 !important; box-shadow: none !important;
-            }
-        }
     </style>
 </head>
 <body class="bg-background min-h-screen flex flex-col font-body-md text-body-md text-on-surface">
@@ -142,28 +101,52 @@ include 'partials/topnav-public.php';
         <!-- Bento Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
             <!-- Certificate Preview (Left) -->
-            <div class="lg:col-span-7 bg-surface-container-lowest rounded-2xl border border-outline-variant overflow-hidden hover:soft-shadow transition-shadow duration-300 self-start">
+            <div class="lg:col-span-7 bg-surface-container-lowest rounded-2xl border border-outline-variant overflow-hidden group hover:soft-shadow transition-shadow duration-300">
                 <div class="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
                     <span class="font-label-md text-on-surface-variant uppercase tracking-wider">Preview Sertifikat</span>
                     <button onclick="downloadCertificate()"
-                            class="text-primary hover:bg-primary-container hover:text-on-primary-container px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-sm font-semibold" title="Cetak / Simpan PDF">
-                        <span class="material-symbols-outlined text-[20px]">download</span> Unduh PDF
+                            class="text-primary hover:bg-primary-container hover:text-on-primary-container p-2 rounded-full transition-colors" title="Unduh PDF">
+                        <span class="material-symbols-outlined">download</span>
                     </button>
                 </div>
-                <!-- Certificate Design: gambar latar + nama + QR (lihat uploads/Certificate/) -->
-                <div class="p-3 md:p-lg bg-surface">
-                    <div id="cert-preview" class="cert-canvas" role="img" aria-label="Preview sertifikat magang">
-                        <img class="cert-bg" src="uploads/Certificate/Sertifikat_Ril.png" alt="" draggable="false"/>
-                        <div id="cert-name" class="cert-name">—</div>
-                        <div id="cert-qr" class="cert-qr" style="display:none">
-                            <img id="cert-qr-img" alt="QR verifikasi sertifikat"/>
+                <!-- Certificate Design -->
+                <div class="p-lg bg-surface flex items-center justify-center min-h-[500px]">
+                    <div id="cert-preview" class="relative w-full max-w-[600px] bg-white shadow-lg border-[6px] border-double border-blue-900/50 rounded-xl p-10 text-center font-sans">
+                        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-900 via-blue-500 to-blue-900 rounded-t-lg"></div>
+                        <div class="flex items-center justify-center gap-2 mb-3">
+                            <span class="material-symbols-outlined filled-icon text-blue-900 text-2xl">school</span>
+                            <span class="text-lg font-black text-blue-900 tracking-wider uppercase">Kedayweb</span>
                         </div>
+                        <p class="text-[10px] uppercase tracking-[0.3em] text-slate-400 font-bold mb-4">Certificate of Internship Completion</p>
+                        <h2 class="text-2xl font-bold text-slate-800 mb-1">SERTIFIKAT MAGANG</h2>
+                        <p class="text-xs text-slate-500 mb-5">Dengan bangga diberikan kepada</p>
+                        <p id="cert-name" class="text-3xl font-bold text-blue-900 mb-1 tracking-wide">—</p>
+                        <div class="w-32 h-0.5 bg-blue-900 mx-auto mb-5"></div>
+                        <p id="cert-desc" class="text-sm text-slate-600 max-w-sm mx-auto leading-relaxed mb-6">—</p>
+                        <div class="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-slate-200 text-left">
+                            <div>
+                                <p class="text-[9px] text-slate-400 uppercase font-bold">ID Sertifikat</p>
+                                <p id="cert-id-display" class="text-xs font-mono font-bold text-slate-700">—</p>
+                                <p class="text-[9px] text-emerald-600 font-semibold mt-1">✓ Terverifikasi</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="inline-block p-1 rounded-full border-2 border-blue-900 text-blue-900 text-[9px] font-bold uppercase tracking-wide">★ Verified ★</div>
+                                <p id="cert-issue-display" class="text-[9px] text-slate-400 mt-1">—</p>
+                            </div>
+                            <div class="text-right">
+                                <p id="cert-supervisor" class="text-xs font-bold text-slate-700 italic border-b border-slate-300 pb-1 inline-block">—</p>
+                                <p class="text-[9px] text-slate-400 uppercase font-bold mt-1">Pembimbing</p>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-blue-900 via-blue-500 to-blue-900 rounded-b-lg"></div>
                     </div>
-                </div>
-                <div class="px-4 py-3 bg-surface-container-low border-t border-outline-variant flex flex-wrap justify-between items-center gap-2 text-xs text-on-surface-variant">
-                    <span>ID Sertifikat: <b id="cert-id-display" class="font-mono text-on-surface">—</b>
-                        <span class="text-emerald-600 font-semibold ml-1">✓ Terverifikasi</span></span>
-                    <span id="cert-issue-display">—</span>
+                    <!-- Hover overlay -->
+                    <div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4" style="border-radius:1rem">
+                        <button onclick="downloadCertificate()"
+                                class="bg-primary/90 text-on-primary px-6 py-2 rounded-lg text-sm font-semibold shadow-xl flex items-center gap-2 backdrop-blur-sm">
+                            <span class="material-symbols-outlined text-[18px]">download</span> Unduh PDF
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -265,7 +248,6 @@ include 'partials/topnav-public.php';
 
 <?php include 'partials/footer.php'; ?>
 
-<script src="qrcode.js"></script>
 <script>
 // Data sertifikat aktif (diisi setelah fetch)
 let activeCert = null;
@@ -310,11 +292,14 @@ function setVerifyLoading(loading) {
 }
 
 function showResult(d) {
-    // Fill cert preview (gambar latar + nama + QR)
+    // Fill cert preview
     document.getElementById('cert-name').textContent       = d.intern_name;
     document.getElementById('cert-id-display').textContent = d.certificate_id;
     document.getElementById('cert-issue-display').textContent = 'Diterbitkan: ' + d.issue_date;
-    renderCertQr(d.certificate_id);
+    document.getElementById('cert-supervisor').textContent = d.supervisor_name || 'Pembimbing';
+    document.getElementById('cert-desc').textContent =
+        `atas keberhasilan menyelesaikan program magang sebagai ${d.intern_position} di Kedayweb` +
+        (d.final_grade ? ` dengan nilai ${d.final_grade} (${d.avg_score}/100)` : '') + '.';
 
     // Fill right panel
     document.getElementById('res-name').textContent       = d.intern_name;
@@ -340,39 +325,7 @@ function showResult(d) {
     document.getElementById('search-section').style.display = 'none';
     document.getElementById('error-section').style.display  = 'none';
     document.getElementById('result-section').style.display = 'block';
-    fitCertName();
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitCertName);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-/* Perkecil font nama otomatis jika terlalu panjang (maks. 50% lebar sertifikat) */
-function fitCertName() {
-    const box = document.getElementById('cert-preview');
-    const el  = document.getElementById('cert-name');
-    let fs = 2.6;
-    box.style.setProperty('--cert-fs', fs);
-    while (el.scrollWidth > el.clientWidth + 1 && fs > 1.2) {
-        fs = Math.round((fs - 0.1) * 10) / 10;
-        box.style.setProperty('--cert-fs', fs);
-    }
-}
-
-/* QR code berisi tautan verifikasi: verification.php?id=<ID> */
-function renderCertQr(certId) {
-    const wrap = document.getElementById('cert-qr');
-    const img  = document.getElementById('cert-qr-img');
-    try {
-        const u = new URL(window.location.href);
-        u.hash = ''; u.search = '';
-        u.searchParams.set('id', certId);
-        const qr = qrcode(0, 'M');
-        qr.addData(u.toString());
-        qr.make();
-        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(qr.createSvgTag({ cellSize: 1, margin: 0, scalable: true }));
-        wrap.style.display = 'flex';
-    } catch (e) {
-        wrap.style.display = 'none';   // library QR gagal dimuat → sertifikat tetap tampil tanpa QR
-    }
 }
 
 function setBar(key, value) {
@@ -415,17 +368,63 @@ document.getElementById('cert-id-input').addEventListener('keydown', e => {
     }
 })();
 
-// Download / Print certificate → gunakan dialog cetak browser (pilih "Simpan sebagai PDF")
-let _titleBackup = null;
+// Download / Print certificate
 function downloadCertificate() {
     if (!activeCert) return;
-    _titleBackup = document.title;
-    document.title = 'Sertifikat_' + activeCert.certificate_id;   // jadi nama file PDF default
-    window.print();
+    const d = activeCert;
+    const win = window.open('', '_blank');
+    win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+    <title>Sertifikat_${d.certificate_id}.pdf</title>
+    <meta charset="utf-8">
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @page { size: landscape; margin: 12mm; }
+        body { font-family: Inter, sans-serif; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-6">
+    <div class="w-full max-w-4xl border-[6px] border-double border-blue-900/60 rounded-2xl p-14 bg-white text-center shadow-lg relative">
+        <div class="absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-blue-900 via-blue-500 to-blue-900 rounded-t-2xl"></div>
+        <div class="flex items-center justify-center gap-2 mb-3">
+            <span style="font-family:'Material Symbols Outlined';font-variation-settings:'FILL' 1" class="text-2xl text-blue-900">school</span>
+            <span class="text-xl font-black text-blue-900 tracking-wider uppercase">Kedayweb</span>
+        </div>
+        <p class="text-[10px] uppercase tracking-[0.3em] text-slate-500 font-bold mb-2">Certificate of Internship Completion</p>
+        <h1 class="text-4xl font-bold text-slate-900 mb-4" style="font-family:Georgia,serif">SERTIFIKAT MAGANG</h1>
+        <p class="text-sm text-slate-600 mb-5">Dengan bangga diberikan kepada</p>
+        <h2 class="text-4xl font-bold text-blue-900 mb-2 tracking-wide" style="font-family:Georgia,serif">${d.intern_name}</h2>
+        <div class="w-48 h-0.5 bg-blue-900 mx-auto mb-5"></div>
+        <p class="text-base text-slate-700 max-w-2xl mx-auto leading-relaxed mb-8">
+            atas keberhasilan menyelesaikan program magang sebagai <strong>${d.intern_position}</strong> di <strong>Kedayweb</strong>
+            ${d.university ? 'dari <strong>' + d.university + '</strong>' : ''}
+            dengan nilai akhir <strong>${d.final_grade} (${d.avg_score}/100)</strong>.
+        </p>
+        <div class="grid grid-cols-3 gap-6 pt-6 border-t border-slate-200 items-end">
+            <div class="text-left">
+                <p class="text-[11px] text-slate-500 uppercase font-semibold">ID Sertifikat</p>
+                <p class="text-sm font-mono font-bold text-slate-800">${d.certificate_id}</p>
+                <p class="text-[10px] text-emerald-700 font-semibold mt-1">✓ Terverifikasi</p>
+                <p class="text-[10px] text-slate-400 mt-0.5">Periode: ${d.start_date} – ${d.end_date}</p>
+            </div>
+            <div class="text-center">
+                <div class="inline-block px-3 py-1 rounded-full border-2 border-blue-900 text-blue-900 font-bold text-xs uppercase tracking-wider mb-2">★ Verified ★</div>
+                <p class="text-[10px] text-slate-400">Diterbitkan: ${d.issue_date}</p>
+            </div>
+            <div class="text-right">
+                <div class="text-sm font-bold text-slate-800 italic border-b border-slate-300 pb-1 inline-block">${d.supervisor_name || 'Pembimbing'}</div>
+                <p class="text-[11px] text-slate-500 uppercase font-semibold mt-1">Pembimbing Program</p>
+            </div>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 h-3 bg-gradient-to-r from-blue-900 via-blue-500 to-blue-900 rounded-b-2xl"></div>
+    </div>
+    <script>window.onload=function(){setTimeout(()=>window.print(),600)};<\/script>
+</body>
+</html>`);
+    win.document.close();
 }
-window.addEventListener('afterprint', () => {
-    if (_titleBackup !== null) { document.title = _titleBackup; _titleBackup = null; }
-});
 </script>
 </body>
 </html>
